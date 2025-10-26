@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  # 1) SELF-HOSTED VPN (WireGuard server) — remote access to your home LAN
+  homevpn:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: homevpn
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      # Use a DDNS name if you don’t have a static IP
+      - SERVERURL= damattberghome.duckdns.org
+      - SERVERPORT=51820
+      - PEERS=3                 # how many client profiles to auto-create
+      - PEERDNS=1.1.1.1
+      # Split tunnel to only your LAN; or use 0.0.0.0/0 for full-tunnel via home
+      - ALLOWEDIPS=192.168.1.0/24
+    volumes:
+      - ./homevpn/config:/config
+      # NOTE: The line below is ONLY for Linux hosts; remove it on Windows/macOS
+      # - /lib/modules:/lib/modules:ro
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    restart: unless-stopped
+
+  # 2) COMMERCIAL VPN CLIENT (Gluetun) — routes other containers through a provider
+  privacyvpn:
+    image: qmcgaw/gluetun:latest
+    container_name: privacyvpn
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - TZ=America/Chicago
+      # Choose your provider & protocol (see gluetun docs for exact vars)
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+           # Supply your WireGuard keys or OpenVPN creds per your provider
+          
+           # *** They get found iin ./homevpn/config/  ***
+           # *** Each sub-folder contains a like (peer1, peer2) like
+              # ** peer1/peer.conf and is what you want to import into wireguard app
+              # *** To see QR code directly in termina run; 
+                # *** docker exec -it homevpn /app/show-peer 1 ***
+                
+      - WIREGUARD_PRIVATE_KEY=your_wireguard_private_key
+    # These allegedly get created when you run docker compose up -d
+      - WIREGUARD_ADDRESSES=10.14.0.2/32
+      # Pick location(s)
+      - SERVER_COUNTRIES=United States
+      # Expose a proxy if you want your host to optionally use it
+      - HTTPPROXY=on
+      - HTTPPROXY_LOG=on
+    ports:
+      - "8888:8888/tcp"   # HTTP proxy (optional)
+    volumes:
+      - ./privacyvpn:/gluetun
+    restart: unless-stopped
+
+  # Example of a container whose traffic is forced through the commercial VPN
+  # (it "shares" the privacyvpn network namespace)
+  whatsmyip:
+    image: curlimages/curl:8.10.1
+    container_name: whatsmyip
+    depends_on:
+      - privacyvpn
+    network_mode: "service:privacyvpn"
+    command: ["sh", "-c", "sleep 4 && echo 'IP via VPN:' && curl -s https://ifconfig.io && echo"]
