@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - "8080:8080"  # qBittorrent WebUI
+      - "6881:6881"  # qBittorrent port
+      - "6881:6881/udp"
+    environment:
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
+      - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - SERVER_COUNTRIES=${SERVER_COUNTRIES}
+      - TZ=${TZ}
+    volumes:
+      - C:\media\config\gluetun:/gluetun  # routes to folder in media stack folder
+    restart: unless-stopped
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "service:gluetun"  # Routes ALL traffic through gluetun (VPN killswitch!)
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - C:\media\config\qbittorrent:/config
+      - C:\media\downloads:/downloads
+    depends_on:
+      - gluetun
+    restart: unless-stopped
