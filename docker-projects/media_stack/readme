@@ -1,0 +1,558 @@
+# Media Stack Documentation
+
+## Overview
+This is a fully automated media downloading and management system running in Docker containers. All torrent traffic is routed through a VPN with kill-switch protection to ensure privacy.
+
+---
+
+## Stack Components
+
+### 1. **Gluetun** (VPN Container)
+- **Purpose:** Provides VPN connectivity for secure, anonymous torrenting
+- **Port:** Internal only (no direct access needed)
+- **Key Features:**
+  - Connects to ProtonVPN using OpenVPN protocol
+  - Acts as a network gateway for qBittorrent
+  - Built-in kill switch - if VPN drops, containers using it lose internet
+  - Automatic reconnection if connection fails
+
+**How it works:** Gluetun creates a VPN tunnel to ProtonVPN servers. Other containers route their traffic through Gluetun by using `network_mode: "service:gluetun"`, ensuring all their traffic goes through the VPN.
+
+### 2. **qBittorrent** (Download Client)
+- **Purpose:** Downloads torrents sent by Radarr/Sonarr
+- **Access:** http://localhost:8080
+- **Default Login:** admin / (check logs for temp password)
+- **Key Features:**
+  - Routes ALL traffic through Gluetun (VPN kill switch)
+  - Web-based interface for monitoring downloads
+  - Automatic category management (radarr-movies, etc.)
+
+**How it works:** qBittorrent has no direct internet access - it can ONLY communicate through the Gluetun container. This ensures that even if the VPN fails, your real IP is never exposed.
+
+**Important Settings:**
+- Network Interface: `tun0` (VPN tunnel)
+- Downloads folder: `/downloads` (maps to `C:\media\downloads`)
+
+### 3. **Radarr** (Movie Management)
+- **Purpose:** Automates movie downloading, organization, and quality management
+- **Access:** http://localhost:7878
+- **Key Features:**
+  - Searches for movies across multiple indexers
+  - Sends torrents to qBittorrent
+  - Monitors download progress
+  - Automatically renames and organizes movies
+  - Quality profiles (720p, 1080p, 4K, etc.)
+
+**How it works:** 
+1. You add a movie to Radarr
+2. Radarr searches indexers (via Prowlarr) for the movie
+3. Finds the best quality torrent based on your preferences
+4. Sends torrent to qBittorrent
+5. Monitors download progress
+6. When complete, moves file from `/downloads` to `/movies` with proper naming
+
+**File Structure:**
+```
+/movies/
+  └── Movie Name (Year)/
+      └── Movie Name (Year) - Quality.ext
+```
+
+### 4. **Prowlarr** (Indexer Manager)
+- **Purpose:** Central management for all torrent indexers
+- **Access:** http://localhost:9696
+- **Key Features:**
+  - One place to add/manage all indexers
+  - Automatically syncs indexers to Radarr and Sonarr
+  - Tests indexer connectivity
+  - Supports public and private trackers
+
+**How it works:** Instead of adding indexers to Radarr and Sonarr separately, you add them once in Prowlarr. Prowlarr then automatically syncs them to all connected apps.
+
+**Current Indexers:**
+- YTS (public, movies)
+- (More can be added as needed)
+
+### 5. **FlareSolverr** (Cloudflare Bypass)
+- **Purpose:** Bypasses Cloudflare protection on indexer sites
+- **Port:** 8191 (internal only)
+- **Key Features:**
+  - Solves Cloudflare challenges automatically
+  - Required for many popular indexers (1337x, TPB, etc.)
+  - Works transparently in the background
+
+**How it works:** When an indexer is protected by Cloudflare, Prowlarr sends the request to FlareSolverr, which solves the challenge and returns the page content.
+
+### 6. **Watchtower** (Auto-Updater)
+- **Purpose:** Automatically updates Docker containers
+- **No Web Interface**
+- **Key Features:**
+  - Checks for image updates daily at 4 AM
+  - Automatically pulls new images
+  - Recreates containers with new versions
+  - Cleans up old images
+
+**How it works:** Watchtower monitors your running containers and checks for updated images. When updates are available, it pulls them, stops the old container, and starts a new one with the updated image.
+
+---
+
+## How The Stack Works Together
+
+### Adding a Movie (Complete Flow):
+```
+1. You → Add movie in Radarr
+2. Radarr → Asks Prowlarr "where can I find this movie?"
+3. Prowlarr → Searches all configured indexers
+4. Prowlarr → (Uses FlareSolverr if indexer has Cloudflare)
+5. Prowlarr → Returns search results to Radarr
+6. Radarr → Picks best torrent based on quality profile
+7. Radarr → Sends torrent to qBittorrent
+8. qBittorrent → Downloads through Gluetun VPN
+9. qBittorrent → Saves to /downloads/complete/
+10. Radarr → Detects completed download
+11. Radarr → Moves and renames file to /movies/
+```
+
+### Network Architecture:
+```
+Internet
+    ↓
+Gluetun (VPN Container)
+    ↓
+qBittorrent (routes through Gluetun)
+    ↑
+Radarr (sends torrents)
+    ↑
+Prowlarr (provides indexers)
+    ↑
+FlareSolverr (bypasses Cloudflare)
+```
+
+**Important:** Only qBittorrent routes through the VPN. Radarr, Prowlarr, and other management apps use your regular internet connection for speed.
+
+---
+
+## File Structure
+
+### Docker Compose Location:
+```
+C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\media_stack\
+├── docker-compose.yml    # Container definitions
+├── .env                  # Secrets (VPN credentials) - NOT in Git
+└── .gitignore           # Prevents .env from being committed
+```
+
+### Media Storage:
+```
+C:\media\
+├── config\              # Container configuration files
+│   ├── gluetun\
+│   ├── qbittorrent\
+│   ├── radarr\
+│   ├── prowlarr\
+│   ├── sonarr\         # (to be added)
+│   ├── overseerr\      # (to be added)
+│   └── plex\           # (to be added)
+├── downloads\           # Active downloads
+│   ├── complete\
+│   └── incomplete\
+├── movies\              # Organized movie library
+└── tv\                  # TV show library (for Sonarr)
+```
+
+---
+
+## Essential Docker Commands
+
+### Starting/Stopping the Stack:
+```bash
+# Navigate to the media_stack folder
+cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\media_stack"
+
+# Start all containers
+docker-compose up -d
+
+# Stop all containers
+docker-compose down
+
+# Restart all containers
+docker-compose restart
+
+# View status of all containers
+docker-compose ps
+```
+
+### Viewing Logs:
+```bash
+# View logs for a specific container
+docker logs gluetun
+docker logs qbittorrent
+docker logs radarr
+docker logs prowlarr
+
+# Follow logs in real-time (Ctrl+C to exit)
+docker logs -f gluetun
+
+# View last 50 lines of logs
+docker logs --tail 50 gluetun
+```
+
+### Updating Containers:
+```bash
+# Pull latest images
+docker-compose pull
+
+# Recreate containers with new images
+docker-compose up -d --force-recreate
+
+# Note: Watchtower does this automatically at 4 AM daily
+```
+
+### Troubleshooting Commands:
+```bash
+# Check if VPN is connected
+docker exec gluetun wget -qO- https://ipinfo.io/ip
+# Should show Netherlands IP: 89.39.107.196
+
+# Check your real IP (for comparison)
+curl https://ipinfo.io/ip
+
+# Restart a specific container
+docker-compose restart radarr
+
+# View detailed container info
+docker inspect gluetun
+
+# Clean up unused Docker resources
+docker system prune -a
+```
+
+---
+
+## Security & Privacy
+
+### VPN Kill Switch:
+The stack has multiple layers of kill switch protection:
+
+1. **Container-level:** qBittorrent uses `network_mode: "service:gluetun"`, meaning it has NO direct internet access. It can ONLY communicate through Gluetun.
+
+2. **Network interface binding:** qBittorrent is configured to use only the `tun0` interface (VPN tunnel).
+
+3. **Gluetun firewall:** Gluetun has a built-in firewall that blocks all non-VPN traffic.
+
+**Result:** If the VPN drops for ANY reason, qBittorrent immediately loses internet connectivity and cannot leak your IP.
+
+### Verifying VPN Protection:
+```bash
+# Check Gluetun's IP (should be Netherlands)
+docker exec gluetun wget -qO- https://ipinfo.io/ip
+
+# Check your real IP (should be different)
+curl https://ipinfo.io/ip
+```
+
+### Network Segmentation:
+- Your Docker host (spare gaming PC) is on the same network as other devices
+- Future consideration: VLAN segmentation for additional isolation
+- Current setup provides adequate protection for home use
+
+---
+
+## Access URLs
+
+| Service | URL | Purpose |
+|---------|-----|---------|
+| qBittorrent | http://localhost:8080 | Monitor downloads |
+| Radarr | http://localhost:7878 | Manage movies |
+| Prowlarr | http://localhost:9696 | Manage indexers |
+| Sonarr | http://localhost:8989 | (To be added) Manage TV shows |
+| Plex | http://localhost:32400/web | (To be added) Watch media |
+| Overseerr | http://localhost:5055 | (To be added) Request media |
+
+---
+
+## Common Tasks
+
+### Adding a Movie:
+1. Open Radarr (http://localhost:7878)
+2. Click "Add New"
+3. Search for the movie
+4. Select root folder: `/movies`
+5. Choose quality profile
+6. Click "Add Movie"
+7. Radarr automatically searches and downloads
+
+### Adding an Indexer:
+1. Open Prowlarr (http://localhost:9696)
+2. Go to Indexers
+3. Click "+ Add Indexer"
+4. Select indexer from list
+5. Configure settings (most are automatic)
+6. Test and Save
+7. Indexer automatically syncs to Radarr/Sonarr
+
+### Checking Download Progress:
+1. Open qBittorrent (http://localhost:8080)
+2. View active torrents
+3. Check download speed, ETA, peers
+4. OR check in Radarr's "Activity" section
+
+### Troubleshooting Failed Downloads:
+1. Check Radarr's "Activity" → "Queue" for errors
+2. Check qBittorrent for stalled torrents
+3. Verify VPN is connected: `docker logs gluetun`
+4. Check indexer status in Prowlarr
+5. Try manual search in Radarr for different release
+
+---
+
+## Configuration Files
+
+### .env File (contains secrets):
+```env
+VPN_SERVICE_PROVIDER=protonvpn
+OPENVPN_USER=your_openvpn_username
+OPENVPN_PASSWORD=your_openvpn_password
+SERVER_COUNTRIES=Netherlands
+TZ=America/Los_Angeles
+PUID=1000
+PGID=1000
+```
+
+**Important:** This file is in `.gitignore` and should NEVER be committed to Git!
+
+### docker-compose.yml:
+Contains all container definitions, ports, volumes, and network configurations.
+
+---
+
+## Troubleshooting
+
+### VPN Not Connecting:
+```bash
+# Check Gluetun logs
+docker logs gluetun
+
+# Common issues:
+# - Wrong OpenVPN credentials
+# - ProtonVPN server down (will auto-retry different servers)
+# - Network connectivity issues
+
+# Restart Gluetun
+docker-compose restart gluetun
+```
+
+### Downloads Not Starting:
+1. Verify qBittorrent is running: `docker-compose ps`
+2. Check if Radarr can connect to qBittorrent:
+   - Radarr → Settings → Download Clients → Test
+3. Check indexer connectivity in Prowlarr
+4. Verify VPN is connected
+
+### Radarr Can't Connect to qBittorrent:
+- Ensure host is set to `gluetun` (not `localhost`)
+- Verify qBittorrent port is `8080`
+- Check qBittorrent credentials are correct
+- Restart both containers
+
+### FlareSolverr Not Working:
+```bash
+# Check FlareSolverr logs
+docker logs flaresolverr
+
+# Verify Prowlarr can reach it:
+# Prowlarr → Settings → Indexers → Indexer Proxies → Test
+
+# Restart FlareSolverr
+docker-compose restart flaresolverr
+```
+
+### Container Won't Start:
+```bash
+# View detailed error
+docker-compose logs [container_name]
+
+# Common issues:
+# - Port already in use
+# - Volume mount path doesn't exist
+# - Insufficient permissions
+
+# Recreate container
+docker-compose up -d --force-recreate [container_name]
+```
+
+---
+
+## Maintenance
+
+### Regular Tasks:
+- **Daily:** Watchtower automatically updates containers at 4 AM
+- **Weekly:** Check for failed downloads in Radarr
+- **Monthly:** Review disk space in `C:\media\`
+- **As Needed:** Add new indexers as old ones go down
+
+### Backup Important Data:
+```
+# Files to backup:
+C:\media\config\radarr\      # Movie library database
+C:\media\config\sonarr\      # TV library database (when added)
+C:\media\config\prowlarr\    # Indexer settings
+docker-compose.yml           # Container config
+.env                         # VPN credentials (keep secure!)
+```
+
+### Disk Space Management:
+- Downloads are in `C:\media\downloads\`
+- Media is in `C:\media\movies\` and `C:\media\tv\`
+- qBittorrent can be configured to auto-delete after seeding ratio reached
+- Plex will NOT delete files automatically
+
+---
+
+## Future Additions (Coming Tomorrow!)
+
+### Sonarr (TV Shows):
+- Same as Radarr but for TV shows
+- Automatically downloads new episodes
+- Season pack management
+- Port: 8989
+
+### Plex (Media Server):
+- Watch your downloaded media
+- Beautiful interface
+- Remote access capability
+- Mobile apps available
+- Port: 32400
+
+### Overseerr (Request Management):
+- User-friendly interface for requesting movies/TV
+- Integrates with Radarr/Sonarr
+- User management for family/friends
+- Port: 5055
+
+---
+
+## Tips & Best Practices
+
+### Quality Profiles:
+- Start with "Any" quality to ensure downloads succeed
+- Later, create custom profiles (1080p minimum, etc.)
+- Consider disk space when choosing 4K content
+
+### Indexers:
+- More indexers = better availability
+- Mix of public and private trackers ideal
+- Private trackers require invitations but have better quality/speed
+- Public trackers (like YTS) are good starting point
+
+### Seeding:
+- Many private trackers require specific seed ratios
+- Public trackers: seed for at least 1.0 ratio or 24 hours
+- Configure seed limits in qBittorrent settings
+
+### Network Performance:
+- VPN will reduce download speeds slightly
+- Close geographically to VPN server = better speeds
+- Netherlands servers are fast for most locations
+- Can change `SERVER_COUNTRIES` in `.env` if needed
+
+---
+
+## Security Notes
+
+### What's Protected:
+✅ Torrent downloads (through VPN)
+✅ qBittorrent traffic (kill switch active)
+✅ Your real IP is hidden when torrenting
+
+### What's NOT Protected:
+❌ Radarr/Prowlarr web traffic (uses regular internet)
+❌ Your regular PC browsing (only Docker containers use VPN)
+❌ This is intentional for speed and simplicity
+
+### Credentials:
+- Keep `.env` file secure (contains VPN credentials)
+- Use strong passwords for all web interfaces
+- Consider setting up reverse proxy with SSL for remote access
+- Don't expose ports directly to internet without authentication
+
+---
+
+## Learning Resources
+
+### Docker:
+- Official Docker docs: https://docs.docker.com/
+- Docker Compose docs: https://docs.docker.com/compose/
+
+### Individual Apps:
+- Radarr: https://wiki.servarr.com/radarr
+- Sonarr: https://wiki.servarr.com/sonarr
+- Prowlarr: https://wiki.servarr.com/prowlarr
+- qBittorrent: https://github.com/qbittorrent/qBittorrent/wiki
+
+### Community:
+- r/radarr on Reddit
+- r/sonarr on Reddit  
+- r/usenet and r/torrents
+- TRaSH Guides: https://trash-guides.info/
+
+---
+
+## Quick Reference
+
+### Container Dependencies:
+```
+Gluetun (VPN)
+  └── qBittorrent (download client)
+      ├── Radarr (movie manager)
+      └── Sonarr (TV manager)
+          └── Prowlarr (indexer manager)
+              └── FlareSolverr (Cloudflare bypass)
+
+Watchtower (independent, updates all)
+```
+
+### Port Reference:
+- 8080: qBittorrent WebUI
+- 7878: Radarr
+- 8989: Sonarr (to be added)
+- 9696: Prowlarr
+- 8191: FlareSolverr (internal)
+- 5055: Overseerr (to be added)
+- 32400: Plex (to be added)
+
+### Default Credentials:
+- **qBittorrent:** admin / (check logs)
+- **Radarr:** (you set during setup)
+- **Prowlarr:** (you set during setup)
+- **Sonarr:** (will set during setup)
+
+---
+
+## Changelog
+
+### 2025-10-28 - Initial Setup
+- ✅ Gluetun VPN configured with ProtonVPN
+- ✅ qBittorrent routing through VPN
+- ✅ Radarr connected to qBittorrent
+- ✅ Prowlarr managing indexers
+- ✅ FlareSolverr handling Cloudflare
+- ✅ Watchtower auto-updating containers
+- ✅ YTS indexer added and working
+- ✅ First movie successfully queued for download
+
+### Coming Next Session:
+- ⏳ Sonarr (TV shows)
+- ⏳ Plex (media player)
+- ⏳ Overseerr (request interface)
+
+---
+
+**Author:** Created during initial setup session on 2025-10-28
+**Stack Status:** Fully operational and downloading content
+**VPN Status:** Connected to Netherlands (89.39.107.196)
+**Next Steps:** Add Sonarr, Plex, and Overseerr
+
+---
+
+*This documentation will be updated as new components are added to the stack.*
