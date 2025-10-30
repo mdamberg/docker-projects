@@ -106,17 +106,27 @@ services:
   plex:
     image: linuxserver/plex:latest
     container_name: plex
+    network_mode: host
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
       - VERSION=docker
-      - PLEX_CLAIM=claim-CSsMz5WFwYdwSqXod6dZ
     volumes:
       - C:\media\config\plex:/config
       - C:\media\movies:/movies
       - C:\media\tv:/tv
-    ports:
-      - "32400:32400"
     restart: unless-stopped
-  
+
+  overseerr:
+    image: linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:\media\config\overseerr:/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
