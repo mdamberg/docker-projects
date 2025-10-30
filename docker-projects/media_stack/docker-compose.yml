@@ -103,10 +103,9 @@ services:
       - "8989:8989"
     restart: unless-stopped
 
-  plex:
+  pplex:
     image: linuxserver/plex:latest
     container_name: plex
-    network_mode: host
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -116,6 +115,8 @@ services:
       - C:\media\config\plex:/config
       - C:\media\movies:/movies
       - C:\media\tv:/tv
+    ports:
+      - "32400:32400"
     restart: unless-stopped
 
   overseerr:
