@@ -103,7 +103,7 @@ services:
       - "8989:8989"
     restart: unless-stopped
 
-  pplex:
+  plex:
     image: linuxserver/plex:latest
     container_name: plex
     environment:
