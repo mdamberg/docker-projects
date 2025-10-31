@@ -131,3 +131,14 @@ services:
     ports:
       - "5055:5055"
     restart: unless-stopped
+
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
+    volumes:
+      - C:\media\config\homarr:/appdata
+    ports:
+      - "7575:7575"
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
