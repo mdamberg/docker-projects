@@ -141,4 +141,5 @@ services:
       - "7575:7575"
     environment:
       - TZ=${TZ}
+      - SECRET_ENCRYPTION_KEY=af6eadbe6729ee364ae16f4a99a0ce7e47ef12b9c4bda6db4001753d6f32d480
     restart: unless-stopped

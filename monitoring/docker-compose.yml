@@ -1,0 +1,13 @@
+
+version: '3.8'
+
+# Kumma uptime for monitoring and alerts for media stack
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    volumes:
+      - ./uptime-kuma-data:/app/data
+    ports:
+      - 3001:3001
+    restart: unless-stopped
