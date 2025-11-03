@@ -1,0 +1,26 @@
+
+version: '3.8'
+
+# Kumma uptime for monitoring and alerts for media stack
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    volumes:
+      - ./uptime-kuma-data:/app/data
+    ports:
+      - 3001:3001
+    restart: unless-stopped
+
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    restart: unless-stopped
+    ports:
+      - "61208:61208"
+    environment:
+      - GLANCES_OPT=-w --disable-plugin sensors
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    pid: host
+    privileged: true  # Adds needed permissions
