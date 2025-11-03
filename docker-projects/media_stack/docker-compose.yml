@@ -168,28 +168,8 @@ services:
     ports:
       - "8787:8787"
     restart: unless-stopped
-    networks:
-      - media_network
 
-  # redarr
-readarr:
-    image: linuxserver/readarr:develop
-    container_name: readarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - C:\media\config\readarr:/config
-      - C:\media\books:/books
-      - C:\media\downloads:/downloads
-    ports:
-      - "8787:8787"
-    restart: unless-stopped
-    networks:
-      - media_network
-
-audiobookshelf:
+  audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     container_name: audiobookshelf
     environment:
@@ -203,6 +183,4 @@ audiobookshelf:
     ports:
       - "13378:80"
     restart: unless-stopped
-    networks:
-      - media_network
   
