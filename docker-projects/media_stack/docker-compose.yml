@@ -153,3 +153,56 @@ services:
       - "3002:3001"
     volumes:
       - /:/mnt/host:ro
+
+  readarr:
+    image: linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:\media\config\readarr:/config
+      - C:\media\books:/books
+      - C:\media\downloads:/downloads
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+    networks:
+      - media_network
+
+  # redarr
+readarr:
+    image: linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:\media\config\readarr:/config
+      - C:\media\books:/books
+      - C:\media\downloads:/downloads
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+    networks:
+      - media_network
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:\media\books\audiobooks:/audiobooks
+      - C:\media\config\audiobookshelf:/config
+      - C:\media\books\metadata:/metadata
+    ports:
+      - "13378:80"
+    restart: unless-stopped
+    networks:
+      - media_network
+  
