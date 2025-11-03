@@ -11,3 +11,26 @@ services:
     ports:
       - 3001:3001
     restart: unless-stopped
+
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    restart: unless-stopped
+    ports:
+      - "61208:61208"
+    environment:
+      - GLANCES_OPT=-w --disable-plugin sensors
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    pid: host
+    privileged: true  # Adds needed permissions
+
+  dashdot:
+    image: mauricenino/dashdot:latest
+    container_name: dashdot
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "8080:3001"
+    volumes:
+      - /:/mnt/host:ro
