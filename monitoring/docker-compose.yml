@@ -31,6 +31,6 @@ services:
     restart: unless-stopped
     privileged: true
     ports:
-      - "8080:3001"
+      - "3002:3001"  # Changed from 8080 to 3002
     volumes:
       - /:/mnt/host:ro
