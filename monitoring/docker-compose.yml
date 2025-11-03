@@ -24,13 +24,3 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     pid: host
     privileged: true  # Adds needed permissions
-
-  dashdot:
-    image: mauricenino/dashdot:latest
-    container_name: dashdot
-    restart: unless-stopped
-    privileged: true
-    ports:
-      - "3002:3001"  # Changed from 8080 to 3002
-    volumes:
-      - /:/mnt/host:ro
