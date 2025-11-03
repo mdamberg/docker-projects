@@ -189,7 +189,7 @@ readarr:
     networks:
       - media_network
 
-  audiobookshelf:
+audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     container_name: audiobookshelf
     environment:
