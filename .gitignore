@@ -6,3 +6,6 @@ resume docs/
 Statement for Dec 13, 2024.pdf
 *.bak
 *.pdf
+# Ignore runtime and local data
+monitoring/uptime-kuma-data/
+*.db
