@@ -165,10 +165,10 @@ services:
     container_name: portainer
     ports:
       - "9443:9443"
-  volumes:
-    - '\\.\pipe\docker_engine:\\.\pipe\docker_engine'
-    - 'C:\media\config\portainer:/data'
-  command:    # Tells docker to run the windows docker pipe instead of Linux unix socket
-    - -H
-    - 'npipe:////./pipe/docker_engine'
-  restart: unless-stopped
+    volumes:
+      - '\\.\pipe\docker_engine:\\.\pipe\docker_engine'
+      - 'C:\media\config\portainer:/data'
+    command:    # Tells docker to run the windows docker pipe instead of Linux unix socket
+      - -H
+      - 'npipe:////./pipe/docker_engine'
+    restart: unless-stopped
