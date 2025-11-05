@@ -143,6 +143,7 @@ services:
     environment:
       - TZ=${TZ}
       - SECRET_ENCRYPTION_KEY=af6eadbe6729ee364ae16f4a99a0ce7e47ef12b9c4bda6db4001753d6f32d480
+      - DOCKER_HOST=tcp://host.docker.internal:2375 
     restart: unless-stopped
 
   dashdot:
@@ -154,3 +155,17 @@ services:
       - "3002:3001"
     volumes:
       - /:/mnt/host:ro
+
+# ----------------------
+#   Portainer
+# ----------------------
+
+  Portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      -"9000:9000"
+    volumes:
+      - //./pipe/docker_engine:/var/run/docker.sock
+      - C:\media\config\portainer:/data
+    restart: unless-stopped
