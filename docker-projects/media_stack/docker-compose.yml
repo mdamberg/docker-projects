@@ -197,14 +197,14 @@ services:
     container_name: portainer
     ports:
       - "9443:9443"
+      # The standard volume mount for Docker Desktop on Windows/Linux/Mac
     volumes:
-      - type: npipe
-        source: \\.\pipe\docker_engine
-        target: \\.\pipe\docker_engine
-      - "C:/media/config/portainer:/data"
-    command:
-      - -H
-      - 'npipe:////./pipe/docker_engine'
+      - /var/run/docker.sock:/var/run/docker.sock
+      - 'C:/media/config/portainer:/data'
+      # The command section is usually not needed when using the standard socket mount
+    # command:
+    #  - -H
+    #  - 'npipe:////./pipe/docker_engine'
     restart: unless-stopped
 
 # ----------------------
