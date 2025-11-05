@@ -1,6 +1,10 @@
 version: "3.8"
 
 services:
+
+# ----------------------
+#   Gluetun
+# ----------------------
   gluetun:
     image: qmcgaw/gluetun:latest
     container_name: gluetun
@@ -22,6 +26,9 @@ services:
       - C:\media\config\gluetun:/gluetun
     restart: unless-stopped
 
+# ----------------------
+#   Qbittorrent
+# ----------------------
   qbittorrent:
     image: linuxserver/qbittorrent:latest
     container_name: qbittorrent
@@ -38,6 +45,9 @@ services:
       - gluetun
     restart: unless-stopped
 
+# ----------------------
+#   Watchtower
+# ----------------------
   watchtower:
     image: containrrr/watchtower:latest
     container_name: watchtower
@@ -50,6 +60,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
+# ----------------------
+#   Radarr
+# ----------------------
   radarr:
     image: linuxserver/radarr:latest
     container_name: radarr
@@ -65,6 +78,9 @@ services:
       - "7878:7878"
     restart: unless-stopped
 
+# ----------------------
+#   Prowlarr
+# ----------------------
   prowlarr:
     image: linuxserver/prowlarr:latest
     container_name: prowlarr
@@ -78,6 +94,9 @@ services:
       - "9696:9696"
     restart: unless-stopped
 
+# ----------------------
+#   Flaresolverr
+# ----------------------
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
     container_name: flaresolverr
@@ -88,6 +107,9 @@ services:
       - "8191:8191"
     restart: unless-stopped
 
+# ----------------------
+#   Sonarr
+# ----------------------
   sonarr:
     image: linuxserver/sonarr:latest
     container_name: sonarr
@@ -103,6 +125,9 @@ services:
       - "8989:8989"
     restart: unless-stopped
 
+# ----------------------
+#   Plex
+# ----------------------
   plex:
     image: linuxserver/plex:latest
     container_name: plex
@@ -119,6 +144,9 @@ services:
       - "32400:32400"
     restart: unless-stopped
 
+# ----------------------
+#   Overseerr
+# ----------------------
   overseerr:
     image: linuxserver/overseerr:latest
     container_name: overseerr
@@ -132,6 +160,9 @@ services:
       - "5055:5055"
     restart: unless-stopped
 
+# ----------------------
+#   Homarr
+# ----------------------
   homarr:
     image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
@@ -146,6 +177,9 @@ services:
       - DOCKER_HOST=tcp://host.docker.internal:2375 
     restart: unless-stopped
 
+# ----------------------
+#   Dash.
+# ----------------------
   dashdot:
     image: mauricenino/dashdot:latest
     container_name: dashdot
@@ -171,4 +205,39 @@ services:
     command:    # Tells docker to run the windows docker pipe instead of Linux unix socket
       - -H
       - 'npipe:////./pipe/docker_engine'
+    restart: unless-stopped
+
+# ----------------------
+#   Lazy Librarian
+# ----------------------
+  lazylibrarian:
+    image: linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - "C:/media/config/lazylibrarian:/config"
+      - "C:/media/downloads:/downloads"
+      - "C:/media/books:/books"
+    ports:
+      - "5299:5299"
+    restart: unless-stopped
+
+# ----------------------
+#   Audio Book Shelf
+# ----------------------
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "13378:80"  # change left side if you prefer a different host port
+    volumes:
+      - "C:/media/config/audiobookshelf:/config"
+      - "C:/media/audiobooks:/audiobooks"
+      - "C:/media/podcasts:/podcasts"
+      - "C:/media/abs-metadata:/metadata"
     restart: unless-stopped
