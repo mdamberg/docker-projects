@@ -168,6 +168,7 @@ services:
     container_name: homarr
     volumes:
       - "C:/media/config/homarr:/appdata"
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "7575:7575"
     environment:
