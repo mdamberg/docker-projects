@@ -167,7 +167,7 @@ services:
     image: ghcr.io/homarr-labs/homarr:latest
     container_name: homarr
     volumes:
-      - "C:/media/config/homarr:/app/data"
+      - "C:/media/config/homarr:/appdata"
     ports:
       - "7575:7575"
     environment:
