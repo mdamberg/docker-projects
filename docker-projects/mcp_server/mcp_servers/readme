@@ -1,0 +1,261 @@
+MCP Server Project
+A Docker-based Model Context Protocol (MCP) server implementation that provides AI assistants with tools to interact with Docker containers and the filesystem.
+Overview
+This project contains two MCP servers that enable Claude Desktop to interact with your local Docker environment and filesystem through natural language commands. The servers run in Docker containers and communicate with Claude Desktop using the MCP stdio protocol.
+Project Structure
+mcp_server/
+├── docker-compose.yml          # Docker Compose configuration for both servers
+├── .env                        # Environment variables (if needed)
+└── mcp_servers/
+    ├── server1/                # Docker Management Server
+    │   ├── Dockerfile
+    │   ├── requirements.txt
+    │   └── server.py
+    └── server2/                # Filesystem Management Server
+        ├── Dockerfile
+        ├── requirements.txt
+        └── server.py
+Servers
+Server 1: Docker Manager (docker-manager)
+Purpose: Provides tools to monitor and interact with Docker containers on your system.
+Available Tools:
+
+list_containers
+
+Lists all Docker containers with their current status
+Optional parameter: all (boolean) - Show all containers including stopped ones
+Returns: Container name, status, image, and ID
+
+
+get_container_logs
+
+Retrieves logs from a specific container
+Parameters:
+
+container_name (required): Name of the container
+tail (optional, default: 50): Number of recent log lines to show
+
+
+Returns: Recent log output from the container
+
+
+container_stats
+
+Gets resource usage statistics for a container
+Parameter: container_name (required)
+Returns: Memory usage, memory limit, and container status
+
+
+
+Example Usage:
+
+"Show me all my Docker containers"
+"What are the logs for my Plex container?"
+"How much memory is Sonarr using?"
+
+Server 2: Filesystem Manager (filesystem-manager)
+Purpose: Provides tools to browse and analyze the filesystem.
+Available Tools:
+
+list_directory
+
+Lists contents of a directory
+Parameter: path (optional, default: "/host")
+Returns: List of files and directories with names, types, and sizes
+
+
+get_disk_usage
+
+Shows disk space usage for a path
+Parameter: path (optional, default: "/host")
+Returns: Total space, used space, free space, and percentage used
+
+
+file_info
+
+Gets detailed information about a specific file
+Parameter: filepath (required)
+Returns: File size, type, and last modified time
+
+
+
+Example Usage:
+
+"What files are in my home directory?"
+"How much disk space do I have left?"
+"Show me details about this file"
+
+Setup Instructions
+Prerequisites
+
+Docker Desktop installed and running
+Claude Desktop application installed
+Windows, macOS, or Linux operating system
+
+Installation
+
+Clone or create the project structure:
+
+bash   mkdir -p mcp_server/mcp_servers/server1
+   mkdir -p mcp_server/mcp_servers/server2
+
+Build the Docker images:
+
+bash   cd mcp_server
+   docker-compose build
+
+Configure Claude Desktop:
+Windows: Edit %APPDATA%\Claude\claude_desktop_config.json
+macOS: Edit ~/Library/Application Support/Claude/claude_desktop_config.json
+Linux: Edit ~/.config/Claude/claude_desktop_config.json
+Add the following configuration:
+
+json   {
+     "mcpServers": {
+       "docker-manager": {
+         "command": "docker",
+         "args": [
+           "run",
+           "--rm",
+           "-i",
+           "--name", "mcp-docker-temp",
+           "-v", "/var/run/docker.sock:/var/run/docker.sock",
+           "mcp_server-mcp-docker-server",
+           "python", "/app/server.py"
+         ]
+       },
+       "filesystem-manager": {
+         "command": "docker",
+         "args": [
+           "run",
+           "--rm",
+           "-i",
+           "--name", "mcp-filesystem-temp",
+           "-v", "C:/Users/YOUR_USERNAME:/host",
+           "mcp_server-mcp-filesystem-server",
+           "python", "/app/server.py"
+         ]
+       }
+     }
+   }
+Important: Replace C:/Users/YOUR_USERNAME with your actual home directory path.
+
+Restart Claude Desktop completely to load the new configuration.
+
+Usage
+Once configured, you can use natural language in Claude Desktop to interact with your Docker containers and filesystem:
+Docker Management Examples
+
+"List all my running Docker containers"
+"Show me the logs for the Portainer container"
+"What's the memory usage of my Plex server?"
+"Are there any stopped containers?"
+
+Filesystem Management Examples
+
+"What files are in my Documents folder?"
+"How much disk space is available?"
+"Show me information about docker-compose.yml"
+"List the directories in /host"
+
+Technical Details
+Technology Stack
+
+Python 3.11: Base runtime environment
+MCP SDK: Model Context Protocol server implementation
+Docker SDK for Python: Docker container interaction
+stdio transport: Communication protocol between Claude Desktop and MCP servers
+
+How It Works
+
+When you ask Claude Desktop a question that requires Docker or filesystem access, it identifies the appropriate MCP tool to use
+Claude Desktop executes the configured command, which starts a temporary Docker container
+The container runs the MCP server with stdio transport
+Claude communicates with the server through standard input/output
+The server executes the requested tool and returns results
+The container automatically removes itself after completion (--rm flag)
+
+Security Considerations
+
+The Docker server has access to your Docker socket, allowing it to control all containers
+The filesystem server can access whatever directory you mount (default: your home directory)
+Both servers run in isolated Docker containers
+Containers are ephemeral and removed after each use
+Only Claude Desktop can invoke these servers (they're not exposed as network services)
+
+Troubleshooting
+Servers not appearing in Claude Desktop
+
+Verify the config file is saved correctly
+Ensure Docker Desktop is running
+Restart Claude Desktop completely (close all windows and check system tray)
+Check that images are built: docker images | grep mcp_server
+
+"Server disconnected" errors
+
+Verify containers can access Docker:
+
+bash   docker run --rm -v /var/run/docker.sock:/var/run/docker.sock mcp_server-mcp-docker-server docker ps
+
+Check container logs:
+
+bash   docker logs mcp-docker-temp
+   docker logs mcp-filesystem-temp
+
+Rebuild images without cache:
+
+bash   docker-compose build --no-cache
+Permission errors (Linux/macOS)
+If you get permission errors accessing the Docker socket:
+bashsudo chmod 666 /var/run/docker.sock
+Extending the Servers
+Adding New Tools
+To add a new tool to either server:
+
+Add a new Tool definition in the list_tools() function
+Add the tool logic in the call_tool() function
+Rebuild the Docker image: docker-compose build
+Restart Claude Desktop
+
+Creating Additional Servers
+You can create server3, server4, etc. following the same pattern:
+
+Create a new directory: mcp_servers/server3/
+Add Dockerfile, requirements.txt, and server.py
+Add the service to docker-compose.yml
+Add the server configuration to Claude Desktop's config
+Build and restart
+
+Ideas for Additional Servers:
+
+Media stack controller (Sonarr, Radarr, Plex APIs)
+System monitoring (CPU, memory, network stats)
+Database management (PostgreSQL, MySQL queries)
+Git repository management
+Web scraping or API integrations
+
+Dependencies
+Server 1 (Docker Manager)
+
+mcp>=1.0.0
+docker
+
+Server 2 (Filesystem Manager)
+
+mcp>=1.0.0
+
+License
+This is a personal project for local use. Modify and extend as needed for your own purposes.
+Contributing
+This is a local setup, but you can:
+
+Add new tools to existing servers
+Create new specialized servers
+Share your server configurations with others
+Improve error handling and logging
+
+Acknowledgments
+
+Built using Anthropic's Model Context Protocol (MCP)
+Inspired by the need to interact with Docker containers through natural language
+Created as a learning project for understanding MCP server implementation

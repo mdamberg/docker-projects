@@ -10,10 +10,9 @@ app = Server("docker-manager")
 
 # Initialize Docker client with timeout and error handling
 try:
-    docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', timeout=120)
-    # Test connection
-    docker_client.ping()
-    print("Docker client connected successfully")
+    docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', timeout=10)
+    # Don't ping on startup - it causes timeout issues
+    print("Docker client initialized")
 except Exception as e:
     print(f"Warning: Could not connect to Docker: {e}")
     docker_client = None
