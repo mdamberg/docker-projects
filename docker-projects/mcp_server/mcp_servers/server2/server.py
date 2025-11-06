@@ -1,15 +1,17 @@
-from mcp import Server
-import mcp.types as types
-import os
+import asyncio
 import json
-from pathlib import Path
+import os
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp.types import Tool, TextContent
 
-server = Server("filesystem-manager")
+# Initialize server
+app = Server("filesystem-manager")
 
-@server.list_tools()
-async def list_tools() -> list[types.Tool]:
+@app.list_tools()
+async def list_tools() -> list[Tool]:
     return [
-        types.Tool(
+        Tool(
             name="list_directory",
             description="List contents of a directory",
             inputSchema={
@@ -23,7 +25,7 @@ async def list_tools() -> list[types.Tool]:
                 }
             }
         ),
-        types.Tool(
+        Tool(
             name="get_disk_usage",
             description="Get disk usage information for a path",
             inputSchema={
@@ -37,7 +39,7 @@ async def list_tools() -> list[types.Tool]:
                 }
             }
         ),
-        types.Tool(
+        Tool(
             name="file_info",
             description="Get detailed information about a file",
             inputSchema={
@@ -53,14 +55,14 @@ async def list_tools() -> list[types.Tool]:
         )
     ]
 
-@server.call_tool()
-async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
+@app.call_tool()
+async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     try:
         if name == "list_directory":
             dir_path = arguments.get("path", "/host")
             
             if not os.path.exists(dir_path):
-                return [types.TextContent(
+                return [TextContent(
                     type="text",
                     text=f"Error: Directory {dir_path} does not exist"
                 )]
@@ -77,7 +79,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     "size_bytes": size
                 })
             
-            return [types.TextContent(
+            return [TextContent(
                 type="text",
                 text=json.dumps(items, indent=2)
             )]
@@ -92,13 +94,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             
             result = {
                 "path": path,
-                "total_gb": total / (1024**3),
-                "used_gb": used / (1024**3),
-                "free_gb": free / (1024**3),
-                "percent_used": (used / total) * 100
+                "total_gb": round(total / (1024**3), 2),
+                "used_gb": round(used / (1024**3), 2),
+                "free_gb": round(free / (1024**3), 2),
+                "percent_used": round((used / total) * 100, 2)
             }
             
-            return [types.TextContent(
+            return [TextContent(
                 type="text",
                 text=json.dumps(result, indent=2)
             )]
@@ -107,7 +109,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             filepath = arguments["filepath"]
             
             if not os.path.exists(filepath):
-                return [types.TextContent(
+                return [TextContent(
                     type="text",
                     text=f"Error: File {filepath} does not exist"
                 )]
@@ -116,13 +118,13 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             result = {
                 "path": filepath,
                 "size_bytes": stat.st_size,
-                "size_mb": stat.st_size / (1024**2),
+                "size_mb": round(stat.st_size / (1024**2), 2),
                 "is_file": os.path.isfile(filepath),
                 "is_directory": os.path.isdir(filepath),
                 "modified_time": stat.st_mtime
             }
             
-            return [types.TextContent(
+            return [TextContent(
                 type="text",
                 text=json.dumps(result, indent=2)
             )]
@@ -130,11 +132,18 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         raise ValueError(f"Unknown tool: {name}")
     
     except Exception as e:
-        return [types.TextContent(
+        return [TextContent(
             type="text",
             text=f"Error: {str(e)}"
         )]
 
+async def main():
+    async with stdio_server() as (read_stream, write_stream):
+        await app.run(
+            read_stream,
+            write_stream,
+            app.create_initialization_options()
+        )
+
 if __name__ == "__main__":
-    print("Starting Filesystem Manager MCP Server on port 8000...")
-    server.run(transport="sse", port=8000)
+    asyncio.run(main())

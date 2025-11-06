@@ -1,17 +1,20 @@
-from mcp import Server
-import mcp.types as types
-import docker
+import asyncio
 import json
+from mcp.server import Server
+from mcp.server.stdio import stdio_server
+from mcp.types import Tool, TextContent
+import docker
 
-server = Server("docker-manager")
+# Initialize server
+app = Server("docker-manager")
 
 # Initialize Docker client
 docker_client = docker.from_env()
 
-@server.list_tools()
-async def list_tools() -> list[types.Tool]:
+@app.list_tools()
+async def list_tools() -> list[Tool]:
     return [
-        types.Tool(
+        Tool(
             name="list_containers",
             description="List all Docker containers with their status",
             inputSchema={
@@ -25,7 +28,7 @@ async def list_tools() -> list[types.Tool]:
                 }
             }
         ),
-        types.Tool(
+        Tool(
             name="get_container_logs",
             description="Get logs from a specific container",
             inputSchema={
@@ -44,7 +47,7 @@ async def list_tools() -> list[types.Tool]:
                 "required": ["container_name"]
             }
         ),
-        types.Tool(
+        Tool(
             name="container_stats",
             description="Get resource usage stats for a container",
             inputSchema={
@@ -60,8 +63,8 @@ async def list_tools() -> list[types.Tool]:
         )
     ]
 
-@server.call_tool()
-async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
+@app.call_tool()
+async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     try:
         if name == "list_containers":
             show_all = arguments.get("all", False)
@@ -76,7 +79,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
                     "id": container.short_id
                 })
             
-            return [types.TextContent(
+            return [TextContent(
                 type="text",
                 text=json.dumps(result, indent=2)
             )]
@@ -88,7 +91,7 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             container = docker_client.containers.get(container_name)
             logs = container.logs(tail=tail).decode('utf-8')
             
-            return [types.TextContent(
+            return [TextContent(
                 type="text",
                 text=f"Logs for {container_name}:\n\n{logs}"
             )]
@@ -98,19 +101,16 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
             container = docker_client.containers.get(container_name)
             stats = container.stats(stream=False)
             
-            # Extract useful stats
-            cpu_stats = stats.get('cpu_stats', {})
             memory_stats = stats.get('memory_stats', {})
             
             result = {
                 "name": container_name,
                 "status": container.status,
-                "memory_usage_mb": memory_stats.get('usage', 0) / (1024 * 1024),
-                "memory_limit_mb": memory_stats.get('limit', 0) / (1024 * 1024),
-                "cpu_usage": cpu_stats
+                "memory_usage_mb": round(memory_stats.get('usage', 0) / (1024 * 1024), 2),
+                "memory_limit_mb": round(memory_stats.get('limit', 0) / (1024 * 1024), 2)
             }
             
-            return [types.TextContent(
+            return [TextContent(
                 type="text",
                 text=json.dumps(result, indent=2)
             )]
@@ -118,11 +118,18 @@ async def call_tool(name: str, arguments: dict) -> list[types.TextContent]:
         raise ValueError(f"Unknown tool: {name}")
     
     except Exception as e:
-        return [types.TextContent(
+        return [TextContent(
             type="text",
             text=f"Error: {str(e)}"
         )]
 
+async def main():
+    async with stdio_server() as (read_stream, write_stream):
+        await app.run(
+            read_stream,
+            write_stream,
+            app.create_initialization_options()
+        )
+
 if __name__ == "__main__":
-    print("Starting Docker Manager MCP Server on port 8000...")
-    server.run(transport="sse", port=8000)
+    asyncio.run(main())

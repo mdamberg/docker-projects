@@ -7,7 +7,7 @@ services:
     ports:
       - "8001:8000"
     volumes:
-      - ./mcp_servers/servers1:/app
+      - ./mcp_servers/server1:/app
       - /var/run/docker.sock:/var/run/docker.sock   # docker sock access
 
     restart: unless-stopped
