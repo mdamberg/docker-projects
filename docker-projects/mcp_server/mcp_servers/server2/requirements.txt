@@ -2,5 +2,4 @@
 
 # **mcp_servers/server2/requirements.txt**:
 
-mcp
-fastmcp
+mcp>=1.0.0

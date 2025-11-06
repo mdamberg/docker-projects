@@ -1,5 +1,4 @@
-**mcp_servers/server1/requirements.txt**:
-```
-mcp
-fastmcp
+#**mcp_servers/server1/requirements.txt**:
+
+mcp>=1.0.0
 docker
