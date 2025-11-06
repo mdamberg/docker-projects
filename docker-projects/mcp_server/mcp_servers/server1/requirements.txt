@@ -1,0 +1,5 @@
+**mcp_servers/server1/requirements.txt**:
+```
+mcp
+fastmcp
+docker
