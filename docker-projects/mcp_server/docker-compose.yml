@@ -2,19 +2,18 @@ version: '3.8'
 
 services:
   mcp-docker-server:
-    build:  ./mcp_servers/server1
+    build: ./mcp_servers/server1
     container_name: mcp-docker-server
     ports:
       - "8001:8000"
     volumes:
       - ./mcp_servers/server1:/app
-      - /var/run/docker.sock:/var/run/docker.sock   # docker sock access
-
-    restart: unless-stopped
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - mcp-network
     environment:
       - SERVER_NAME=docker-manager
+    # Remove restart policy - stdio servers run on-demand
 
   mcp-filesystem-server:
     build: ./mcp_servers/server2
@@ -23,12 +22,12 @@ services:
       - "8002:8000"
     volumes:
       - ./mcp_servers/server2:/app
-      - /home/your-user:/host  # Adjust to your needs
-    restart: unless-stopped
+      - /home/your-user:/host
     networks:
       - mcp-network
     environment:
       - SERVER_NAME=filesystem-manager
+    # Remove restart policy - stdio servers run on-demand
 
 networks:
   mcp-network:
