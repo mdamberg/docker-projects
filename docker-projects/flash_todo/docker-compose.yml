@@ -1,0 +1,17 @@
+services:
+  flash_todo:
+    build: .
+    container_name: flash_todo
+    ports:
+      - "5070:5000"          # host:container
+    volumes:
+      - ./data:/app/data
+    environment:
+      - FLASK_APP=app.py
+    networks:
+      - homarr_net
+
+networks:
+  homarr_net:
+    external: true
+    name: media_stack_default
