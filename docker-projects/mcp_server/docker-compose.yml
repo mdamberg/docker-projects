@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mcp-docker-server:
+    build:  ./mcp_servers/server1
+    container_name: mcp-docker-server
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./mcp_servers/servers1:/app
+      - /var/run/docker.sock:/var/run/docker.sock   # docker sock access
+
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    environment:
+      - SERVER_NAME=docker-manager
+
+  mcp-filesystem-server:
+    build: ./mcp_servers/server2
+    container_name: mcp-filesystem-server
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./mcp_servers/server2:/app
+      - /home/your-user:/host  # Adjust to your needs
+    restart: unless-stopped
+    networks:
+      - mcp-network
+    environment:
+      - SERVER_NAME=filesystem-manager
+
+networks:
+  mcp-network:
+    driver: bridge
