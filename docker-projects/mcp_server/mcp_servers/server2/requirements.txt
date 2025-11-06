@@ -1,0 +1,6 @@
+
+
+# **mcp_servers/server2/requirements.txt**:
+
+mcp
+fastmcp
