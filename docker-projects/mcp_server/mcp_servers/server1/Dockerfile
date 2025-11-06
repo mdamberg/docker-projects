@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server.py .
 
+# Set Docker host for Windows
+ENV DOCKER_HOST=unix:///var/run/docker.sock
+
 EXPOSE 8000
 
-CMD ["python", "server.py"]
+CMD ["python", "/app/server.py"]

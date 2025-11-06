@@ -8,8 +8,15 @@ import docker
 # Initialize server
 app = Server("docker-manager")
 
-# Initialize Docker client
-docker_client = docker.from_env()
+# Initialize Docker client with timeout and error handling
+try:
+    docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock', timeout=120)
+    # Test connection
+    docker_client.ping()
+    print("Docker client connected successfully")
+except Exception as e:
+    print(f"Warning: Could not connect to Docker: {e}")
+    docker_client = None
 
 @app.list_tools()
 async def list_tools() -> list[Tool]:
@@ -65,6 +72,13 @@ async def list_tools() -> list[Tool]:
 
 @app.call_tool()
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
+    # Check if Docker client is connected
+    if docker_client is None:
+        return [TextContent(
+            type="text",
+            text="Error: Docker client not connected. Check Docker socket mount."
+        )]
+    
     try:
         if name == "list_containers":
             show_all = arguments.get("all", False)
