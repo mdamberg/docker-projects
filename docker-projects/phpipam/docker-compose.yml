@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  phpipam:
+    image: pierrecdn/phpipam
+    ports:
+      - "8081:80"
+    environment:
+      - TZ=America/Chicago
+    restart: unless-stopped
+
+  phpipam-mariadb:
+    image: mariadb:10.5
+    environment:
+      MYSQL_ROOT_PASSWORD: yourrootpw
+      MYSQL_DATABASE: phpipam
+      MYSQL_USER: phpipam
+      MYSQL_PASSWORD: phppass
+    volumes:
+      - ./mysql_data:/var/lib/mysql
