@@ -1,1 +1,4 @@
 .env
+# Database and config files
+mysql_data/
+phpipam/config.php
