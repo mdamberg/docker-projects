@@ -15,12 +15,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    restart: unless-stopped
 
   phpipam:
     image: phpipam/phpipam-www:latest
     container_name: phpipam
     ports:
-      - "8081:80"        # change host port if needed
+      - "8081:80"   # change host port if needed
     environment:
       TZ: ${TZ}
     depends_on:
