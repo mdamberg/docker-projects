@@ -1,19 +1,29 @@
-version: '3.8'
 services:
-  phpipam:
-    image: pierrecdn/phpipam
-    ports:
-      - "8081:80"
-    environment:
-      - TZ=America/Chicago
-    restart: unless-stopped
-
   phpipam-mariadb:
-    image: mariadb:10.5
+    image: mariadb:10.6
+    container_name: phpipam-mariadb
     environment:
-      MYSQL_ROOT_PASSWORD: yourrootpw
-      MYSQL_DATABASE: phpipam
-      MYSQL_USER: phpipam
-      MYSQL_PASSWORD: phppass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: ${TZ}
     volumes:
       - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  phpipam:
+    image: phpipam/phpipam-www:latest
+    container_name: phpipam
+    ports:
+      - "8081:80"        # change host port if needed
+    environment:
+      TZ: ${TZ}
+    depends_on:
+      phpipam-mariadb:
+        condition: service_healthy
+    restart: unless-stopped
