@@ -17,11 +17,15 @@ services:
       - "6881:6881"  # qBittorrent port
       - "6881:6881/udp"
     environment:
-      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
+      - VPN_SERVICE_PROVIDER=private internet access
       - OPENVPN_USER=${OPENVPN_USER}
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - SERVER_REGIONS=${SERVER_REGIONS}
+      - SERVER_REGIONS=US California
+      - OPENVPN_VERSION=2.6
+      - OPENVPN_VERBOSITY=3
       - TZ=${TZ}
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.0.0/16,10.0.0.0/8,172.16.0.0/12
+
     volumes:
       - C:\media\config\gluetun:/gluetun
     restart: unless-stopped
