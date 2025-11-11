@@ -1,0 +1,8 @@
+# MySQL/MariaDB data files
+phpipam/mysql_data/aria_log*
+phpipam/mysql_data/ib_*
+phpipam/mysql_data/ibdata*
+phpipam/mysql_data/ddl_recovery.log
+
+# Claude Code local settings
+.claude/settings.local.json
