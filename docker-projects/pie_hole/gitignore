@@ -1,0 +1,4 @@
+# gitignore 
+.env
+etc-piehole/
+etc-dnsmasq.d/
