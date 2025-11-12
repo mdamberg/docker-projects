@@ -6,7 +6,7 @@ services:
     ports:
       - "5335:53/tcp"    # Different port to avoid conflicts
       - "5335:53/udp"
-      - "8080:80/tcp"    # Web interface
+      - "8081:80/tcp"    # Web interface (changed from 8080 to avoid conflict with qBittorrent)
       - "8443:443/tcp"
     environment:
       TZ: ${TZ}
