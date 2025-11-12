@@ -10,7 +10,8 @@ services:
       - "8443:443/tcp"
     environment:
       TZ: ${TZ}
-      FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD}
+      # Password will be set manually after container starts
+      # FTLCONF_webserver_api_password: ${PIHOLE_PASSWORD}
       # Optional: Set custom DNS servers (Cloudflare by default)
       # PIHOLE_DNS_: "1.1.1.1;1.0.0.1"
     volumes:
