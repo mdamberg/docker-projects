@@ -10,3 +10,4 @@ etc-pihole/tls.pem
 
 # Exclude other sensitive data
 etc-pihole/setupVars.conf
+etc-pihole/adlists.list
