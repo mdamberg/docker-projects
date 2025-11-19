@@ -5,10 +5,10 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     ports:
-      - "8082:80"      # Web interface
-      - "8443:443"     # HTTPS
-      - "5335:53/tcp"  # DNS
-      - "5335:53/udp"  # DNS
+     - "8082:80"
+     - "8443:443"
+     - "53:53/tcp"    # Change from 5335
+     - "53:53/udp"    # Change from 5335
     environment:
       - TZ=America/Chicago
     volumes:
