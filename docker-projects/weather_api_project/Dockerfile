@@ -3,10 +3,11 @@ FROM python:3.11-slim
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir-requirements
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY weather.py .
 COPY templates/ templates
+COPY .env . 
 
 EXPOSE 5000
 

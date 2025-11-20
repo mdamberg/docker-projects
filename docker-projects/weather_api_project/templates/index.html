@@ -10,186 +10,260 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
-        
+
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+            background: rgba(30, 30, 50, 0.95);
+            padding: 10px 15px;
             width: 100%;
+            border-bottom: 1px solid rgba(176, 130, 255, 0.3);
         }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        
+
+        /* Search bar - compact inline */
         .search-box {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 5px;
+            margin-bottom: 8px;
+            max-width: 250px;
         }
-        
+
         input[type="text"] {
             flex: 1;
-            padding: 15px;
-            border: 2px solid #667eea;
-            border-radius: 10px;
-            font-size: 16px;
+            padding: 6px 10px;
+            border: 1px solid #00d4ff;
+            border-radius: 4px;
+            font-size: 12px;
             outline: none;
-            transition: border-color 0.3s;
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
         }
-        
-        input[type="text"]:focus {
-            border-color: #764ba2;
+
+        input[type="text"]::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
-        
+
         button {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #00d4ff 0%, #b082ff 100%);
+            color: #1a1a2e;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 10px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        
-        button:hover {
-            transform: translateY(-2px);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .weather-display {
-            text-align: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            border-radius: 15px;
-            margin-top: 20px;
-        }
-        
-        .city-name {
-            font-size: 2em;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        
-        .weather-icon {
-            width: 100px;
-            height: 100px;
-            margin: 20px auto;
-        }
-        
-        .temperature {
-            font-size: 4em;
-            color: #667eea;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .description {
-            font-size: 1.5em;
-            color: #666;
-            text-transform: capitalize;
-            margin-bottom: 20px;
-        }
-        
-        .weather-details {
+
+        /* Main weather ribbon */
+        .weather-ribbon {
             display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 2px solid #667eea33;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
-        
-        .detail {
-            text-align: center;
+
+        /* Left section - City and main temp */
+        .weather-main {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
-        .detail-label {
-            color: #999;
-            font-size: 0.9em;
-            margin-bottom: 5px;
+
+        .weather-icon {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
         }
-        
-        .detail-value {
-            color: #333;
+
+        .weather-primary {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .city-info {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .city-name {
             font-size: 1.3em;
+            color: #ffd700;
             font-weight: bold;
         }
-        
-        .error {
-            background: #ff6b6b;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #999;
+
+        .country {
             font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .temp-info {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .temperature {
+            font-size: 2.2em;
+            color: #00d4ff;
+            font-weight: bold;
+        }
+
+        .description {
+            font-size: 0.95em;
+            color: #b082ff;
+            text-transform: capitalize;
+        }
+
+        /* Stats sections */
+        .stats-group {
+            display: flex;
+            gap: 12px;
+            padding: 0 15px;
+            border-left: 1px solid rgba(176, 130, 255, 0.3);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: 0.9em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Sun times */
+        .sun-times {
+            display: flex;
+            gap: 12px;
+            padding-left: 15px;
+            border-left: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .sun-stat .stat-label {
+            color: #ffd700;
+        }
+
+        .sun-stat .stat-value {
+            color: #ffffff;
+        }
+
+        /* Error */
+        .error {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            display: inline-block;
+        }
+
+        /* Hide elements we don't need in ribbon */
+        h1, .footer {
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🌤️ Weather Check</h1>
-        
         <form method="POST">
             <div class="search-box">
-                <input type="text" name="city" placeholder="Enter city name..." value="{{ city or '' }}" required>
-                <button type="submit">Search</button>
+                <input type="text" name="city" placeholder="Enter city..." value="{{ city or '' }}" required>
+                <button type="submit">Go</button>
             </div>
         </form>
-        
+
         {% if error %}
         <div class="error">{{ error }}</div>
         {% endif %}
-        
+
         {% if weather %}
-        <div class="weather-display">
-            <div class="city-name">{{ weather.city }}</div>
-            <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="Weather icon" class="weather-icon">
-            <div class="temperature">{{ weather.temperature }}°F</div>
-            <div class="description">{{ weather.description }}</div>
-            
-            <div class="weather-details">
-                <div class="detail">
-                    <div class="detail-label">Humidity</div>
-                    <div class="detail-value">{{ weather.humidity }}%</div>
+        <div class="weather-ribbon">
+            <!-- Main weather info -->
+            <div class="weather-main">
+                <img src="http://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="Weather" class="weather-icon">
+                <div class="weather-primary">
+                    <div class="city-info">
+                        <span class="city-name">{{ weather.city }}</span>
+                        <span class="country">{{ weather.country }}</span>
+                    </div>
+                    <div class="temp-info">
+                        <span class="temperature">{{ weather.temperature }}°F</span>
+                        <span class="description">{{ weather.description }}</span>
+                    </div>
                 </div>
-                <div class="detail">
-                    <div class="detail-label">Wind Speed</div>
-                    <div class="detail-value">{{ weather.wind_speed }} mph</div>
+            </div>
+
+            <!-- Temperature stats -->
+            <div class="stats-group">
+                <div class="stat">
+                    <div class="stat-label">Feels</div>
+                    <div class="stat-value">{{ weather.feels_like }}°</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Min/Max</div>
+                    <div class="stat-value">{{ weather.temp_min }}°/{{ weather.temp_max }}°</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Humidity</div>
+                    <div class="stat-value">{{ weather.humidity }}%</div>
+                </div>
+            </div>
+
+            <!-- Wind stats -->
+            <div class="stats-group">
+                <div class="stat">
+                    <div class="stat-label">Wind</div>
+                    <div class="stat-value">{{ weather.wind_speed }} {{ weather.wind_dir }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Gusts</div>
+                    <div class="stat-value">{{ weather.wind_gust }} mph</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Clouds</div>
+                    <div class="stat-value">{{ weather.clouds }}%</div>
+                </div>
+            </div>
+
+            <!-- Atmospheric stats -->
+            <div class="stats-group">
+                <div class="stat">
+                    <div class="stat-label">Pressure</div>
+                    <div class="stat-value">{{ weather.pressure }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Visibility</div>
+                    <div class="stat-value">{{ weather.visibility }} mi</div>
+                </div>
+            </div>
+
+            <!-- Sun times -->
+            <div class="sun-times">
+                <div class="stat sun-stat">
+                    <div class="stat-label">Sunrise</div>
+                    <div class="stat-value">{{ weather.sunrise }}</div>
+                </div>
+                <div class="stat sun-stat">
+                    <div class="stat-label">Sunset</div>
+                    <div class="stat-value">{{ weather.sunset }}</div>
                 </div>
             </div>
         </div>
         {% endif %}
-        
-        <div class="footer">
-            Docker Weather API Project 🐳
-        </div>
     </div>
 </body>
 </html>
