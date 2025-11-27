@@ -7,7 +7,7 @@
       {
         "conversation_engine": "conversation.home_assistant",
         "conversation_language": "en",
-        "id": "01kamtvdrq22gep4swwnxnk0pe",
+        "id": "01kamw2qbnjfzw99841fz9pwne",
         "language": "en",
         "name": "Home Assistant",
         "stt_engine": null,
@@ -20,6 +20,6 @@
         "prefer_local_intents": false
       }
     ],
-    "preferred_item": "01kamtvdrq22gep4swwnxnk0pe"
+    "preferred_item": "01kamw2qbnjfzw99841fz9pwne"
   }
 }

@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "minor_version": 1,
+  "key": "person",
+  "data": {
+    "items": [
+      {
+        "id": "matt_damberg",
+        "name": "Matt Damberg",
+        "user_id": "725300cbc9084b6697461f26f07d001b",
+        "device_trackers": [
+          "device_tracker.matt_dambergs_iphone"
+        ]
+      }
+    ]
+  }
+}

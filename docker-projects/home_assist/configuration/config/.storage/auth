@@ -5,7 +5,7 @@
   "data": {
     "users": [
       {
-        "id": "3d199a4329cd4cc28f0dca10e93fd01b",
+        "id": "4a8adbc7bf4d4b258ae01026726286b4",
         "group_ids": [
           "system-read-only"
         ],
@@ -13,6 +13,17 @@
         "is_active": true,
         "name": "Home Assistant Content",
         "system_generated": true,
+        "local_only": false
+      },
+      {
+        "id": "725300cbc9084b6697461f26f07d001b",
+        "group_ids": [
+          "system-admin"
+        ],
+        "is_owner": true,
+        "is_active": true,
+        "name": "Matt Damberg",
+        "system_generated": false,
         "local_only": false
       }
     ],
@@ -30,23 +41,67 @@
         "name": "Read Only"
       }
     ],
-    "credentials": [],
+    "credentials": [
+      {
+        "id": "a79e0145eb964c08b1151875ba8f2ce1",
+        "user_id": "725300cbc9084b6697461f26f07d001b",
+        "auth_provider_type": "homeassistant",
+        "auth_provider_id": null,
+        "data": {
+          "username": "damattberg"
+        }
+      }
+    ],
     "refresh_tokens": [
       {
-        "id": "ec5338cf5be043fa8d4e2a339ead5904",
-        "user_id": "3d199a4329cd4cc28f0dca10e93fd01b",
+        "id": "4040123451984586aa831e7a9127ae3f",
+        "user_id": "4a8adbc7bf4d4b258ae01026726286b4",
         "client_id": null,
         "client_name": null,
         "client_icon": null,
         "token_type": "system",
-        "created_at": "2025-11-22T03:48:43.589896+00:00",
+        "created_at": "2025-11-22T04:10:11.749839+00:00",
         "access_token_expiration": 1800.0,
-        "token": "6d9fb8487910790ef5c938e05cc04e92cf0b0fac00e636a8d3524b4416e683e53b135bb8a2bf35ad17fb53defab523100d93f3d88d5418fa68846f07ecffdf17",
-        "jwt_key": "5f80679c697d863bd9798f452e415f73f52349364daa1c580ddb23e56bab03305ab2bb86f74cd771d2fd20249de6bdd2296001a14b4f8fd82b64800158456b7f",
+        "token": "61caa343af54241a1a6dd5426471540ebac4808ce7f38c4081a9ebf15b462618ffd87fa6b1f2e09acf37c71942c20e652e2d2adf654aecfefb7eeca2216172ca",
+        "jwt_key": "8fe6b53f51be63e2aa0b0cd410ccfe2cbb8ce0fce0efeadca4a4d41e041079ef04959c6dc92390537f7c5dcd0684c93899f3cec7a48620d7b707d239046c2eaf",
         "last_used_at": null,
         "last_used_ip": null,
         "expire_at": null,
         "credential_id": null,
+        "version": "2025.11.3"
+      },
+      {
+        "id": "3cd84dae480a4437ae77c6e4ce1680e5",
+        "user_id": "725300cbc9084b6697461f26f07d001b",
+        "client_id": "http://localhost:8123/",
+        "client_name": null,
+        "client_icon": null,
+        "token_type": "normal",
+        "created_at": "2025-11-22T04:15:30.423582+00:00",
+        "access_token_expiration": 1800.0,
+        "token": "7e23a6d9cec84a8226bd78c1463146590494b171dee1cfbe0546c607afae0de16dcfa17df5966bcd13daf9232d2e5353ae04b5020ad5e1081ca208da08c5cf2b",
+        "jwt_key": "3ff935ccb6a64338ac02db7c1fdb457eb832e336baa98114c3fafc5126dac1244c9116dc35c35052cceeae3036fb7be1d6e1fa506b386caf2ccff36116d82cb0",
+        "last_used_at": "2025-11-26T22:45:58.091152+00:00",
+        "last_used_ip": "172.24.0.1",
+        "expire_at": 1771973158.091152,
+        "credential_id": "a79e0145eb964c08b1151875ba8f2ce1",
+        "version": "2025.11.3"
+      },
+      {
+        "id": "29ef25d15d224a248dd5da62e1c60129",
+        "user_id": "725300cbc9084b6697461f26f07d001b",
+        "client_id": "https://home-assistant.io/iOS",
+        "client_name": null,
+        "client_icon": null,
+        "token_type": "normal",
+        "created_at": "2025-11-22T04:26:44.522018+00:00",
+        "access_token_expiration": 1800.0,
+        "token": "2362b5ba36b61d572c099f3871223ced8a3c97276a78b0fb809ee2c6ab8b0d723a24b017bf89970158b0b9ad0b4cf09ca4dce7ee32951d2b34ea10d108406ce0",
+        "jwt_key": "843cc0042ed93926b4573e3376c4784257834b8315ba333d762791494d6b27ea2d606cb1f7a01166e2bf84583425efa106e7c7f52958f1bc74235cb8a255652a",
+        "last_used_at": "2025-11-26T22:16:23.835896+00:00",
+        "last_used_ip": "172.24.0.1",
+        "expire_at": 1771971383.835896,
+        "credential_id": "a79e0145eb964c08b1151875ba8f2ce1",
         "version": "2025.11.3"
       }
     ]

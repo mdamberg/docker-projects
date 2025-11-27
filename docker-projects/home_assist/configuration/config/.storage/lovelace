@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "path": "default_view",
+          "title": "Home",
+          "cards": [
+            {
+              "type": "entity",
+              "entity": "sensor.sun_next_dawn"
+            },
+            {
+              "show_current": true,
+              "show_forecast": true,
+              "type": "weather-forecast",
+              "entity": "weather.forecast_home",
+              "forecast_type": "daily",
+              "secondary_info_attribute": "wind_speed",
+              "forecast_slots": 12
+            },
+            {
+              "type": "gauge",
+              "entity": "sensor.matt_dambergs_iphone_battery_level",
+              "needle": true
+            },
+            {
+              "type": "entities",
+              "entities": [
+                "sensor.cpu_speed",
+                "sensor.matt_s_plex",
+                "sensor.overseerr_available_requests",
+                "sensor.overseerr_declined_requests",
+                "sensor.overseerr_movie_requests",
+                "sensor.overseerr_pending_requests",
+                "sensor.overseerr_processing_requests",
+                "sensor.overseerr_total_requests",
+                "sensor.overseerr_tv_requests"
+              ],
+              "title": "Office"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "sensor.system_monitor_disk_free",
+                  "name": "Disk free /"
+                },
+                {
+                  "entity": "sensor.system_monitor_disk_usage",
+                  "name": "Disk usage /"
+                },
+                {
+                  "entity": "sensor.system_monitor_ipv4_address_eth0",
+                  "name": "IPv4 address eth0"
+                },
+                {
+                  "entity": "sensor.system_monitor_ipv4_address_lo",
+                  "name": "IPv4 address lo"
+                },
+                {
+                  "entity": "sensor.system_monitor_load_5_min",
+                  "name": "Load (5 min)"
+                },
+                {
+                  "entity": "sensor.system_monitor_memory_usage",
+                  "name": "Memory usage"
+                }
+              ],
+              "title": "System Monitor"
+            },
+            {
+              "chart_type": "bar",
+              "period": "day",
+              "type": "statistics-graph",
+              "entities": [
+                "sensor.refrigerator_energy_last_month",
+                "sensor.refrigerator_energy_this_month"
+              ],
+              "stat_types": [
+                "state"
+              ]
+            },
+            {
+              "type": "statistic",
+              "entity": "sensor.refrigerator_energy_last_month",
+              "period": {
+                "calendar": {
+                  "period": "month"
+                }
+              },
+              "stat_type": "change"
+            },
+            {
+              "type": "grid",
+              "square": false,
+              "columns": 1,
+              "cards": [
+                {
+                  "type": "entities",
+                  "entities": [
+                    "remote.fancy_new_room_tv_un55cu7000dxza"
+                  ],
+                  "title": "fancy new room tv (UN55CU7000DXZA)"
+                },
+                {
+                  "type": "media-control",
+                  "entity": "media_player.fancy_new_room_tv_un55cu7000dxza"
+                }
+              ]
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.plex_plex_for_android_tv_smarttv_4k"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "binary_sensor.radarr_health",
+                  "name": "Health"
+                }
+              ],
+              "title": "Radarr"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                "sensor.sonarr_shows",
+                "sensor.sonarr_wanted",
+                {
+                  "entity": "sensor.sonarr_upcoming",
+                  "name": "Upcoming"
+                }
+              ],
+              "title": "Sonarr"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
