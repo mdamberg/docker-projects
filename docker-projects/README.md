@@ -18,7 +18,11 @@ docker-projects/
 │   │                         # - qBittorrent (8080), Overseerr (5055)
 │   │                         # - Homarr (7575), Portainer (9443)
 │   │                         # - LazyLibrarian (5299), Audiobookshelf (13378)
-│   └── LinkAce/              # Bookmark manager (port 8282)
+│   ├── LinkAce/              # Bookmark manager (port 8282)
+│   ├── monitoring/           # System monitoring stack
+│   │                         # - Uptime Kuma (3001), Glances (61208)
+│   └── vpn/                  # VPN services
+│                             # - HomeVPN/WireGuard (51820), PrivacyVPN (8888)
 │
 └── Development Projects/
     ├── flash_todo/
@@ -62,6 +66,8 @@ cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects"
 - `homeassistant` - Home automation platform
 - `mediastack` - Complete media server (Plex, Sonarr, Radarr, etc.)
 - `linkace` - Bookmark and link manager
+- `monitoring` - System monitoring (Uptime Kuma, Glances)
+- `vpn` - VPN services (WireGuard server, ProtonVPN client)
 
 ### Individual Service Management
 

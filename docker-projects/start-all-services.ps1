@@ -9,7 +9,7 @@
 
 .PARAMETER Services
     Optional. Specify which services to start (comma-separated). If not provided, starts all.
-    Valid values: pihole, homeassistant, mediastack, linkace, all
+    Valid values: pihole, homeassistant, mediastack, linkace, monitoring, vpn, all
     Example: .\start-all-services.ps1 -Services "pihole,homeassistant"
 
 .EXAMPLE
@@ -34,6 +34,8 @@ $InfraServices = @{
     'homeassistant' = 'home_assist'
     'mediastack' = 'media_stack'
     'linkace' = 'LinkAce'
+    'monitoring' = 'monitoring'
+    'vpn' = 'vpn'
 }
 
 # Parse which services to start
