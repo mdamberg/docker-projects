@@ -1,0 +1,16 @@
+services:
+  linkding:
+    image: sissbruecker/linkding:latest
+    container_name: linkding
+    ports:
+      - "8282:9090"
+    volumes:
+      - linkding-data:/etc/linkding/data
+    environment:
+      - LD_SUPERUSER_NAME=admin
+      - LD_SUPERUSER_PASSWORD=changeme
+      - TZ=America/Chicago
+    restart: unless-stopped
+
+volumes:
+  linkding-data:

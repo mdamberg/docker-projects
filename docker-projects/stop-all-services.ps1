@@ -8,7 +8,7 @@
 
 .PARAMETER Services
     Optional. Specify which services to stop (comma-separated). If not provided, stops all.
-    Valid values: pihole, homeassistant, mediastack, linkace, monitoring, vpn, all
+    Valid values: pihole, homeassistant, mediastack, linkding, monitoring, vpn, all
     Example: .\stop-all-services.ps1 -Services "pihole,homeassistant"
 
 .EXAMPLE
@@ -32,7 +32,7 @@ $InfraServices = @{
     'pihole' = 'pie_hole'
     'homeassistant' = 'home_assist'
     'mediastack' = 'media_stack'
-    'linkace' = 'LinkAce'
+    'linkding' = 'linkding'
     'monitoring' = 'monitoring'
     'vpn' = 'vpn'
 }
