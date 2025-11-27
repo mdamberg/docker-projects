@@ -1,0 +1,33 @@
+services:
+  linkace:
+    image: linkace/linkace:latest
+    container_name: linkace
+    environment:
+      - APP_ENV=production
+      - APP_KEY=${LINKACE_APP_KEY}
+      - DB_HOST=db
+      - DB_DATABASE=linkace
+      - DB_USERNAME=linkace
+      - DB_PASSWORD=${LINKACE_DB_PASSWORD}
+      - TZ=${TZ}
+    ports:
+      - "8282:80"
+    volumes:
+      - linkace_data:/app/data
+    restart: unless-stopped
+
+  db:
+    image: mariadb:10.6
+    container_name: linkace_db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=linkace
+      - MYSQL_USER=linkace
+      - MYSQL_PASSWORD=${LINKACE_DB_PASSWORD}
+    volumes:
+      - linkace_db:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  linkace_data:
+  linkace_db:
