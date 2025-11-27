@@ -312,3 +312,39 @@ dispatchEvent (node_modules/@lit-labs/virtualizer/src/Virtualizer.ts:816:23)
 2025-11-26 19:05:08.495 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
 2025-11-26 19:05:08.569 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
 2025-11-26 19:05:08.641 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:10:09.465 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:10:09.537 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:10:09.615 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:10:09.723 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:15:10.422 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:15:10.511 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:15:10.591 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:15:10.669 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:20:11.434 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:20:11.503 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:20:11.576 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:20:11.652 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:25:12.406 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:25:12.495 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:25:12.574 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:25:12.659 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:30:13.415 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:30:13.508 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:30:13.592 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:30:13.662 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:35:14.420 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:35:14.501 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:35:14.574 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:35:14.649 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:40:15.429 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:40:15.511 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:40:15.611 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:40:15.698 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:45:16.432 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:45:16.505 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:45:16.590 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:45:16.662 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
+2025-11-26 19:50:17.348 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Upstairs playroom .
+2025-11-26 19:50:17.421 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Basement.
+2025-11-26 19:50:17.493 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Living room .
+2025-11-26 19:50:17.567 WARNING (MainThread) [blinkpy.camera] Could not find thumbnail for camera Patio.
