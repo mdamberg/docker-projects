@@ -50,6 +50,24 @@ Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host "  Docker Infrastructure Startup Script  " -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan
 
+# Check if Docker is running
+Write-Host "[CHECK] Verifying Docker Desktop is running..." -ForegroundColor Yellow
+try {
+    $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "Docker daemon not responding"
+    }
+    Write-Host "[OK] Docker Desktop is running (version: $DockerVersion)" -ForegroundColor Green
+} catch {
+    Write-Host "[ERROR] Docker Desktop is not running!" -ForegroundColor Red
+    Write-Host "`nPlease start Docker Desktop and wait for it to fully initialize," -ForegroundColor Yellow
+    Write-Host "then run this script again.`n" -ForegroundColor Yellow
+    Write-Host "You can start Docker Desktop from:" -ForegroundColor Cyan
+    Write-Host "  - Start Menu: Search for 'Docker Desktop'" -ForegroundColor Cyan
+    Write-Host "  - Or run: Start-Process 'C:\Program Files\Docker\Docker\Docker Desktop.exe'`n" -ForegroundColor Cyan
+    exit 1
+}
+
 $SuccessCount = 0
 $FailCount = 0
 $Results = @()

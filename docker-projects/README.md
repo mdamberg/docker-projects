@@ -64,7 +64,7 @@ cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects"
 ### Available Services
 - `pihole` - DNS ad-blocking and network filtering
 - `homeassistant` - Home automation platform
-- `mediastack` - Complete media server (Plex, Sonarr, Radarr, etc.)
+- `mediastack` - Complete media server (Plex, Sonarr, Radarr, etc.)i 
 - `linkace` - Bookmark and link manager
 - `monitoring` - System monitoring (Uptime Kuma, Glances)
 - `vpn` - VPN services (WireGuard server, ProtonVPN client)
