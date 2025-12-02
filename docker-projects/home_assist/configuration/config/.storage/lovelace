@@ -6,6 +6,193 @@
     "config": {
       "views": [
         {
+          "type": "sections",
+          "background": {
+            "opacity": 70,
+            "alignment": "center",
+            "size": "cover",
+            "repeat": "repeat",
+            "attachment": "fixed",
+            "image": {
+              "media_content_id": "media-source://image_upload/2429c13414e187e641803500788692b0",
+              "media_content_type": "image/png",
+              "metadata": {
+                "title": "xvg1uvi0hyed1.png",
+                "thumbnail": "/api/image/serve/2429c13414e187e641803500788692b0/256x256",
+                "media_class": "image",
+                "navigateIds": [
+                  {},
+                  {
+                    "media_content_type": "app",
+                    "media_content_id": "media-source://image_upload"
+                  }
+                ]
+              }
+            }
+          },
+          "max_columns": 4,
+          "title": "Security Cameras",
+          "path": "security-cameras",
+          "icon": "mdi:camera-enhance-outline",
+          "subview": true,
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Kitchen",
+                  "heading_style": "title"
+                },
+                {
+                  "camera_view": "auto",
+                  "fit_mode": "cover",
+                  "type": "picture-glance",
+                  "title": "Kitchen",
+                  "image": {
+                    "media_content_id": "https://demo.home-assistant.io/stub_config/kitchen.png"
+                  },
+                  "entities": [
+                    "sensor.backup_backup_manager_state",
+                    "sensor.sun_next_dusk"
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "camera_image": "camera.kitchen_camera_fluent",
+                  "entity": "camera.kitchen_camera_fluent"
+                },
+                {
+                  "square": true,
+                  "type": "grid",
+                  "cards": [
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.kitchen_camera_ptz_up",
+                      "name": "Kitchen Pan Up"
+                    },
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.kitchen_camera_ptz_down",
+                      "name": "Kitchen Pan Down"
+                    },
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.kitchen_camera_ptz_left",
+                      "name": "Kitchen Pan Left"
+                    },
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.kitchen_camera_ptz_right",
+                      "name": "Kitchen Pan Right"
+                    }
+                  ],
+                  "columns": 4
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "number.kitchen_camera_volume",
+                  "show_state": true,
+                  "color": "purple",
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 2
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading_style": "title",
+                  "heading": "Bed Rooms",
+                  "icon": "mdi:bed"
+                },
+                {
+                  "camera_view": "auto",
+                  "fit_mode": "cover",
+                  "type": "picture-glance",
+                  "title": "Amelias Room",
+                  "image": {
+                    "media_content_id": "https://demo.home-assistant.io/stub_config/kitchen.png"
+                  },
+                  "entities": [
+                    "sensor.sun_next_midnight",
+                    "sensor.sun_next_noon"
+                  ],
+                  "entity": "camera.amelias_room_fluent",
+                  "camera_image": "camera.amelias_room_fluent"
+                },
+                {
+                  "square": true,
+                  "type": "grid",
+                  "cards": [
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.amelias_room_ptz_up",
+                      "name": "Amelia Pan Up"
+                    },
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.amelias_room_ptz_down",
+                      "name": "Amelia Pan Down"
+                    },
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.amelias_room_ptz_left",
+                      "name": "Amelia Pan Left"
+                    },
+                    {
+                      "show_name": true,
+                      "show_icon": true,
+                      "type": "button",
+                      "entity": "button.amelias_room_ptz_right",
+                      "name": "Amelia Pan Right"
+                    }
+                  ],
+                  "columns": 4
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "number.amelias_room_volume",
+                  "color": "purple",
+                  "show_state": true,
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 2
+                  }
+                }
+              ]
+            }
+          ],
+          "header": {
+            "card": {
+              "type": "markdown",
+              "content": "# Security Camera Dashboard\nControl Panels for various cameras throughout the house."
+            }
+          }
+        },
+        {
           "path": "default_view",
           "title": "Home",
           "cards": [
@@ -74,7 +261,7 @@
             },
             {
               "chart_type": "bar",
-              "period": "day",
+              "period": "week",
               "type": "statistics-graph",
               "entities": [
                 "sensor.refrigerator_energy_last_month",
@@ -137,6 +324,559 @@
                 }
               ],
               "title": "Sonarr"
+            },
+            {
+              "type": "grid",
+              "square": false,
+              "columns": 1,
+              "cards": [
+                {
+                  "type": "entities",
+                  "entities": [
+                    "binary_sensor.kitchen_camera_baby_crying"
+                  ],
+                  "title": "Kitchen Camera"
+                },
+                {
+                  "type": "picture-entity",
+                  "entity": "camera.kitchen_camera_fluent"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "square": false,
+              "columns": 1,
+              "cards": [
+                {
+                  "type": "entities",
+                  "entities": [
+                    "remote.85_in_samsung_tv_un85du8000cxza"
+                  ],
+                  "title": "85 in Samsung TV (UN85DU8000CXZA)"
+                },
+                {
+                  "type": "media-control",
+                  "entity": "media_player.85_in_samsung_tv_un85du8000cxza"
+                }
+              ]
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "button.amelias_room_guard_go_to",
+                  "name": "Guard go to"
+                },
+                {
+                  "entity": "button.amelias_room_ptz_down",
+                  "name": "PTZ down"
+                },
+                {
+                  "entity": "button.amelias_room_ptz_left",
+                  "name": "PTZ left"
+                },
+                {
+                  "entity": "button.amelias_room_ptz_right",
+                  "name": "PTZ right"
+                },
+                {
+                  "entity": "button.amelias_room_ptz_stop",
+                  "name": "PTZ stop"
+                },
+                {
+                  "entity": "button.amelias_room_ptz_up",
+                  "name": "PTZ up"
+                },
+                {
+                  "entity": "siren.amelias_room_siren",
+                  "name": "Siren"
+                }
+              ],
+              "title": "Amelias Room"
+            },
+            {
+              "type": "entities",
+              "entities": [
+                {
+                  "entity": "button.kitchen_camera_guard_go_to",
+                  "name": "Guard go to"
+                },
+                {
+                  "entity": "button.kitchen_camera_ptz_down",
+                  "name": "PTZ down"
+                },
+                {
+                  "entity": "button.kitchen_camera_ptz_left",
+                  "name": "PTZ left"
+                },
+                {
+                  "entity": "button.kitchen_camera_ptz_right",
+                  "name": "PTZ right"
+                },
+                {
+                  "entity": "button.kitchen_camera_ptz_stop",
+                  "name": "PTZ stop"
+                },
+                {
+                  "entity": "button.kitchen_camera_ptz_up",
+                  "name": "PTZ up"
+                },
+                {
+                  "entity": "siren.kitchen_camera_siren",
+                  "name": "Siren"
+                }
+              ],
+              "title": "Kitchen Camera"
+            },
+            {
+              "type": "grid",
+              "square": false,
+              "columns": 1,
+              "cards": [
+                {
+                  "type": "entities",
+                  "entities": [
+                    {
+                      "entity": "binary_sensor.amelias_room_baby_crying",
+                      "name": "Baby crying"
+                    }
+                  ],
+                  "title": "Amelias Room"
+                },
+                {
+                  "type": "picture-entity",
+                  "entity": "camera.amelias_room_fluent"
+                }
+              ]
+            }
+          ],
+          "background": {
+            "opacity": 70,
+            "alignment": "center",
+            "size": "cover",
+            "repeat": "repeat",
+            "attachment": "fixed",
+            "image": {
+              "media_content_id": "media-source://image_upload/6f8ddc8af1ce2e8b769c601767409d8b",
+              "media_content_type": "image/png",
+              "metadata": {
+                "title": "ib3jfnetoyfe1.png",
+                "thumbnail": "/api/image/serve/6f8ddc8af1ce2e8b769c601767409d8b/256x256",
+                "media_class": "image",
+                "navigateIds": [
+                  {},
+                  {
+                    "media_content_type": "app",
+                    "media_content_id": "media-source://image_upload"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "sections",
+          "max_columns": 4,
+          "title": "Media",
+          "path": "media",
+          "background": {
+            "opacity": 30,
+            "alignment": "center",
+            "size": "contain",
+            "repeat": "repeat",
+            "attachment": "fixed",
+            "image": {
+              "media_content_id": "media-source://image_upload/bd15166440db57216acc25fc44f7f70a",
+              "media_content_type": "image/png",
+              "metadata": {
+                "title": "icons.png",
+                "thumbnail": "/api/image/serve/bd15166440db57216acc25fc44f7f70a/256x256",
+                "media_class": "image",
+                "navigateIds": [
+                  {},
+                  {
+                    "media_content_type": "app",
+                    "media_content_id": "media-source://image_upload"
+                  }
+                ]
+              }
+            }
+          },
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Living Room TV",
+                  "heading_style": "title",
+                  "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "media_player.85_in_samsung_tv_un85du8000cxza"
+                    }
+                  ]
+                },
+                {
+                  "type": "media-control",
+                  "entity": "media_player.85_in_samsung_tv_un85du8000cxza",
+                  "name": "Living Room TV",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "remote.85_in_samsung_tv_un85du8000cxza",
+                  "name": "85\" Samsung Remote",
+                  "color": "accent",
+                  "icon": "mdi:play-pause",
+                  "show_state": true,
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 2
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading_style": "title",
+                  "heading": "Basement TV",
+                  "icon": "mdi:television",
+                  "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "media_player.fancy_new_room_tv_un55cu7000dxza"
+                    }
+                  ]
+                },
+                {
+                  "type": "media-control",
+                  "entity": "media_player.fancy_new_room_tv_un55cu7000dxza",
+                  "name": "Basement TV"
+                },
+                {
+                  "show_name": true,
+                  "show_icon": true,
+                  "type": "button",
+                  "entity": "remote.fancy_new_room_tv_un55cu7000dxza",
+                  "name": "55\" Samsung Remote",
+                  "color": "accent",
+                  "icon": "mdi:play-pause",
+                  "show_state": true,
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 2
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading_style": "title",
+                  "heading": "Plex Stream",
+                  "icon": "mdi:plex",
+                  "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "sensor.matt_s_plex"
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "media_player.plex_plex_for_android_tv_smarttv_4k"
+                    },
+                    {
+                      "type": "entity",
+                      "entity": "button.matt_s_plex_scan_clients"
+                    }
+                  ]
+                },
+                {
+                  "type": "media-control",
+                  "entity": "media_player.plex_plex_for_android_tv_smarttv_4k",
+                  "name": "Plex Stream"
+                }
+              ]
+            }
+          ],
+          "cards": [],
+          "header": {
+            "card": {
+              "type": "markdown",
+              "text_only": true,
+              "content": "# Media Control Dashboard\nPlex, Local TV Control and other Media Management ✨"
+            }
+          }
+        },
+        {
+          "type": "sections",
+          "title": "Security Camera",
+          "path": "security-camera",
+          "icon": "mdi:security",
+          "max_columns": 6,
+          "background": {
+            "opacity": 70,
+            "alignment": "center",
+            "size": "cover",
+            "repeat": "repeat",
+            "attachment": "fixed",
+            "image": {
+              "media_content_id": "media-source://image_upload/1c18cc1f981540c2ca80e0d74e418faf",
+              "media_content_type": "image/png",
+              "metadata": {
+                "title": "xvg1uvi0hyed1.png",
+                "thumbnail": "/api/image/serve/1c18cc1f981540c2ca80e0d74e418faf/256x256",
+                "media_class": "image",
+                "navigateIds": [
+                  {},
+                  {
+                    "media_content_type": "app",
+                    "media_content_id": "media-source://image_upload"
+                  }
+                ]
+              }
+            }
+          },
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Kitchen",
+                  "heading_style": "title",
+                  "icon": "mdi:security"
+                },
+                {
+                  "show_state": false,
+                  "show_name": true,
+                  "camera_view": "live",
+                  "fit_mode": "cover",
+                  "type": "picture-entity",
+                  "entity": "camera.kitchen_camera_fluent",
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 5
+                  }
+                },
+                {
+                  "type": "grid",
+                  "columns": 3,
+                  "square": true,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Up",
+                      "icon": "mdi:arrow-up-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.kitchen_camera_fluent",
+                          "command": "UP"
+                        }
+                      },
+                      "icon_color": "#FFD800"
+                    },
+                    {
+                      "type": "button",
+                      "name": "Home",
+                      "icon": "mdi:home",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.kitchen_camera_fluent",
+                          "command": "TOPOS",
+                          "preset": 1
+                        }
+                      },
+                      "icon_color": "#9B00FF"
+                    },
+                    {
+                      "type": "button",
+                      "name": "Down",
+                      "icon": "mdi:arrow-down-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.kitchen_camera_fluent",
+                          "command": "DOWN"
+                        }
+                      },
+                      "icon_color": "#FFD800"
+                    },
+                    {
+                      "type": "button",
+                      "name": "Left",
+                      "icon": "mdi:arrow-left-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.kitchen_camera_fluent",
+                          "command": "LEFT"
+                        }
+                      },
+                      "icon_color": "#FFD800"
+                    },
+                    {
+                      "type": "button",
+                      "name": "Stop",
+                      "icon": "mdi:stop",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.kitchen_camera_fluent",
+                          "command": "STOP"
+                        }
+                      },
+                      "icon_color": "#9B00FF"
+                    },
+                    {
+                      "type": "button",
+                      "name": "Right",
+                      "icon": "mdi:arrow-right-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.kitchen_camera_fluent",
+                          "command": "RIGHT"
+                        }
+                      },
+                      "icon_color": "#FFD800"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Amelia's Room",
+                  "heading_style": "title",
+                  "icon": "mdi:security",
+                  "badges": [
+                    {
+                      "type": "entity",
+                      "entity": "camera.amelias_room_fluent"
+                    }
+                  ]
+                },
+                {
+                  "show_state": true,
+                  "show_name": true,
+                  "camera_view": "live",
+                  "fit_mode": "cover",
+                  "type": "picture-entity",
+                  "entity": "camera.amelias_room_fluent",
+                  "grid_options": {
+                    "columns": 12,
+                    "rows": 5
+                  }
+                },
+                {
+                  "type": "grid",
+                  "columns": 3,
+                  "square": true,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Up",
+                      "icon": "mdi:arrow-up-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.amelias_room_fluent",
+                          "command": "UP"
+                        }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Home",
+                      "icon": "mdi:home",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.amelias_room_fluent",
+                          "command": "TOPOS",
+                          "preset": 1
+                        }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Down",
+                      "icon": "mdi:arrow-down-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.amelias_room_fluent",
+                          "command": "DOWN"
+                        }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Left",
+                      "icon": "mdi:arrow-left-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.amelias_room_fluent",
+                          "command": "LEFT"
+                        }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Stop",
+                      "icon": "mdi:stop",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.amelias_room_fluent",
+                          "command": "STOP"
+                        }
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Right",
+                      "icon": "mdi:arrow-right-bold",
+                      "tap_action": {
+                        "action": "call-service",
+                        "service": "reolink_dev.ptz_control",
+                        "data": {
+                          "entity_id": "camera.amelias_room_fluent",
+                          "command": "RIGHT"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
