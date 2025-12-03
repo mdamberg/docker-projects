@@ -1,0 +1,11 @@
+services:
+  weather_api:
+    build: .
+    container_name: weather_api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./.env:/app/.env:ro
+    environment:
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+    restart: unless-stopped

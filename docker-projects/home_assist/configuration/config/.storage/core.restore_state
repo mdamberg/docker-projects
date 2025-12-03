@@ -4,162 +4,167 @@
   "key": "core.restore_state",
   "data": [
     {
-      "state": {"entity_id":"conversation.home_assistant","state":"unknown","attributes":{"friendly_name":"Home Assistant","supported_features":1},"last_changed":"2025-12-02T15:51:31.887404+00:00","last_reported":"2025-12-02T15:51:31.887404+00:00","last_updated":"2025-12-02T15:51:31.887404+00:00","context":{"id":"01KBFW61SFXGKE7F9NFK581ABA","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"conversation.home_assistant","state":"unknown","attributes":{"friendly_name":"Home Assistant","supported_features":1},"last_changed":"2025-12-03T02:33:55.830442+00:00","last_reported":"2025-12-03T02:33:55.830442+00:00","last_updated":"2025-12-03T02:33:55.830442+00:00","context":{"id":"01KBH0YABPG66CWHT53VMMF3RP","parent_id":null,"user_id":null}},
       "extra_data": null,
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"event.backup_automatic_backup","state":"unknown","attributes":{"event_types":["completed","failed","in_progress"],"event_type":null,"friendly_name":"Backup Automatic backup"},"last_changed":"2025-12-02T15:51:31.995289+00:00","last_reported":"2025-12-02T15:51:31.995289+00:00","last_updated":"2025-12-02T15:51:31.995289+00:00","context":{"id":"01KBFW61WV3SVSHC0R5V0C04RX","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"event.backup_automatic_backup","state":"unknown","attributes":{"event_types":["completed","failed","in_progress"],"event_type":null,"friendly_name":"Backup Automatic backup"},"last_changed":"2025-12-03T02:33:56.117922+00:00","last_reported":"2025-12-03T02:33:56.117922+00:00","last_updated":"2025-12-03T02:33:56.117922+00:00","context":{"id":"01KBH0YAMNMMK1PQXWA1Q5G8S4","parent_id":null,"user_id":null}},
       "extra_data": {
         "last_event_type": null,
         "last_event_attributes": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"person.matt_damberg","state":"not_home","attributes":{"editable":true,"id":"matt_damberg","device_trackers":["device_tracker.matt_dambergs_iphone"],"latitude":45.140758627950206,"longitude":-92.66608524527213,"gps_accuracy":11,"source":"device_tracker.matt_dambergs_iphone","user_id":"725300cbc9084b6697461f26f07d001b","friendly_name":"Matt Damberg"},"last_changed":"2025-12-02T15:51:32.997456+00:00","last_reported":"2025-12-02T15:53:00.964989+00:00","last_updated":"2025-12-02T15:53:00.964989+00:00","context":{"id":"01KBFW8RS4PKBVNG1HVS7KPSD3","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"person.matt_damberg","state":"not_home","attributes":{"editable":true,"id":"matt_damberg","device_trackers":["device_tracker.matt_dambergs_iphone"],"latitude":45.140791467205055,"longitude":-92.665999410295,"gps_accuracy":14,"source":"device_tracker.matt_dambergs_iphone","user_id":"725300cbc9084b6697461f26f07d001b","friendly_name":"Matt Damberg"},"last_changed":"2025-12-03T02:33:57.316304+00:00","last_reported":"2025-12-03T13:54:05.026969+00:00","last_updated":"2025-12-03T13:54:05.026969+00:00","context":{"id":"01KBJ7VQ32BE7ANM5387DFQ46Y","parent_id":null,"user_id":null}},
       "extra_data": null,
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"device_tracker.matt_dambergs_iphone","state":"not_home","attributes":{"source_type":"gps","battery_level":80,"latitude":45.140758627950206,"longitude":-92.66608524527213,"gps_accuracy":11,"altitude":273.0360307326971,"vertical_accuracy":30,"friendly_name":"Matt Damberg’s iPhone"},"last_changed":"2025-12-02T15:51:36.767434+00:00","last_reported":"2025-12-02T15:51:36.767434+00:00","last_updated":"2025-12-02T15:51:36.767434+00:00","context":{"id":"01KBFW66HZEQY66XVYB67CD5J0","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"device_tracker.matt_dambergs_iphone","state":"not_home","attributes":{"source_type":"gps","battery_level":90,"latitude":45.140791467205055,"longitude":-92.665999410295,"gps_accuracy":14,"altitude":275.0200195323632,"vertical_accuracy":30,"friendly_name":"Matt Damberg’s iPhone"},"last_changed":"2025-12-03T13:54:05.019652+00:00","last_reported":"2025-12-03T13:54:05.019652+00:00","last_updated":"2025-12-03T13:54:05.019652+00:00","context":{"id":"01KBJ7VQ2VFF0YY89JGBYDN2H2","parent_id":null,"user_id":null}},
       "extra_data": null,
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_battery_level","state":"80","attributes":{"unit_of_measurement":"%","device_class":"battery","icon":"mdi:battery-80","friendly_name":"Matt Damberg’s iPhone Battery Level"},"last_changed":"2025-12-02T15:51:36.768000+00:00","last_reported":"2025-12-02T15:51:36.768000+00:00","last_updated":"2025-12-02T15:51:36.768000+00:00","context":{"id":"01KBFW66J0QEY6KG3YGMT9M14V","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_battery_level","state":"90","attributes":{"unit_of_measurement":"%","device_class":"battery","icon":"mdi:battery-90","friendly_name":"Matt Damberg’s iPhone Battery Level"},"last_changed":"2025-12-03T13:54:05.001385+00:00","last_reported":"2025-12-03T13:54:05.020371+00:00","last_updated":"2025-12-03T13:54:05.001385+00:00","context":{"id":"01KBJ7VQ295EMNHBJHGCQFT165","parent_id":null,"user_id":null}},
       "extra_data": {
-        "native_value": 80,
+        "native_value": 90,
         "native_unit_of_measurement": "%"
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_battery_state","state":"Not Charging","attributes":{"Low Power Mode":false,"icon":"mdi:battery-80","friendly_name":"Matt Damberg’s iPhone Battery State"},"last_changed":"2025-12-02T15:51:36.768159+00:00","last_reported":"2025-12-02T15:51:36.768159+00:00","last_updated":"2025-12-02T15:51:36.768159+00:00","context":{"id":"01KBFW66J0F1JPK39431P67P9Q","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_battery_state","state":"Not Charging","attributes":{"Low Power Mode":false,"icon":"mdi:battery-90","friendly_name":"Matt Damberg’s iPhone Battery State"},"last_changed":"2025-12-03T13:18:26.955037+00:00","last_reported":"2025-12-03T13:18:26.955037+00:00","last_updated":"2025-12-03T13:18:26.955037+00:00","context":{"id":"01KBJ5TF4BEZMDWSGZGK97G978","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "Not Charging",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_sim_2","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone SIM 2"},"last_changed":"2025-12-02T15:51:36.768286+00:00","last_reported":"2025-12-02T15:51:36.768286+00:00","last_updated":"2025-12-02T15:51:36.768286+00:00","context":{"id":"01KBFW66J0DY2WJSVHX723VV4S","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_sim_2","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone SIM 2"},"last_changed":"2025-12-03T02:34:03.464025+00:00","last_reported":"2025-12-03T02:34:03.464025+00:00","last_updated":"2025-12-03T02:34:03.464025+00:00","context":{"id":"01KBH0YHT8K07F0JMKYNHR97A9","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "unavailable",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_sim_1","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone SIM 1"},"last_changed":"2025-12-02T15:51:36.768406+00:00","last_reported":"2025-12-02T15:51:36.768406+00:00","last_updated":"2025-12-02T15:51:36.768406+00:00","context":{"id":"01KBFW66J046T7KBQ234SXPV56","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_sim_1","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone SIM 1"},"last_changed":"2025-12-03T02:34:03.464965+00:00","last_reported":"2025-12-03T02:34:03.464965+00:00","last_updated":"2025-12-03T02:34:03.464965+00:00","context":{"id":"01KBH0YHT83JJ2V0643TH0X8MX","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "unavailable",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_storage","state":"unavailable","attributes":{"unit_of_measurement":"% available","icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Storage"},"last_changed":"2025-12-02T15:51:36.768511+00:00","last_reported":"2025-12-02T15:51:36.768511+00:00","last_updated":"2025-12-02T15:51:36.768511+00:00","context":{"id":"01KBFW66J0RAM30XKTTENWH3VM","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_storage","state":"unavailable","attributes":{"unit_of_measurement":"% available","icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Storage"},"last_changed":"2025-12-03T02:34:03.465961+00:00","last_reported":"2025-12-03T02:34:03.465961+00:00","last_updated":"2025-12-03T02:34:03.465961+00:00","context":{"id":"01KBH0YHT9QWA3HRT4AG4NMN5Y","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "unavailable",
         "native_unit_of_measurement": "% available"
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_ssid","state":"home","attributes":{"icon":"mdi:wifi","friendly_name":"Matt Damberg’s iPhone SSID"},"last_changed":"2025-12-02T15:51:36.768625+00:00","last_reported":"2025-12-02T15:51:36.768625+00:00","last_updated":"2025-12-02T15:51:36.768625+00:00","context":{"id":"01KBFW66J0NGV3J7Z6CPEQ6RZE","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_ssid","state":"home","attributes":{"icon":"mdi:wifi","friendly_name":"Matt Damberg’s iPhone SSID"},"last_changed":"2025-12-03T02:34:03.466256+00:00","last_reported":"2025-12-03T02:34:03.466256+00:00","last_updated":"2025-12-03T02:34:03.466256+00:00","context":{"id":"01KBH0YHTAZVG54JJTVG20YEAH","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "home",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_connection_type","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Connection Type"},"last_changed":"2025-12-02T15:51:36.768728+00:00","last_reported":"2025-12-02T15:51:36.768728+00:00","last_updated":"2025-12-02T15:51:36.768728+00:00","context":{"id":"01KBFW66J0RDXHQ1SCG6GZ09J3","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_connection_type","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Connection Type"},"last_changed":"2025-12-03T02:34:03.467036+00:00","last_reported":"2025-12-03T02:34:03.467036+00:00","last_updated":"2025-12-03T02:34:03.467036+00:00","context":{"id":"01KBH0YHTB6ECTSD6J1BA7XWP1","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "unavailable",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_bssid","state":"78:76:89:8a:d8:73","attributes":{"icon":"mdi:wifi-star","friendly_name":"Matt Damberg’s iPhone BSSID"},"last_changed":"2025-12-02T15:51:36.768882+00:00","last_reported":"2025-12-02T15:51:36.768882+00:00","last_updated":"2025-12-02T15:51:36.768882+00:00","context":{"id":"01KBFW66J082XC65T75F8S3FT9","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_bssid","state":"c8:e3:6:85:40:c5","attributes":{"icon":"mdi:wifi-star","friendly_name":"Matt Damberg’s iPhone BSSID"},"last_changed":"2025-12-03T13:18:26.956377+00:00","last_reported":"2025-12-03T13:18:26.956377+00:00","last_updated":"2025-12-03T13:18:26.956377+00:00","context":{"id":"01KBJ5TF4CW083J92H7M878QK7","parent_id":null,"user_id":null}},
       "extra_data": {
-        "native_value": "78:76:89:8a:d8:73",
+        "native_value": "c8:e3:6:85:40:c5",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_location_permission","state":"Authorized Always","attributes":{"icon":"mdi:map","friendly_name":"Matt Damberg’s iPhone Location permission"},"last_changed":"2025-12-02T15:51:36.768997+00:00","last_reported":"2025-12-02T15:51:36.768997+00:00","last_updated":"2025-12-02T15:51:36.768997+00:00","context":{"id":"01KBFW66J0MT2FK24Z3SJSA1DD","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_location_permission","state":"Authorized Always","attributes":{"icon":"mdi:map","friendly_name":"Matt Damberg’s iPhone Location permission"},"last_changed":"2025-12-03T02:34:03.467561+00:00","last_reported":"2025-12-03T02:34:03.467561+00:00","last_updated":"2025-12-03T02:34:03.467561+00:00","context":{"id":"01KBH0YHTBTAWT61ZG1EMWAAD7","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "Authorized Always",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_geocoded_location","state":"523 Lagrandeur Rd\nSomerset WI 54025\nUnited States","attributes":{"Administrative Area":"WI","Areas Of Interest":"N/A","Country":"United States","Inland Water":"N/A","ISO Country Code":"US","Locality":"Somerset","Location":[45.140758627950206,-92.66608524527213],"Name":"523 Lagrandeur Rd","Ocean":"N/A","Postal Code":"54025","Sub Administrative Area":"St. Croix County","Sub Locality":"N/A","Sub Thoroughfare":"523","Thoroughfare":"Lagrandeur Rd","Time Zone":"America/Chicago","Zones":[],"icon":"mdi:map","friendly_name":"Matt Damberg’s iPhone Geocoded Location"},"last_changed":"2025-12-02T15:51:36.769148+00:00","last_reported":"2025-12-02T15:51:36.769148+00:00","last_updated":"2025-12-02T15:51:36.769148+00:00","context":{"id":"01KBFW66J1H018H7C4ZPKEF92B","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_geocoded_location","state":"523 Lagrandeur Rd\nSomerset WI 54025\nUnited States","attributes":{"Administrative Area":"WI","Areas Of Interest":"N/A","Country":"United States","Inland Water":"N/A","ISO Country Code":"US","Locality":"Somerset","Location":[45.140791467205055,-92.665999410295],"Name":"523 Lagrandeur Rd","Ocean":"N/A","Postal Code":"54025","Sub Administrative Area":"St. Croix County","Sub Locality":"N/A","Sub Thoroughfare":"523","Thoroughfare":"Lagrandeur Rd","Time Zone":"America/Chicago","Zones":[],"icon":"mdi:map","friendly_name":"Matt Damberg’s iPhone Geocoded Location"},"last_changed":"2025-12-03T02:34:03.467975+00:00","last_reported":"2025-12-03T13:54:05.023739+00:00","last_updated":"2025-12-03T13:54:05.023739+00:00","context":{"id":"01KBJ7VQ2ZAC7VF05GKXH5EKMA","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "523 Lagrandeur Rd\nSomerset WI 54025\nUnited States",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_last_update_trigger","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Last Update Trigger"},"last_changed":"2025-12-02T15:51:36.769275+00:00","last_reported":"2025-12-02T15:51:36.769275+00:00","last_updated":"2025-12-02T15:51:36.769275+00:00","context":{"id":"01KBFW66J1QDS25M8772Y12VZC","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_last_update_trigger","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Last Update Trigger"},"last_changed":"2025-12-03T02:34:03.468195+00:00","last_reported":"2025-12-03T02:34:03.468195+00:00","last_updated":"2025-12-03T02:34:03.468195+00:00","context":{"id":"01KBH0YHTC94KJ9S1Y4RHPQ2FD","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "unavailable",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_app_version","state":"2025.10.0","attributes":{"icon":"mdi:cellphone","friendly_name":"Matt Damberg’s iPhone App Version"},"last_changed":"2025-12-02T15:51:36.769390+00:00","last_reported":"2025-12-02T15:51:36.769390+00:00","last_updated":"2025-12-02T15:51:36.769390+00:00","context":{"id":"01KBFW66J138NV3K1XW15BGTMH","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_app_version","state":"2025.12.0","attributes":{"icon":"mdi:cellphone","friendly_name":"Matt Damberg’s iPhone App Version"},"last_changed":"2025-12-03T05:22:47.403422+00:00","last_reported":"2025-12-03T05:22:47.403422+00:00","last_updated":"2025-12-03T05:22:47.403422+00:00","context":{"id":"01KBHAKGFBNWDK146MT7ZESR6Z","parent_id":null,"user_id":null}},
       "extra_data": {
-        "native_value": "2025.10.0",
+        "native_value": "2025.12.0",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"sensor.matt_dambergs_iphone_audio_output","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Audio Output"},"last_changed":"2025-12-02T15:51:36.769485+00:00","last_reported":"2025-12-02T15:51:36.769485+00:00","last_updated":"2025-12-02T15:51:36.769485+00:00","context":{"id":"01KBFW66J117WS2TPKS8975H53","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"sensor.matt_dambergs_iphone_audio_output","state":"unavailable","attributes":{"icon":"mdi:dots-square","friendly_name":"Matt Damberg’s iPhone Audio Output"},"last_changed":"2025-12-03T02:34:03.468688+00:00","last_reported":"2025-12-03T02:34:03.468688+00:00","last_updated":"2025-12-03T02:34:03.468688+00:00","context":{"id":"01KBH0YHTCNC85B7B2SYNB97MR","parent_id":null,"user_id":null}},
       "extra_data": {
         "native_value": "unavailable",
         "native_unit_of_measurement": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"button.matt_s_plex_scan_clients","state":"unknown","attributes":{"friendly_name":"Matt's Plex Scan clients"},"last_changed":"2025-12-02T15:51:36.778472+00:00","last_reported":"2025-12-02T15:51:36.778472+00:00","last_updated":"2025-12-02T15:51:36.778472+00:00","context":{"id":"01KBFW66JAWPVWQTYNXNP4XP0F","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"tts.google_translate_en_com","state":"unknown","attributes":{"friendly_name":"Google Translate en com"},"last_changed":"2025-12-03T02:34:03.545783+00:00","last_reported":"2025-12-03T02:34:03.545783+00:00","last_updated":"2025-12-03T02:34:03.545783+00:00","context":{"id":"01KBH0YHWSQJVPCXHBVX95PEBQ","parent_id":null,"user_id":null}},
       "extra_data": null,
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"tts.google_translate_en_com","state":"unknown","attributes":{"friendly_name":"Google Translate en com"},"last_changed":"2025-12-02T15:51:36.799011+00:00","last_reported":"2025-12-02T15:51:36.799011+00:00","last_updated":"2025-12-02T15:51:36.799011+00:00","context":{"id":"01KBFW66JZM9JEXB8ZFN8CCXGZ","parent_id":null,"user_id":null}},
-      "extra_data": null,
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
-    },
-    {
-      "state": {"entity_id":"event.refrigerator_notification","state":"unknown","attributes":{"event_types":["frozen_is_complete","door_is_open","time_to_change_filter","water_filter_reset_complete","time_to_change_water_filter","filter_reset_complete"],"event_type":null,"friendly_name":"Refrigerator Notification"},"last_changed":"2025-12-02T15:51:37.376656+00:00","last_reported":"2025-12-02T15:51:37.376656+00:00","last_updated":"2025-12-02T15:51:37.376656+00:00","context":{"id":"01KBFW67509AMA60VR631JTKYS","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"event.refrigerator_notification","state":"unknown","attributes":{"event_types":["frozen_is_complete","door_is_open","time_to_change_filter","water_filter_reset_complete","time_to_change_water_filter","filter_reset_complete"],"event_type":null,"friendly_name":"Refrigerator Notification"},"last_changed":"2025-12-03T02:34:03.670303+00:00","last_reported":"2025-12-03T02:34:03.670303+00:00","last_updated":"2025-12-03T02:34:03.670303+00:00","context":{"id":"01KBH0YJ0P0T2PZ3BW6NZK5BDZ","parent_id":null,"user_id":null}},
       "extra_data": {
         "last_event_type": null,
         "last_event_attributes": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"event.oven_notification","state":"2025-11-29T21:09:07.095+00:00","attributes":{"event_types":["preheating_is_complete","error_has_occurred","cooking_is_complete","time_to_clean"],"event_type":"preheating_is_complete","friendly_name":"Oven Notification"},"last_changed":"2025-12-02T15:51:37.376847+00:00","last_reported":"2025-12-02T15:51:37.376847+00:00","last_updated":"2025-12-02T15:51:37.376847+00:00","context":{"id":"01KBFW67501TBTBGD0PHR60769","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"event.oven_notification","state":"2025-11-29T21:09:07.095+00:00","attributes":{"event_types":["cooking_is_complete","preheating_is_complete","time_to_clean","error_has_occurred"],"event_type":"preheating_is_complete","friendly_name":"Oven Notification"},"last_changed":"2025-12-03T02:34:03.670869+00:00","last_reported":"2025-12-03T02:34:03.670869+00:00","last_updated":"2025-12-03T02:34:03.670869+00:00","context":{"id":"01KBH0YJ0PMGDABT2SPDQQJCDH","parent_id":null,"user_id":null}},
       "extra_data": {
         "last_event_type": "preheating_is_complete",
         "last_event_attributes": null
       },
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
     },
     {
-      "state": {"entity_id":"update.matt_s_plex_update","state":"off","attributes":{"auto_update":false,"display_precision":0,"installed_version":"1.42.2.10156-f737b826c","in_progress":false,"latest_version":"1.42.2.10156-f737b826c","release_summary":null,"release_url":null,"skipped_version":null,"title":null,"update_percentage":null,"entity_picture":"https://brands.home-assistant.io/_/plex/icon.png","friendly_name":"Matt's Plex Update","supported_features":16},"last_changed":"2025-12-02T15:51:37.423928+00:00","last_reported":"2025-12-02T15:51:37.423928+00:00","last_updated":"2025-12-02T15:51:37.423928+00:00","context":{"id":"01KBFW676FD0G2FPTDCSNA0QCA","parent_id":null,"user_id":null}},
+      "state": {"entity_id":"update.hacs_update","state":"off","attributes":{"auto_update":false,"display_precision":0,"installed_version":"2.0.5","in_progress":false,"latest_version":"2.0.5","release_summary":null,"release_url":"https://github.com/hacs/integration/releases/2.0.5","skipped_version":null,"title":null,"update_percentage":null,"entity_picture":"https://brands.home-assistant.io/_/hacs/icon.png","friendly_name":"HACS update","supported_features":23},"last_changed":"2025-12-03T02:35:27.166388+00:00","last_reported":"2025-12-03T02:35:27.166388+00:00","last_updated":"2025-12-03T02:35:27.166388+00:00","context":{"id":"01KBH113HYFHG5T79XCJC17FF4","parent_id":null,"user_id":null}},
       "extra_data": null,
-      "last_seen": "2025-12-02T16:38:00.828116+00:00"
+      "last_seen": "2025-12-03T14:35:22.418471+00:00"
+    },
+    {
+      "state": {"entity_id":"button.matt_s_plex_scan_clients","state":"unknown","attributes":{"friendly_name":"Matt's Plex Scan clients"},"last_changed":"2025-12-03T01:46:28.978302+00:00","last_reported":"2025-12-03T01:46:28.978302+00:00","last_updated":"2025-12-03T01:46:28.978302+00:00","context":{"id":"01KBGY7E7J0FDHT0ZQ9A8KCGA8","parent_id":null,"user_id":null}},
+      "extra_data": null,
+      "last_seen": "2025-12-03T01:48:22.094063+00:00"
+    },
+    {
+      "state": {"entity_id":"update.matt_s_plex_update","state":"off","attributes":{"auto_update":false,"display_precision":0,"installed_version":"1.42.2.10156-f737b826c","in_progress":false,"latest_version":"1.42.2.10156-f737b826c","release_summary":null,"release_url":null,"skipped_version":null,"title":null,"update_percentage":null,"entity_picture":"https://brands.home-assistant.io/_/plex/icon.png","friendly_name":"Matt's Plex Update","supported_features":16},"last_changed":"2025-12-03T01:46:29.344924+00:00","last_reported":"2025-12-03T01:46:29.344924+00:00","last_updated":"2025-12-03T01:46:29.344924+00:00","context":{"id":"01KBGY7EK0PW499RMWN18NF66X","parent_id":null,"user_id":null}},
+      "extra_data": null,
+      "last_seen": "2025-12-03T01:48:22.094063+00:00"
     },
     {
       "state": {"entity_id":"button.kitchen_camera_ptz_stop","state":"unavailable","attributes":{"friendly_name":"Kitchen Camera PTZ stop"},"last_changed":"2025-12-02T08:17:38.277698+00:00","last_reported":"2025-12-02T08:17:38.277698+00:00","last_updated":"2025-12-02T08:17:38.277698+00:00","context":{"id":"01KBF26YF5Z4KN55PVT6V53FT3","parent_id":null,"user_id":null}},

@@ -445,6 +445,10 @@
                   "title": "Amelias Room"
                 },
                 {
+                  "show_state": true,
+                  "show_name": true,
+                  "camera_view": "auto",
+                  "fit_mode": "cover",
                   "type": "picture-entity",
                   "entity": "camera.amelias_room_fluent"
                 }

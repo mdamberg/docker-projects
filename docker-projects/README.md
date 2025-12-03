@@ -8,6 +8,7 @@ This directory contains Docker-based infrastructure services and development pro
 docker-projects/
 ├── start-all-services.ps1    # Start all infrastructure services
 ├── stop-all-services.ps1     # Stop all infrastructure services
+├── setup-autostart.ps1       # Configure automatic startup on boot
 ├── README.md                  # This file
 │
 ├── Infrastructure Services/
@@ -18,15 +19,16 @@ docker-projects/
 │   │                         # - qBittorrent (8080), Overseerr (5055)
 │   │                         # - Homarr (7575), Portainer (9443)
 │   │                         # - LazyLibrarian (5299), Audiobookshelf (13378)
-│   ├── LinkAce/              # Bookmark manager (port 8282)
+│   ├── linkding/             # Bookmark manager (port 8282)
 │   ├── monitoring/           # System monitoring stack
 │   │                         # - Uptime Kuma (3001), Glances (61208)
-│   └── vpn/                  # VPN services
-│                             # - HomeVPN/WireGuard (51820), PrivacyVPN (8888)
+│   ├── vpn/                  # VPN services
+│   │                         # - HomeVPN/WireGuard (51820), PrivacyVPN (8888)
+│   ├── flash_todo/           # Flask-based todo app (port 5070)
+│   ├── weather_api_project/  # Weather dashboard (port 5000)
+│   └── backups/              # Backup services (Duplicati)
 │
 └── Development Projects/
-    ├── flash_todo/
-    ├── weather_api_project/
     ├── weather_app/
     ├── mcp_server/
     └── input_project/
@@ -64,10 +66,12 @@ cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects"
 ### Available Services
 - `pihole` - DNS ad-blocking and network filtering
 - `homeassistant` - Home automation platform
-- `mediastack` - Complete media server (Plex, Sonarr, Radarr, etc.)i 
-- `linkace` - Bookmark and link manager
+- `mediastack` - Complete media server (Plex, Sonarr, Radarr, etc.)
+- `linkding` - Bookmark and link manager
 - `monitoring` - System monitoring (Uptime Kuma, Glances)
 - `vpn` - VPN services (WireGuard server, ProtonVPN client)
+- `flash` - Flask-based todo application
+- `weather` - Weather dashboard with API integration
 
 ### Individual Service Management
 
@@ -81,6 +85,74 @@ docker-compose restart    # Restart
 docker-compose logs -f    # View logs
 ```
 
+## Management Scripts
+
+### start-all-services.ps1
+Starts all Docker infrastructure services with proper error handling and status reporting.
+
+**Usage:**
+```powershell
+# Start all services
+.\start-all-services.ps1
+
+# Start specific services
+.\start-all-services.ps1 -Services "pihole,homeassistant"
+.\start-all-services.ps1 -Services "mediastack,flash,weather"
+```
+
+**Features:**
+- Validates Docker is running before starting
+- Provides detailed status for each service
+- Shows summary of successes and failures
+- Supports selective service startup
+
+### stop-all-services.ps1
+Stops all Docker infrastructure services gracefully.
+
+**Usage:**
+```powershell
+# Stop all services
+.\stop-all-services.ps1
+
+# Stop specific services
+.\stop-all-services.ps1 -Services "mediastack"
+.\stop-all-services.ps1 -Services "flash,weather"
+```
+
+**Features:**
+- Graceful shutdown of containers
+- Status reporting for each service
+- Supports selective service shutdown
+
+### setup-autostart.ps1
+Configures automatic startup of all Docker services on system boot using Windows Task Scheduler.
+
+**Usage:**
+```powershell
+# Run as Administrator
+.\setup-autostart.ps1
+```
+
+**What it does:**
+- Creates a Windows Task Scheduler task named "Docker Infrastructure Auto-Start"
+- Configures the task to run at system startup (before user login)
+- Runs with SYSTEM privileges to ensure Docker access
+- Automatically restarts services if they fail to start initially
+
+**Requirements:**
+- Must be run as Administrator
+- Docker Desktop must be configured to start on boot
+
+**To verify it's working:**
+1. Open Task Scheduler (`Win + R` → `taskschd.msc`)
+2. Look for "Docker Infrastructure Auto-Start" in Task Scheduler Library
+3. Or test it: `Start-ScheduledTask -TaskName "Docker Infrastructure Auto-Start"`
+
+**To remove auto-start:**
+```powershell
+Unregister-ScheduledTask -TaskName "Docker Infrastructure Auto-Start" -Confirm:$false
+```
+
 ## Auto-Start on System Boot
 
 All services have `restart: unless-stopped` policies, which means:
@@ -89,19 +161,18 @@ All services have `restart: unless-stopped` policies, which means:
 - ❌ They WON'T start if you've manually stopped them
 - ❌ They won't start automatically the first time (need manual start)
 
-### Option 1: Run Script on Login (Simplest)
+### Recommended: Use setup-autostart.ps1 (Automated)
 
-1. Press `Win + R`, type `shell:startup`, press Enter
-2. Right-click in the folder → New → Shortcut
-3. Browse to: `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\start-all-services.ps1`
-4. Click Next, name it "Start Docker Services", Finish
-
-**Note:** You may need to adjust PowerShell execution policy:
+Run the automated setup script as Administrator:
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\setup-autostart.ps1
 ```
 
-### Option 2: Task Scheduler (Runs Before Login)
+This configures everything automatically and ensures services start before user login.
+
+### Alternative: Manual Task Scheduler Setup
+
+If you prefer to configure manually:
 
 1. Open Task Scheduler (`Win + R` → `taskschd.msc`)
 2. Create Basic Task
@@ -112,14 +183,6 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
    - Arguments: `-ExecutionPolicy Bypass -File "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\start-all-services.ps1"`
 3. Check "Run with highest privileges"
 4. Check "Run whether user is logged on or not"
-
-### Option 3: Docker Desktop Auto-Start
-
-1. Open Docker Desktop Settings
-2. General → Check "Start Docker Desktop when you log in"
-3. Resources → Advanced → Check "Start Docker when system starts"
-
-Then run the `start-all-services.ps1` script once after Docker starts.
 
 ## Adding New Services
 
@@ -137,7 +200,11 @@ When adding a new infrastructure service:
        'pihole' = 'pie_hole'
        'homeassistant' = 'home_assist'
        'mediastack' = 'media_stack'
-       'linkace' = 'LinkAce'
+       'linkding' = 'linkding'
+       'monitoring' = 'monitoring'
+       'vpn' = 'vpn'
+       'flash' = 'flash_todo'
+       'weather' = 'weather_api_project'
        'yournewservice' = 'your_service_directory'  # Add this
    }
    ```
@@ -189,7 +256,9 @@ docker-compose up -d --build
 | LazyLibrarian | 5299 | http://localhost:5299 |
 | Audiobookshelf | 13378 | http://localhost:13378 |
 | Prowlarr | 9696 | http://localhost:9696 |
-| LinkAce | 8282 | http://localhost:8282 |
+| Linkding | 8282 | http://localhost:8282 |
+| Flash Todo | 5070 | http://localhost:5070 |
+| Weather Dashboard | 5000 | http://localhost:5000 |
 
 ## Notes
 
