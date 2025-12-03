@@ -2,3 +2,25 @@
 #homelab-docs/
 .vscode/
 .claude/
+
+# Home Assistant - Exclude sensitive storage and runtime files
+docker-projects/home_assist/configuration/config/.storage/
+docker-projects/home_assist/configuration/config/home-assistant.log*
+docker-projects/home_assist/configuration/config/home-assistant_v2.db*
+docker-projects/home_assist/configuration/config/.ha_run.lock
+
+# Pi-hole - Exclude runtime files
+docker-projects/pie_hole/etc-pihole/dnsmasq.conf
+docker-projects/pie_hole/etc-pihole/logrotate
+docker-projects/pie_hole/etc-pihole/versions
+
+# Duplicati - Exclude database and lock files
+docker-projects/backups/duplicati/config/*.sqlite
+docker-projects/backups/duplicati/config/*.sqlite-*
+docker-projects/backups/duplicati/config/control_dir_v2/
+
+# General Docker runtime files
+**/data/*.db
+**/data/*.sqlite
+**/.env.local
+**/secrets/
