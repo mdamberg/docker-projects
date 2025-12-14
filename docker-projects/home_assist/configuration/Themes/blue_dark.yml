@@ -1,0 +1,26 @@
+blue_dark:
+  # Main colors
+  primary-color: "#2196F3"
+  accent-color: "#FF9800"
+  dark-primary-color: "#1976D2"
+  light-primary-color: "#BBDEFB"
+  
+  # Text colors
+  primary-text-color: "#FFFFFF"
+  text-primary-color: "#FFFFFF"
+  secondary-text-color: "#B3B3B3"
+  disabled-text-color: "#777777"
+  
+  # Background colors
+  primary-background-color: "#0d1117"
+  secondary-background-color: "#161b22"
+  divider-color: "rgba(255, 255, 255, 0.12)"
+  
+  # Card colors
+  card-background-color: "#161b22"
+  
+  # Sidebar
+  sidebar-icon-color: "#B3B3B3"
+  sidebar-text-color: "#FFFFFF"
+  sidebar-selected-text-color: "#2196F3"
+  sidebar-selected-icon-color: "#2196F3"g

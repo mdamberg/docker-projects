@@ -1,1 +1,15 @@
-[]
+- id: '1765722657249'
+  alias: Water Filter 25% Alert
+  description: Send notification when refrigerator water filter reaches 25%
+  triggers:
+  - entity_id: sensor.refrigerator_water_filter
+    below: 25
+    trigger: numeric_state
+  conditions: []
+  actions:
+  - data:
+      title: Refrigerator Filter Alert
+      message: Water filter is at {{ states('sensor.refrigerator_water_filter') }}%
+        - time to order a replacement!
+    action: notify.notify
+  mode: single

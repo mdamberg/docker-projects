@@ -1,0 +1,8 @@
+{
+  "version": "6",
+  "minor_version": 1,
+  "key": "hacs.data",
+  "data": {
+    "repositories": {}
+  }
+}
