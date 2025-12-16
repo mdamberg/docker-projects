@@ -52,22 +52,65 @@ Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host "  Docker Infrastructure Startup Script  " -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan
 
-# Check if Docker is running
+# Check if Docker is running, start it if not
 Write-Host "[CHECK] Verifying Docker Desktop is running..." -ForegroundColor Yellow
-try {
-    $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        throw "Docker daemon not responding"
+
+$DockerDesktopPath = "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+$MaxWaitSeconds = 120  # Wait up to 2 minutes for Docker to start
+
+function Test-DockerRunning {
+    try {
+        $null = docker version --format '{{.Server.Version}}' 2>&1
+        return $LASTEXITCODE -eq 0
+    } catch {
+        return $false
     }
-    Write-Host "[OK] Docker Desktop is running (version: $DockerVersion)" -ForegroundColor Green
-} catch {
-    Write-Host "[ERROR] Docker Desktop is not running!" -ForegroundColor Red
-    Write-Host "`nPlease start Docker Desktop and wait for it to fully initialize," -ForegroundColor Yellow
-    Write-Host "then run this script again.`n" -ForegroundColor Yellow
-    Write-Host "You can start Docker Desktop from:" -ForegroundColor Cyan
-    Write-Host "  - Start Menu: Search for 'Docker Desktop'" -ForegroundColor Cyan
-    Write-Host "  - Or run: Start-Process 'C:\Program Files\Docker\Docker\Docker Desktop.exe'`n" -ForegroundColor Cyan
-    exit 1
+}
+
+if (-not (Test-DockerRunning)) {
+    Write-Host "[INFO] Docker Desktop is not running. Starting it now..." -ForegroundColor Yellow
+
+    # Check if Docker Desktop executable exists
+    if (-not (Test-Path $DockerDesktopPath)) {
+        Write-Host "[ERROR] Docker Desktop not found at: $DockerDesktopPath" -ForegroundColor Red
+        Write-Host "Please install Docker Desktop or update the path in this script.`n" -ForegroundColor Yellow
+        exit 1
+    }
+
+    # Start Docker Desktop
+    try {
+        Start-Process -FilePath $DockerDesktopPath -WindowStyle Hidden
+        Write-Host "[INFO] Docker Desktop starting..." -ForegroundColor Cyan
+    } catch {
+        Write-Host "[ERROR] Failed to start Docker Desktop: $_" -ForegroundColor Red
+        exit 1
+    }
+
+    # Wait for Docker to be ready
+    Write-Host "[WAIT] Waiting for Docker to initialize (max $MaxWaitSeconds seconds)..." -ForegroundColor Yellow
+    $WaitedSeconds = 0
+    $ReadyMessageShown = $false
+
+    while (-not (Test-DockerRunning) -and $WaitedSeconds -lt $MaxWaitSeconds) {
+        Start-Sleep -Seconds 2
+        $WaitedSeconds += 2
+
+        if ($WaitedSeconds % 10 -eq 0 -and -not $ReadyMessageShown) {
+            Write-Host "[WAIT] Still waiting... ($WaitedSeconds seconds elapsed)" -ForegroundColor Yellow
+        }
+    }
+
+    if (Test-DockerRunning) {
+        $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
+        Write-Host "[OK] Docker Desktop is ready (version: $DockerVersion)" -ForegroundColor Green
+    } else {
+        Write-Host "[ERROR] Docker Desktop failed to start within $MaxWaitSeconds seconds!" -ForegroundColor Red
+        Write-Host "Please check Docker Desktop manually and ensure it can start properly.`n" -ForegroundColor Yellow
+        exit 1
+    }
+} else {
+    $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
+    Write-Host "[OK] Docker Desktop is already running (version: $DockerVersion)" -ForegroundColor Green
 }
 
 $SuccessCount = 0
