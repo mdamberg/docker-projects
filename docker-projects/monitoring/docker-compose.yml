@@ -1,6 +1,3 @@
-
-version: '3.8'
-
 # Kumma uptime for monitoring and alerts for media stack
 services:
   uptime-kuma:

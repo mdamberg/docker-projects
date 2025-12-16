@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mcp-docker-server:
     build: ./mcp_servers/server1
