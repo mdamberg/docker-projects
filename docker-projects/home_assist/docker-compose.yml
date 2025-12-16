@@ -1,1 +1,12 @@
-docker
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: ghcr.io/home-assistant/home-assistant:stable
+    volumes:
+      - ./configuration/config:/config
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - 8123:8123
+    environment:
+      - TZ=${TZ}
