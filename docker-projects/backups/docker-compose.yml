@@ -8,6 +8,7 @@ services:
       - TZ=${TZ}
       - SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
       - CLI_ARGS=--webservice-password=admin
+      - HEALTHCHECKS_URL=${HEALTHCHECKS_URL}
     volumes:
       - ./duplicati/config:/config
       - C:\docker-projects:/source/docker-configs:ro

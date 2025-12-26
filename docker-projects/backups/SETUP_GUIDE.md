@@ -112,6 +112,60 @@ After the backup runs, check that files were created in `C:\backups` on your hos
 - Verify source and destination paths are accessible
 - Check disk space on C:\backups drive
 
+## Step 6: Set Up Healthchecks.io Monitoring (Optional but Recommended)
+
+Healthchecks.io provides dead man's switch monitoring - it alerts you if your backups STOP running (different from ntfy which alerts you when they DO run).
+
+### Create a Healthcheck
+
+1. Go to https://healthchecks.io and create a free account
+2. Create a new check with these settings:
+   - **Name**: "Duplicati Docker Backups"
+   - **Schedule**: Daily at 1:00 AM (or your backup schedule)
+   - **Grace Time**: 2 hours (allows backup to complete)
+3. Copy the ping URL (looks like: `https://hc-ping.com/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX`)
+
+### Configure the Healthcheck URL
+
+Add your healthcheck URL to the `.env` file in `docker-projects/backups/.env`:
+
+```
+HEALTHCHECKS_URL=https://hc-ping.com/your-check-id-here
+```
+
+The healthcheck script (`ping-healthchecks.sh`) is already configured to:
+- Automatically ping healthchecks.io after successful backups
+- Skip pinging if the backup fails (so you get alerted)
+- Use the URL from the environment variable
+
+### Test the Healthcheck
+
+After adding the URL and restarting the container:
+
+```bash
+# Test successful backup scenario
+docker exec duplicati bash -c "DUPLICATI__PARSED_RESULT=Success bash /config/ping-healthchecks.sh"
+
+# Should output: "Backup successful, pinging healthchecks.io... Successfully pinged healthchecks.io"
+```
+
+Check your healthchecks.io dashboard to see the ping.
+
+### Integrate with Duplicati
+
+To run the healthcheck script after each backup:
+
+1. In Duplicati web interface, edit your backup job
+2. Go to Options → Advanced options
+3. Add these settings:
+   ```
+   run-script-after=/config/ping-healthchecks.sh
+   run-script-timeout=60s
+   ```
+4. Save the backup job
+
+Now healthchecks.io will monitor your backups and alert you if they fail or don't run!
+
 ## Next Steps
 
 - Consider setting up retention policies (how long to keep old backups)
