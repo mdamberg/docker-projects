@@ -6,6 +6,8 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
+      - SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
+      - CLI_ARGS=--webservice-password=admin
     volumes:
       - ./duplicati/config:/config
       - C:\docker-projects:/source/docker-configs:ro
