@@ -245,6 +245,107 @@ Overseerr can notify via:
 - Failed requests
 - Issue reports
 
+### Telegram Notifications
+
+Overseerr has excellent Telegram support for notifying users about request status.
+
+#### Prerequisites
+- Complete the [Telegram Bot Setup](../notifications/telegram-setup.md) first
+- You'll need your **Bot Token** and **Chat ID**
+
+#### Configuration Steps
+
+1. **Open Overseerr** at `http://localhost:5055`
+
+2. **Go to Settings → Notifications → Telegram**
+
+3. **Configure Telegram**:
+   - **Enable Agent**: Toggle ON
+   - **Bot API Token**: `8410328014:AAF4MnHVHr-EoJwno7uB4x9weC22HtJI9LU`
+   - **Chat ID**: `8320862964`
+   - **Send Silently**: OFF (you want notifications with sound)
+
+4. **Choose Notification Types**:
+
+   **For Admins** (your Chat ID):
+   - ✅ **Media Requested** - When users submit requests
+   - ✅ **Media Auto-Approved** - When requests auto-approve
+   - ✅ **Media Failed** - When downloads fail
+   - ⚠️ **Media Approved** - Skip if using auto-approve (duplicate)
+   - ⚠️ **Media Declined** - Only if manually reviewing requests
+
+   **For Users** (they need their own Chat ID):
+   - Users can add their own Telegram Chat ID in User Settings
+   - They'll receive notifications when their requests are approved/available
+
+5. **Test the Connection**
+   - Click **Test** button
+   - You should receive a test notification in Telegram
+
+6. **Save** settings
+
+#### Notification Examples
+
+**Request Received (Admin):**
+```
+[Overseerr] New Request
+The Matrix (1999) - Movie
+Requested by: John
+Quality: 1080p
+Status: Pending approval
+```
+
+**Request Auto-Approved (Admin):**
+```
+[Overseerr] Request Auto-Approved
+Inception (2010) - Movie
+Requested by: Sarah
+Sent to Radarr for download
+```
+
+**Media Available (User):**
+```
+[Overseerr] Media Available
+The Matrix (1999) is now available!
+Watch it now on Plex
+```
+
+**Download Failed (Admin):**
+```
+[Overseerr] Media Failed
+Breaking Bad - Season 1
+Requested by: Mike
+Error: Download client returned error
+```
+
+#### User-Specific Notifications
+
+Each Overseerr user can add their own Telegram Chat ID:
+
+1. User logs into Overseerr
+2. Goes to **User Settings → Notifications**
+3. Adds their Telegram Chat ID
+4. They receive notifications for their own requests:
+   - Request approved
+   - Content available
+   - Request denied
+
+**Pro Tip**: Send this guide to your Plex users so they can set up their own Telegram notifications!
+
+#### What You Should Enable
+
+**Essential (Admins)**:
+- ✅ Media Requested (know what people want)
+- ✅ Media Failed (catch download issues)
+- ✅ Media Auto-Approved (track what's being downloaded)
+
+**Optional (Admins)**:
+- Media Approved (only if manually approving)
+- Media Declined (only if manually declining)
+
+**Essential (Users)**:
+- Users should enable all notification types for their requests
+
 ## User Quotas
 
 Limit how much users can request:

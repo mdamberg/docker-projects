@@ -44,6 +44,7 @@ Key configuration elements:
 Stored in `.env` file (gitignored):
 - `TZ`: America/Chicago
 - `SETTINGS_ENCRYPTION_KEY`: Encrypts the Duplicati settings database
+- `HEALTHCHECKS_URL`: Healthchecks.io ping URL for dead man's switch monitoring
 
 ### Startup/Shutdown
 
@@ -116,6 +117,46 @@ send-http-message=Backup completed: %OPERATIONNAME% - %PARSEDRESULT%
 run-script-after=C:\scripts\backup-notification.ps1
 run-script-after-arguments=--status=%PARSEDRESULT% --backup=%backup-name%
 ```
+
+### Healthchecks.io Integration (Dead Man's Switch)
+
+The backup system includes healthchecks.io integration for dead man's switch monitoring - it alerts you if backups STOP running.
+
+**How It Works:**
+- After each successful backup, the system pings a healthchecks.io URL
+- If healthchecks.io doesn't receive a ping within the expected timeframe, it sends an alert
+- Failed backups don't ping, triggering an alert
+- Provides an additional layer of monitoring beyond ntfy notifications
+
+**Configuration:**
+
+1. **Environment Variable**: Set in `.env` file:
+   ```
+   HEALTHCHECKS_URL=https://hc-ping.com/your-check-id-here
+   ```
+
+2. **Healthcheck Script**: Located at `duplicati/config/ping-healthchecks.sh`
+   - Automatically runs after backups complete
+   - Only pings on successful backups
+   - Configured via Duplicati's `run-script-after` option
+
+3. **Duplicati Integration**: In backup job options:
+   ```
+   run-script-after=/config/ping-healthchecks.sh
+   run-script-timeout=60s
+   ```
+
+**Testing:**
+```bash
+# Test the healthcheck script
+docker exec duplicati bash -c "DUPLICATI__PARSED_RESULT=Success bash /config/ping-healthchecks.sh"
+
+# Verify environment variable is set
+docker exec duplicati bash -c "echo \$HEALTHCHECKS_URL"
+```
+
+**Setup Instructions:**
+See `docker-projects/backups/SETUP_GUIDE.md` for detailed healthchecks.io setup steps.
 
 ## Monitoring
 

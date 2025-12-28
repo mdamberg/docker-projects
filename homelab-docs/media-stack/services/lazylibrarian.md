@@ -49,14 +49,14 @@ LazyLibrarian is an automated book and audiobook collection manager, similar to 
 
 **Workflow**:
 ```
-Add author/book ’ LazyLibrarian ’ Searches Prowlarr ’ Finds release
-                                                           “
+Add author/book ï¿½ LazyLibrarian ï¿½ Searches Prowlarr ï¿½ Finds release
+                                                           ï¿½
                                            Sends to qBittorrent to download
-                                                           “
+                                                           ï¿½
                                             Download completes
-                                                           “
+                                                           ï¿½
                                   LazyLibrarian organizes into C:\media\books
-                                                           “
+                                                           ï¿½
                                      Audiobookshelf or ebook reader picks it up
 ```
 
@@ -109,18 +109,18 @@ lazylibrarian:
 
 **Book won't download?**
 - Check if Prowlarr has working book indexers
-- Verify qBittorrent connection (Settings ’ Downloaders)
-- Check search providers (Settings ’ Search Providers)
-- Look at LazyLibrarian logs (Config ’ Logs)
+- Verify qBittorrent connection (Settings ï¿½ Downloaders)
+- Check search providers (Settings ï¿½ Search Providers)
+- Look at LazyLibrarian logs (Config ï¿½ Logs)
 
 **Download completed but LazyLibrarian didn't import?**
 - Verify `/downloads` path matches qBittorrent's path
 - Check file permissions (PUID/PGID)
 - Look for processing errors in logs
-- Try manual processing (Books ’ Process Folder)
+- Try manual processing (Books ï¿½ Process Folder)
 
 **Book imported but wrong format?**
-- Configure preferred formats (Settings ’ Processing ’ Preferred ebook/audiobook type)
+- Configure preferred formats (Settings ï¿½ Processing ï¿½ Preferred ebook/audiobook type)
 - LazyLibrarian tries to get format you prefer (EPUB, MOBI, M4B, etc.)
 
 **Searches return no results?**
@@ -142,32 +142,32 @@ lazylibrarian:
 - Set timezone and basic settings
 
 ### 2. Connect to Prowlarr
-- Config ’ Indexers ’ Add Prowlarr
-- **OR** add from Prowlarr side (Settings ’ Apps ’ Add ’ LazyLibrarian)
+- Config ï¿½ Indexers ï¿½ Add Prowlarr
+- **OR** add from Prowlarr side (Settings ï¿½ Apps ï¿½ Add ï¿½ LazyLibrarian)
   - URL: `http://lazylibrarian:5299`
-  - API Key: Found in LazyLibrarian ’ Config ’ Interface
+  - API Key: Found in LazyLibrarian ï¿½ Config ï¿½ Interface
 
 ### 3. Add Download Client (qBittorrent)
-- Config ’ Downloaders ’ Add qBittorrent
+- Config ï¿½ Downloaders ï¿½ Add qBittorrent
 - Host: `gluetun` (or `localhost`)
 - Port: `8080`
 - Category: `books` (optional but helpful)
 - Test connection
 
 ### 4. Configure Search Providers
-- Config ’ Search Providers
+- Config ï¿½ Search Providers
 - Add GoodReads API key (optional, for metadata)
 - Add GoogleBooks API key (optional, for metadata)
 - Configure preferred ebook/audiobook format
 
 ### 5. Set Processing Options
-- Config ’ Processing
+- Config ï¿½ Processing
 - **Ebook Type**: EPUB, MOBI, AZW3 (choose your preferred format)
 - **Audiobook Type**: M4B, MP3 (M4B recommended for audiobooks)
 - **Destination**: `/books` (already configured via volume mount)
 
 ### 6. Add Your First Author
-- Authors ’ Add Author
+- Authors ï¿½ Add Author
 - Search for author name
 - Select author
 - Choose which books to monitor
@@ -246,7 +246,7 @@ C:\media\books\
         Book 2 - Chamber of Secrets.epub
 ```
 
-Configure this in Settings ’ Processing ’ Folder Format
+Configure this in Settings ï¿½ Processing ï¿½ Folder Format
 
 ## Metadata and Covers
 
@@ -273,6 +273,88 @@ Sources:
 
 **Notifications**: Configure Discord, Telegram, etc. for new book alerts
 
+## Telegram Notifications
+
+Get notifications when new books or audiobooks are downloaded.
+
+### Prerequisites
+- Complete the [Telegram Bot Setup](../notifications/telegram-setup.md) first
+- You'll need your **Bot Token** and **Chat ID**
+
+### Configuration Steps
+
+1. **Open LazyLibrarian** at `http://localhost:5299`
+
+2. **Go to Config â†’ Notifications**
+
+3. **Find the Telegram section** and enable it
+
+4. **Configure Telegram**:
+   - **Use Telegram**: âœ… Enable
+   - **Telegram Token**: `8410328014:AAF4MnHVHr-EoJwno7uB4x9weC22HtJI9LU`
+   - **Telegram ChatID**: `8320862964`
+
+5. **Choose Notification Events**:
+   - âœ… **On Book Snatch** - When LazyLibrarian grabs a book
+   - âœ… **On Book Download** - When book download completes
+   - âœ… **On Magazine Snatch** - When magazine is grabbed (if using)
+   - âœ… **On Magazine Download** - When magazine download completes (if using)
+
+6. **Test the Connection**:
+   - Click the **Test Telegram** button
+   - You should receive a test notification in Telegram
+
+7. **Save** the configuration
+
+### Notification Examples
+
+**Book Downloaded:**
+```
+[LazyLibrarian] Book Downloaded
+The Martian by Andy Weir
+Format: EPUB
+Size: 2.3 MB
+```
+
+**Book Snatched:**
+```
+[LazyLibrarian] Book Grabbed
+Project Hail Mary by Andy Weir
+Release: Project.Hail.Mary.EPUB
+Provider: MyAnonamouse
+```
+
+**Audiobook Downloaded:**
+```
+[LazyLibrarian] AudioBook Downloaded
+Dune by Frank Herbert
+Format: M4B
+Size: 487 MB
+Narrator: Scott Brick
+```
+
+### What You Should Enable
+
+**Essential Notifications:**
+- âœ… On Book Download (know when books finish)
+- âœ… On Book Snatch (know what's downloading)
+
+**Optional:**
+- On Magazine notifications (only if you use magazines)
+
+### Troubleshooting
+
+**Not receiving notifications?**
+- Verify bot token and chat ID are correct
+- Make sure you started a conversation with your bot (send `/start`)
+- Check LazyLibrarian logs for Telegram errors
+- Test the connection again
+
+**Books downloading but no notification?**
+- Make sure "On Book Download" is enabled
+- Check that the download actually completed successfully
+- Verify the book was imported to your library
+
 ## Book Indexers for Prowlarr
 
 Popular book indexers to add in Prowlarr:
@@ -293,13 +375,13 @@ Popular book indexers to add in Prowlarr:
 ## Common Workflows
 
 **Following an Author**:
-1. Authors ’ Add Author
+1. Authors ï¿½ Add Author
 2. Select author
 3. Monitor all future books
 4. LazyLibrarian auto-downloads new releases
 
 **One-Time Book Request**:
-1. Books ’ Add Book
+1. Books ï¿½ Add Book
 2. Search for specific title
 3. Add and search
 4. LazyLibrarian finds and downloads

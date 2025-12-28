@@ -254,9 +254,138 @@ C:\media\tv\
 
 **Custom Formats**: Prefer specific release groups, codecs (e.g., x265 for space savings)
 
-**Notifications**: Get alerts when episodes download or air
+**Notifications**: Get alerts via Telegram when episodes are grabbed, downloaded, imported, or failed
 
 **Anime Support**: Special naming and parsing for anime series
+
+## Telegram Notifications
+
+Get reliable, instant notifications for all TV show-related events in Telegram.
+
+### Prerequisites
+- Complete the [Telegram Bot Setup](../notifications/telegram-setup.md) first
+- You'll need your **Bot Token** and **Chat ID**
+
+### Configuration Steps
+
+1. **Open Sonarr** at `http://localhost:8989`
+
+2. **Go to Settings → Connect**
+   - Click the **+** button
+   - Select **Telegram**
+
+3. **Configure Telegram Connection**:
+   - **Name**: `Telegram` (or any name you want)
+   - **Bot Token**: `8410328014:AAF4MnHVHr-EoJwno7uB4x9weC22HtJI9LU`
+   - **Chat ID**: `8320862964`
+   - **Send Silently**: `No` (you want sound/vibration for notifications)
+
+4. **Choose Notification Triggers** (enable these):
+
+   ✅ **On Grab** - Notifies when Sonarr grabs an episode release from an indexer
+   - Message: "Episode grabbed: Breaking Bad - S01E01 - Pilot"
+
+   ✅ **On Import** - Notifies when episode is successfully downloaded and imported
+   - Message: "Episode downloaded: Breaking Bad - S01E01 - 2.3 GB"
+
+   ✅ **On Upgrade** - Notifies when episode is upgraded to better quality
+   - Message: "Episode upgraded: Breaking Bad - S01E01 - 720p → 1080p"
+
+   ✅ **On Rename** - Notifies when Sonarr renames files (optional)
+
+   ✅ **On Series Add** - Notifies when a new series is added to Sonarr (optional)
+
+   ✅ **On Series Delete** - Notifies when a series is removed
+
+   ✅ **On Episode File Delete** - Notifies when episode file is deleted
+
+   ✅ **On Health Issue** - Critical! Notifies about problems
+   - Examples: "Indexer unavailable", "Download client error", "Disk space low"
+
+   ✅ **On Health Restored** - Notifies when issues are resolved
+
+   ✅ **On Application Update** - Notifies when Sonarr updates (optional)
+
+   ⚠️ **On Download Failure** - This is handled by "On Import Complete" when it fails
+
+5. **Test the Connection**
+   - Click **Test** button
+   - You should receive a test notification in Telegram
+   - If it fails, verify your bot token and chat ID
+
+6. **Save** the connection
+
+### Notification Examples
+
+**Episode Grabbed:**
+```
+[Episode Grabbed] Breaking Bad - S01E01 - Pilot
+Quality: WEBDL-1080p
+Release: Breaking.Bad.S01E01.1080p.WEB-DL.x264-GROUP
+Indexer: EZTV
+```
+
+**Episode Downloaded:**
+```
+[Episode Downloaded] Breaking Bad - S01E01 - Pilot
+Quality: WEBDL-1080p
+Size: 2.3 GB
+Time: 15 minutes
+```
+
+**Download Failed:**
+```
+[Download Warning] The Office - S02E05
+Download client reported an error
+Release: The.Office.S02E05.1080p.WEB-DL
+Error: Indexer returned 404 - file not found
+```
+
+**Health Issue:**
+```
+[Health Check Failure]
+Issue: qBittorrent is unavailable
+Time: 2025-12-27 20:00
+```
+
+**Series Added:**
+```
+[Series Added] The Mandalorian (2019)
+Monitoring: Future episodes only
+Quality Profile: HD-1080p
+```
+
+### Troubleshooting Notifications
+
+**Not receiving notifications?**
+- Verify bot token and chat ID are correct
+- Make sure you started a conversation with your bot (send `/start`)
+- Check Sonarr → System → Logs for Telegram errors
+- Test the connection again
+
+**Receiving too many notifications?**
+- Disable optional triggers (On Rename, On Series Add, On Application Update)
+- Use Telegram's mute feature during sleep hours
+- Consider using "Future Episodes" monitoring to reduce noise
+
+**Notifications are delayed?**
+- Telegram is usually instant - check your internet connection
+- Verify Sonarr isn't rate-limited (System → Logs)
+- Check if bot is blocked or restricted
+
+### What You Should Monitor
+
+**Essential Notifications** (keep these enabled):
+- ✅ On Import (know when episodes finish downloading)
+- ✅ On Health Issue (catch problems early)
+- ✅ On Grab (know what's downloading)
+
+**Optional Notifications** (can be noisy):
+- On Series Add (if you use Overseerr, you'll get duplicate notifications)
+- On Rename (only useful if debugging)
+- On Application Update (unless you care about updates)
+
+**Pro Tip**: If you watch a lot of ongoing series (10+ shows), notifications can get frequent during peak TV nights (Sunday/Monday). Consider muting during those times or only enabling "On Import" and "On Health Issue".
 
 ## Episode Naming Tokens
 
