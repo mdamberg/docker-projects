@@ -9,3 +9,9 @@ frontend:
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+
+# Media Dashboard Sensors
+rest: !include media_dashboard_sensors.yaml
+
+# Media Dashboard Templates
+template: !include media_dashboard_templates.yaml

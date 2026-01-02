@@ -1,0 +1,226 @@
+# ============================================
+# Media Dashboard - Lovelace Configuration
+# ============================================
+
+title: Media Stack
+icon: mdi:movie-open
+path: media-stack
+
+views:
+  - title: Overview
+    path: overview
+    icon: mdi:view-dashboard
+    badges: []
+    cards:
+      # ============================================
+      # Top Row - 3 Column Layout
+      # ============================================
+      - type: horizontal-stack
+        cards:
+          # LEFT COLUMN - Media Libraries
+          - type: vertical-stack
+            cards:
+              - type: entities
+                title: Media Libraries
+                show_header_toggle: false
+                entities:
+                  - entity: sensor.radarr_movie_count
+                    name: Total Movies
+                    icon: mdi:movie-open
+                  - entity: sensor.radarr_downloaded
+                    name: Downloaded
+                    icon: mdi:movie-check
+                  - entity: sensor.radarr_missing
+                    name: Missing
+                    icon: mdi:movie-off
+                  - type: divider
+                  - entity: sensor.sonarr_series_count
+                    name: Total Series
+                    icon: mdi:television-classic
+                  - entity: sensor.sonarr_monitored
+                    name: Monitored
+                    icon: mdi:eye
+                  - entity: sensor.sonarr_missing_episodes
+                    name: Missing Episodes
+                    icon: mdi:television-off
+
+          # MIDDLE COLUMN - Health Gauges
+          - type: vertical-stack
+            cards:
+              - type: gauge
+                entity: sensor.media_stack_health
+                name: Stack Health
+                severity:
+                  green: 75
+                  yellow: 50
+                  red: 0
+                needle: true
+
+              - type: gauge
+                entity: sensor.prowlarr_success_rate
+                name: Prowlarr Success Rate
+                min: 0
+                max: 100
+                severity:
+                  green: 10
+                  yellow: 5
+                  red: 0
+                needle: true
+
+              - type: gauge
+                entity: sensor.radarr_completion_rate
+                name: Movie Collection
+                min: 0
+                max: 100
+                needle: true
+
+              - type: horizontal-stack
+                cards:
+                  - type: entity
+                    entity: sensor.total_media_items
+                    name: Total Media
+                    icon: mdi:movie-open
+
+                  - type: entity
+                    entity: sensor.qbittorrent_download_speed
+                    name: Download Speed
+                    icon: mdi:speedometer
+
+          # RIGHT COLUMN - Prowlarr Statistics
+          - type: vertical-stack
+            cards:
+              - type: entities
+                title: Prowlarr Statistics
+                show_header_toggle: false
+                entities:
+                  - entity: sensor.prowlarr_total_queries
+                    name: Total Queries
+                    icon: mdi:magnify
+                  - entity: sensor.prowlarr_total_grabs
+                    name: Total Grabs
+                    icon: mdi:download
+                  - entity: sensor.prowlarr_enabled_indexers
+                    name: Active Indexers
+                    icon: mdi:database-check
+
+              - type: history-graph
+                title: Prowlarr Activity
+                hours_to_show: 24
+                entities:
+                  - entity: sensor.prowlarr_total_queries
+                    name: Queries
+                  - entity: sensor.prowlarr_total_grabs
+                    name: Grabs
+
+      # ============================================
+      # Download Activity - Full Width Below
+      # ============================================
+      - type: vertical-stack
+        title: Download Activity
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.radarr_queue_2
+                name: Radarr Queue
+                icon: mdi:movie-open
+
+              - type: entity
+                entity: sensor.sonarr_queue_2
+                name: Sonarr Queue
+                icon: mdi:television-classic
+
+              - type: entity
+                entity: sensor.total_queue
+                name: Total Queue
+                icon: mdi:download-multiple
+
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.qbittorrent_total_torrents
+                name: Total Torrents
+                icon: mdi:download-network
+
+              - type: entity
+                entity: sensor.qbittorrent_downloading
+                name: Downloading
+                icon: mdi:arrow-down-bold
+
+              - type: entity
+                entity: sensor.qbittorrent_seeding
+                name: Seeding
+                icon: mdi:arrow-up-bold
+
+          - type: history-graph
+            title: Transfer Rates (24h)
+            hours_to_show: 24
+            entities:
+              - entity: sensor.qbittorrent_download_speed
+                name: Download
+              - entity: sensor.qbittorrent_upload_speed
+                name: Upload
+
+  # ============================================
+  # Detailed Stats View
+  # ============================================
+  - title: Detailed Stats
+    path: detailed
+    icon: mdi:chart-line
+    badges: []
+    cards:
+      - type: entities
+        title: Prowlarr Indexer Performance
+        entities:
+          - entity: sensor.prowlarr_indexer_count
+            name: Total Indexers
+          - entity: sensor.prowlarr_enabled_indexers
+            name: Enabled
+          - entity: sensor.prowlarr_total_queries
+            name: Lifetime Queries
+          - entity: sensor.prowlarr_total_grabs
+            name: Lifetime Grabs
+          - entity: sensor.prowlarr_success_rate
+            name: Success Rate
+
+      - type: history-graph
+        title: Prowlarr Activity (7 days)
+        hours_to_show: 168
+        entities:
+          - entity: sensor.prowlarr_total_queries
+          - entity: sensor.prowlarr_total_grabs
+
+      - type: history-graph
+        title: Library Growth (7 days)
+        hours_to_show: 168
+        entities:
+          - entity: sensor.radarr_movie_count
+            name: Movies
+          - entity: sensor.sonarr_series_count
+            name: Series
+
+      - type: history-graph
+        title: Download Queue (7 days)
+        hours_to_show: 168
+        entities:
+          - entity: sensor.radarr_queue_2
+          - entity: sensor.sonarr_queue_2
+
+  # ============================================
+  # Container Status View
+  # ============================================
+  - title: Containers
+    path: containers
+    icon: mdi:docker
+    badges: []
+    cards:
+      - type: markdown
+        content: |
+          ## Container Status
+
+          Configure Docker or Portainer integration to monitor container health.
+
+          **To enable:**
+          1. Settings > Devices & Services > Add Integration
+          2. Search for "Portainer" or use Docker socket monitoring
+          3. This view will auto-populate with container status cards

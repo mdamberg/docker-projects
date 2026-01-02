@@ -1,0 +1,100 @@
+# ============================================
+# Media Dashboard Template Sensors
+# ============================================
+# Add to configuration.yaml: template: !include media_dashboard_templates.yaml
+
+- sensor:
+    # Prowlarr Success Rate
+    - name: "Prowlarr Success Rate"
+      unique_id: prowlarr_success_rate
+      unit_of_measurement: "%"
+      state: >
+        {% set queries = states('sensor.prowlarr_total_queries') | float(0) %}
+        {% set grabs = states('sensor.prowlarr_total_grabs') | float(0) %}
+        {% if queries > 0 %}
+          {{ ((grabs / queries) * 100) | round(2) }}
+        {% else %}
+          0
+        {% endif %}
+      icon: mdi:percent
+      attributes:
+        queries: "{{ states('sensor.prowlarr_total_queries') }}"
+        grabs: "{{ states('sensor.prowlarr_total_grabs') }}"
+
+    # Total Media Library Count
+    - name: "Total Media Items"
+      unique_id: total_media_items
+      state: >
+        {{ states('sensor.radarr_movie_count') | int(0) + states('sensor.sonarr_series_count') | int(0) }}
+      unit_of_measurement: "items"
+      icon: mdi:movie-open
+      attributes:
+        movies: "{{ states('sensor.radarr_movie_count') }}"
+        series: "{{ states('sensor.sonarr_series_count') }}"
+
+    # Total Downloads in Queue
+    - name: "Total Queue"
+      unique_id: total_download_queue
+      state: >
+        {{ states('sensor.radarr_queue') | int(0) + states('sensor.sonarr_queue') | int(0) }}
+      unit_of_measurement: "downloads"
+      icon: mdi:download-multiple
+      attributes:
+        radarr: "{{ states('sensor.radarr_queue') }}"
+        sonarr: "{{ states('sensor.sonarr_queue') }}"
+
+    # Radarr Collection Completion
+    - name: "Radarr Completion Rate"
+      unique_id: radarr_completion_rate
+      unit_of_measurement: "%"
+      state: >
+        {% set total = states('sensor.radarr_movie_count') | int(0) %}
+        {% set downloaded = states('sensor.radarr_downloaded') | int(0) %}
+        {% if total > 0 %}
+          {{ ((downloaded / total) * 100) | round(1) }}
+        {% else %}
+          0
+        {% endif %}
+      icon: mdi:percent
+      attributes:
+        total: "{{ states('sensor.radarr_movie_count') }}"
+        downloaded: "{{ states('sensor.radarr_downloaded') }}"
+        missing: "{{ states('sensor.radarr_missing') }}"
+
+    # Media Stack Health
+    - name: "Media Stack Health"
+      unique_id: media_stack_health
+      state: >
+        {% set services = [
+          'sensor.prowlarr_indexer_count',
+          'sensor.radarr_movie_count',
+          'sensor.sonarr_series_count',
+          'sensor.qbittorrent_total_torrents'
+        ] %}
+        {% set available = services | select('has_value') | list | length %}
+        {% set total = services | length %}
+        {% if total > 0 %}
+          {{ ((available / total) * 100) | round(0) | int }}
+        {% else %}
+          0
+        {% endif %}
+      unit_of_measurement: "%"
+      icon: >
+        {% set health = this.state | int(0) %}
+        {% if health >= 75 %}
+          mdi:check-circle
+        {% elif health >= 50 %}
+          mdi:alert-circle
+        {% else %}
+          mdi:close-circle
+        {% endif %}
+      attributes:
+        status: >
+          {% set health = this.state | int(0) %}
+          {% if health >= 75 %}
+            Healthy
+          {% elif health >= 50 %}
+            Degraded
+          {% else %}
+            Critical
+          {% endif %}

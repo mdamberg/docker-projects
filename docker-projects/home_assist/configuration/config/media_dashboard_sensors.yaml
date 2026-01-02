@@ -1,0 +1,179 @@
+# ============================================
+# Media Dashboard Sensors Configuration
+# ============================================
+# This file creates read-only sensors that pull stats from your media services
+# Add to configuration.yaml: rest: !include media_dashboard_sensors.yaml
+
+# ============================================
+# Prowlarr Statistics
+# ============================================
+- resource: http://host.docker.internal:9696/api/v1/indexer
+  headers:
+    X-Api-Key: "YOUR_PROWLARR_API_KEY_HERE"
+  scan_interval: 60
+  sensor:
+    - name: "Prowlarr Indexer Count"
+      value_template: "{{ value_json | length }}"
+      unit_of_measurement: "indexers"
+      icon: mdi:database-search
+
+    - name: "Prowlarr Enabled Indexers"
+      value_template: "{{ value_json | selectattr('enable', 'equalto', true) | list | length }}"
+      unit_of_measurement: "indexers"
+      icon: mdi:database-check
+
+- resource: http://host.docker.internal:9696/api/v1/indexerstats
+  headers:
+    X-Api-Key: 4b01f5ebd9f940719e5fc927fc5282c7
+  scan_interval: 300
+  sensor:
+    - name: "Prowlarr Total Queries"
+      value_template: >
+        {% set total = namespace(count=0) %}
+        {% for indexer in value_json.indexers %}
+          {% set total.count = total.count + indexer.numberOfQueries %}
+        {% endfor %}
+        {{ total.count }}
+      unit_of_measurement: "queries"
+      icon: mdi:magnify
+
+    - name: "Prowlarr Total Grabs"
+      value_template: >
+        {% set total = namespace(count=0) %}
+        {% for indexer in value_json.indexers %}
+          {% set total.count = total.count + indexer.numberOfGrabs %}
+        {% endfor %}
+        {{ total.count }}
+      unit_of_measurement: "grabs"
+      icon: mdi:download
+
+    - name: "Prowlarr Indexer Stats"
+      value_template: "{{ value_json.indexers | length }}"
+      json_attributes:
+        - indexers
+
+# ============================================
+# Radarr Statistics
+# ============================================
+- resource: http://host.docker.internal:7878/api/v3/movie
+  headers:
+    X-Api-Key: 4c45340702c4488abee858fa4633639e
+  scan_interval: 300
+  sensor:
+    - name: "Radarr Movie Count"
+      value_template: "{{ value_json | length }}"
+      unit_of_measurement: "movies"
+      icon: mdi:movie-open
+
+    - name: "Radarr Downloaded"
+      value_template: "{{ value_json | selectattr('hasFile', 'equalto', true) | list | length }}"
+      unit_of_measurement: "movies"
+      icon: mdi:movie-check
+
+    - name: "Radarr Missing"
+      value_template: "{{ value_json | selectattr('hasFile', 'equalto', false) | list | length }}"
+      unit_of_measurement: "movies"
+      icon: mdi:movie-off
+
+- resource: http://host.docker.internal:7878/api/v3/queue
+  headers:
+    X-Api-Key: 4c45340702c4488abee858fa4633639e
+  scan_interval: 60
+  sensor:
+    - name: "Radarr Queue"
+      value_template: "{{ value_json.totalRecords }}"
+      unit_of_measurement: "downloads"
+      icon: mdi:download-circle
+      json_attributes:
+        - records
+
+# ============================================
+# Sonarr Statistics
+# ============================================
+- resource: http://host.docker.internal:8989/api/v3/series
+  headers:
+    X-Api-Key: 6e88db56c704442b9eb1d3f65e5f8d79
+  scan_interval: 300
+  sensor:
+    - name: "Sonarr Series Count"
+      value_template: "{{ value_json | length }}"
+      unit_of_measurement: "series"
+      icon: mdi:television-classic
+
+    - name: "Sonarr Monitored"
+      value_template: "{{ value_json | selectattr('monitored', 'equalto', true) | list | length }}"
+      unit_of_measurement: "series"
+      icon: mdi:eye
+
+- resource: http://host.docker.internal:8989/api/v3/queue
+  headers:
+    X-Api-Key: 6e88db56c704442b9eb1d3f65e5f8d79
+  scan_interval: 60
+  sensor:
+    - name: "Sonarr Queue"
+      value_template: "{{ value_json.totalRecords }}"
+      unit_of_measurement: "downloads"
+      icon: mdi:download-circle
+
+- resource: http://host.docker.internal:8989/api/v3/wanted/missing
+  headers:
+    X-Api-Key: 6e88db56c704442b9eb1d3f65e5f8d79
+  scan_interval: 300
+  sensor:
+    - name: "Sonarr Missing Episodes"
+      value_template: "{{ value_json.totalRecords }}"
+      unit_of_measurement: "episodes"
+      icon: mdi:television-off
+
+# ============================================
+# qBittorrent Statistics
+# ============================================
+- resource: http://host.docker.internal:8080/api/v2/torrents/info
+  scan_interval: 30
+  sensor:
+    - name: "qBittorrent Total Torrents"
+      value_template: "{{ value_json | length }}"
+      unit_of_measurement: "torrents"
+      icon: mdi:download-network
+
+    - name: "qBittorrent Downloading"
+      value_template: "{{ value_json | selectattr('state', 'equalto', 'downloading') | list | length }}"
+      unit_of_measurement: "torrents"
+      icon: mdi:arrow-down-bold
+
+    - name: "qBittorrent Seeding"
+      value_template: "{{ value_json | selectattr('state', 'equalto', 'uploading') | list | length }}"
+      unit_of_measurement: "torrents"
+      icon: mdi:arrow-up-bold
+
+    - name: "qBittorrent Download Speed"
+      value_template: >
+        {% set speed = value_json | map(attribute='dlspeed') | sum %}
+        {{ (speed / 1048576) | round(2) }}
+      unit_of_measurement: "MB/s"
+      icon: mdi:speedometer
+
+    - name: "qBittorrent Upload Speed"
+      value_template: >
+        {% set speed = value_json | map(attribute='upspeed') | sum %}
+        {{ (speed / 1048576) | round(2) }}
+      unit_of_measurement: "MB/s"
+      icon: mdi:speedometer
+
+# ============================================
+# Overseerr Statistics (Optional)
+# ============================================
+- resource: http://host.docker.internal:5055/api/v1/request
+  headers:
+    X-Api-Key: MTc2MTg1MzQ1NzI2N2QwOTFhN2E2LWY3MmUtNDFjMi1iN2RkLTIwNGUyNWVjMmE4ZQ==
+  scan_interval: 300
+  sensor:
+    - name: "Overseerr Requests"
+      value_template: "{{ value_json.results | length }}"
+      unit_of_measurement: "requests"
+      icon: mdi:table-arrow-right
+
+    - name: "Overseerr Pending"
+      value_template: "{{ value_json.results | selectattr('status', 'equalto', 1) | list | length }}"
+      unit_of_measurement: "requests"
+      icon: mdi:clock-outline
