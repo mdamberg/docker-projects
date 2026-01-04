@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-TODO_FILE = '/data/todos.json'  # where we save todos (/data is volume mount point)
+TODO_FILE = '/app/data/todos.json'  # where we save todos (/app/data is volume mount point)
 
 
 #  Check to see if JSON file exists, if yes -> read and convert JSON to python list, if not -> empty string
