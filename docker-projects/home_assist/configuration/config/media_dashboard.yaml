@@ -13,107 +13,131 @@ views:
     badges: []
     cards:
       # ============================================
-      # Top Row - 3 Column Layout
+      # Top Row - Key Metrics
       # ============================================
       - type: horizontal-stack
         cards:
-          # LEFT COLUMN - Media Libraries
-          - type: vertical-stack
-            cards:
-              - type: entities
-                title: Media Libraries
-                show_header_toggle: false
-                entities:
-                  - entity: sensor.radarr_movie_count
-                    name: Total Movies
-                    icon: mdi:movie-open
-                  - entity: sensor.radarr_downloaded
-                    name: Downloaded
-                    icon: mdi:movie-check
-                  - entity: sensor.radarr_missing
-                    name: Missing
-                    icon: mdi:movie-off
-                  - type: divider
-                  - entity: sensor.sonarr_series_count
-                    name: Total Series
-                    icon: mdi:television-classic
-                  - entity: sensor.sonarr_monitored
-                    name: Monitored
-                    icon: mdi:eye
-                  - entity: sensor.sonarr_missing_episodes
-                    name: Missing Episodes
-                    icon: mdi:television-off
+          - type: gauge
+            entity: sensor.media_stack_health
+            name: Stack Health
+            severity:
+              green: 75
+              yellow: 50
+              red: 0
+            needle: true
 
-          # MIDDLE COLUMN - Health Gauges
-          - type: vertical-stack
-            cards:
-              - type: gauge
-                entity: sensor.media_stack_health
-                name: Stack Health
-                severity:
-                  green: 75
-                  yellow: 50
-                  red: 0
-                needle: true
+          - type: gauge
+            entity: sensor.prowlarr_success_rate
+            name: Prowlarr Success Rate
+            min: 0
+            max: 100
+            severity:
+              green: 10
+              yellow: 5
+              red: 0
+            needle: true
 
-              - type: gauge
-                entity: sensor.prowlarr_success_rate
-                name: Prowlarr Success Rate
-                min: 0
-                max: 100
-                severity:
-                  green: 10
-                  yellow: 5
-                  red: 0
-                needle: true
-
-              - type: gauge
-                entity: sensor.radarr_completion_rate
-                name: Movie Collection
-                min: 0
-                max: 100
-                needle: true
-
-              - type: horizontal-stack
-                cards:
-                  - type: entity
-                    entity: sensor.total_media_items
-                    name: Total Media
-                    icon: mdi:movie-open
-
-                  - type: entity
-                    entity: sensor.qbittorrent_download_speed
-                    name: Download Speed
-                    icon: mdi:speedometer
-
-          # RIGHT COLUMN - Prowlarr Statistics
-          - type: vertical-stack
-            cards:
-              - type: entities
-                title: Prowlarr Statistics
-                show_header_toggle: false
-                entities:
-                  - entity: sensor.prowlarr_total_queries
-                    name: Total Queries
-                    icon: mdi:magnify
-                  - entity: sensor.prowlarr_total_grabs
-                    name: Total Grabs
-                    icon: mdi:download
-                  - entity: sensor.prowlarr_enabled_indexers
-                    name: Active Indexers
-                    icon: mdi:database-check
-
-              - type: history-graph
-                title: Prowlarr Activity
-                hours_to_show: 24
-                entities:
-                  - entity: sensor.prowlarr_total_queries
-                    name: Queries
-                  - entity: sensor.prowlarr_total_grabs
-                    name: Grabs
+          - type: gauge
+            entity: sensor.radarr_completion_rate
+            name: Movie Collection
+            min: 0
+            max: 100
+            needle: true
 
       # ============================================
-      # Download Activity - Full Width Below
+      # Statistics Row
+      # ============================================
+      - type: horizontal-stack
+        cards:
+          - type: entity
+            entity: sensor.total_media_items
+            name: Total Media
+            icon: mdi:movie-open
+
+          - type: entity
+            entity: sensor.total_queue
+            name: Active Downloads
+            icon: mdi:download-multiple
+
+          - type: entity
+            entity: sensor.qbittorrent_download_speed
+            name: Download Speed
+            icon: mdi:speedometer
+
+      # ============================================
+      # Prowlarr Statistics Section
+      # ============================================
+      - type: vertical-stack
+        title: Prowlarr Statistics
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.prowlarr_total_queries
+                name: Total Queries
+                icon: mdi:magnify
+
+              - type: entity
+                entity: sensor.prowlarr_total_grabs
+                name: Total Grabs
+                icon: mdi:download
+
+              - type: entity
+                entity: sensor.prowlarr_enabled_indexers
+                name: Active Indexers
+                icon: mdi:database-check
+
+          - type: history-graph
+            title: Prowlarr Activity
+            hours_to_show: 24
+            entities:
+              - entity: sensor.prowlarr_total_queries
+                name: Queries
+              - entity: sensor.prowlarr_total_grabs
+                name: Grabs
+
+      # ============================================
+      # Library Statistics
+      # ============================================
+      - type: vertical-stack
+        title: Media Libraries
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.radarr_movie_count
+                name: Total Movies
+                icon: mdi:movie-open
+
+              - type: entity
+                entity: sensor.radarr_downloaded
+                name: Downloaded
+                icon: mdi:movie-check
+
+              - type: entity
+                entity: sensor.radarr_missing
+                name: Missing
+                icon: mdi:movie-off
+
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.sonarr_series_count
+                name: Total Series
+                icon: mdi:television-classic
+
+              - type: entity
+                entity: sensor.sonarr_monitored
+                name: Monitored
+                icon: mdi:eye
+
+              - type: entity
+                entity: sensor.sonarr_missing_episodes
+                name: Missing Episodes
+                icon: mdi:television-off
+
+      # ============================================
+      # Download Queue Section
       # ============================================
       - type: vertical-stack
         title: Download Activity
@@ -129,11 +153,6 @@ views:
                 entity: sensor.sonarr_queue_2
                 name: Sonarr Queue
                 icon: mdi:television-classic
-
-              - type: entity
-                entity: sensor.total_queue
-                name: Total Queue
-                icon: mdi:download-multiple
 
           - type: horizontal-stack
             cards:
