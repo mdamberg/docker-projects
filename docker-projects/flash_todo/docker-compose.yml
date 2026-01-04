@@ -6,6 +6,7 @@ services:
       - "5070:5000"          # host:container
     volumes:
       - ./data:/app/data
+      - ./templates:/app/templates
     environment:
       - FLASK_APP=app.py
     networks:
