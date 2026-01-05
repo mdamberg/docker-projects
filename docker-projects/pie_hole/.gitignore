@@ -7,6 +7,8 @@ etc-pihole/config_backups/
 etc-pihole/cli_pw
 etc-pihole/*.log
 etc-pihole/tls.pem
+etc-pihole/tls.crt
+etc-pihole/tls_ca.crt
 
 # Exclude other sensitive data
 etc-pihole/setupVars.conf

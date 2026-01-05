@@ -1,49 +1,7 @@
+# This file previously contained homevpn and privacyvpn configurations.
+# Both have been removed and replaced by wg-easy (located in docker-projects/wireguard/).
+#
+# The vpn directory can be deleted if no longer needed.
+# The only remaining VPN service needed is gluetun in the media_stack.
+
 services:
-  homevpn:
-    image: lscr.io/linuxserver/wireguard:latest
-    container_name: homevpn
-    cap_add: [ NET_ADMIN, SYS_MODULE ]
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - SERVERURL=damattberghome.duckdns.org   # your DuckDNS name
-      - SERVERPORT=51820
-      - PEERS=3
-      - PEERDNS=1.1.1.1
-      - ALLOWEDIPS=192.168.1.0/24              # or 0.0.0.0/0,::/0 for full tunnel via home
-    volumes:
-      - ./homevpn:/config                      # simpler path; optional
-    ports:
-      - "51820:51820/udp"
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
-    restart: unless-stopped
-
-  privacyvpn:
-    image: qmcgaw/gluetun:latest
-    container_name: privacyvpn
-    cap_add: [ NET_ADMIN ]
-    environment:
-      - TZ=America/Chicago
-      - VPN_SERVICE_PROVIDER=protonvpn         
-      - VPN_TYPE=wireguard
-      # === Use your provider's creds/keys (NOT homevpn keys) ===
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
-      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
-      - SERVER_COUNTRIES=United States
-      # (optional) HTTP proxy
-      - HTTPPROXY=on
-      - HTTPPROXY_LOG=on
-    ports:
-      - "8888:8888/tcp"
-    volumes:
-      - ./privacyvpn:/gluetun
-    restart: unless-stopped
-
-  whatsmyip:
-    image: curlimages/curl:8.10.1
-    container_name: whatsmyip
-    depends_on: [ privacyvpn ]
-    network_mode: "service:privacyvpn"
-    command: ["sh","-c","sleep 4 && echo 'IP via VPN:' && curl -s https://ifconfig.io && echo"]

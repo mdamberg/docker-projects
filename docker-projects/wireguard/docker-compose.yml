@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  wireguard:
+    image: ghcr.io/wg-easy/wg-easy:latest
+    container_name: wireguard
+    environment:
+      # Required: Bcrypt hashed password (password is: WireGuardAdmin2024!)
+      - PASSWORD_HASH=$$2a$$12$$WjOAt27j1vft0qusjKguW.SpFw7aBSKD6REGEXUQH2EUe9r9WXvba
+      # Your public IP or DDNS hostname
+      - WG_HOST=damattberghome.duckdns.org
+      # Default WireGuard port
+      - WG_PORT=51820
+      # Number of days until clients expire (0 = never)
+      - WG_PERSISTENT_KEEPALIVE=25
+      # WireGuard network subnet
+      - WG_DEFAULT_ADDRESS=10.8.0.x
+      # DNS server for VPN clients (use your router or 1.1.1.1)
+      - WG_DEFAULT_DNS=10.0.0.1
+      # Allowed IPs - what clients can access
+      # 10.0.0.0/24 = your home network only
+      # 0.0.0.0/0 = route ALL traffic through VPN
+      - WG_ALLOWED_IPS=10.0.0.0/24
+    volumes:
+      - ./config:/etc/wireguard
+    ports:
+      - "51820:51820/udp"  # WireGuard VPN port
+      - "51821:51821/tcp"  # Web UI port
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1

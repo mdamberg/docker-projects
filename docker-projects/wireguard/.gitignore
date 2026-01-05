@@ -1,0 +1,11 @@
+# WireGuard configuration files (contain private keys - DO NOT COMMIT!)
+*.conf
+config/
+client_configs/
+
+# Client downloads
+*.png
+*.zip
+
+# System files
+nul
