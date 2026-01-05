@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "task": "Finish remote access",
+    "done": false,
+    "id": 0
+  },
+  {
+    "task": "Replace watchtower with WUD",
+    "done": false,
+    "id": 1
+  },
+  {
+    "task": "Add api and point to flask to do",
+    "done": false,
+    "id": 2
+  },
+  {
+    "task": "Figure out how to sync scriptable files to cloud \u2014> edit on desktop ",
+    "done": false,
+    "id": 3
+  },
+  {
+    "task": "Look into water usage monitor",
+    "done": false,
+    "id": 4
+  }
+]
