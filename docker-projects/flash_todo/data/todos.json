@@ -23,5 +23,30 @@
     "task": "Look into water usage monitor",
     "done": false,
     "id": 4
+  },
+  {
+    "task": "Add and look up ssh for media stack and homeassistant",
+    "done": false,
+    "id": 5
+  },
+  {
+    "task": "Create and automate HomeAssistant backups ",
+    "done": false,
+    "id": 6
+  },
+  {
+    "task": "Set up remote access for SERVER PC",
+    "done": false,
+    "id": 7
+  },
+  {
+    "task": "Add vscode extension for homeassistant",
+    "done": false,
+    "id": 8
+  },
+  {
+    "task": "Add watchman HomeAssistant HACS",
+    "done": false,
+    "id": 9
   }
 ]
