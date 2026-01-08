@@ -2,85 +2,61 @@
   {
     "task": "Finish remote access",
     "done": true,
-    "id": 0,
-    "category": "Remote Access",
-    "priority": "Medium"
+    "id": 0
   },
   {
     "task": "Replace watchtower with WUD",
     "done": false,
-    "id": 1,
-    "category": "Docker",
-    "priority": "Medium"
+    "id": 1
   },
   {
     "task": "Add api and point to flask to do",
-    "done": true,
-    "id": 2,
-    "category": "Scripting",
-    "priority": "Medium"
+    "done": false,
+    "id": 2
   },
   {
     "task": "Figure out how to sync scriptable files to cloud \u2014> edit on desktop ",
     "done": false,
-    "id": 3,
-    "category": "Scripting",
-    "priority": "Medium"
+    "id": 3
   },
   {
     "task": "Look into water usage monitor",
     "done": false,
-    "id": 4,
-    "category": "Monitoring",
-    "priority": "Medium"
+    "id": 4
   },
   {
     "task": "Add and look up ssh for media stack and homeassistant",
     "done": false,
-    "id": 5,
-    "category": "HomeAssistant",
-    "priority": "Medium"
+    "id": 5
   },
   {
     "task": "Create and automate HomeAssistant backups ",
     "done": false,
-    "id": 6,
-    "category": "HomeAssistant",
-    "priority": "Medium"
+    "id": 6
   },
   {
     "task": "Set up remote access for SERVER PC",
     "done": false,
-    "id": 7,
-    "category": "Remote Access",
-    "priority": "Medium"
+    "id": 7
   },
   {
     "task": "Add vscode extension for homeassistant",
     "done": false,
-    "id": 8,
-    "category": "HomeAssistant",
-    "priority": "Medium"
+    "id": 8
   },
   {
     "task": "Add watchman HomeAssistant HACS",
     "done": false,
-    "id": 9,
-    "category": "HomeAssistant",
-    "priority": "Medium"
+    "id": 9
   },
   {
     "task": "Add phipam for port tracking  ",
     "done": false,
-    "id": 10,
-    "category": "Monitoring",
-    "priority": "Medium"
+    "id": 10
   },
   {
     "task": "Add \u2018tags\u2019 or folders to to do list. Make more dynamic",
-    "done": true,
-    "id": 11,
-    "category": "General",
-    "priority": "Medium"
+    "done": false,
+    "id": 11
   }
 ]
