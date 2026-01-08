@@ -1,7 +1,7 @@
 [
   {
     "task": "Finish remote access",
-    "done": false,
+    "done": true,
     "id": 0
   },
   {
@@ -48,5 +48,15 @@
     "task": "Add watchman HomeAssistant HACS",
     "done": false,
     "id": 9
+  },
+  {
+    "task": "Add phipam for port tracking  ",
+    "done": false,
+    "id": 10
+  },
+  {
+    "task": "Add \u2018tags\u2019 or folders to to do list. Make more dynamic",
+    "done": false,
+    "id": 11
   }
 ]
