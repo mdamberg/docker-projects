@@ -11,7 +11,7 @@
     "done": false,
     "id": 1,
     "category": "Docker",
-    "priority": "Medium"
+    "priority": "Low"
   },
   {
     "task": "Add api and point to flask to do",
@@ -25,14 +25,14 @@
     "done": false,
     "id": 3,
     "category": "Scripting",
-    "priority": "Medium"
+    "priority": "Low"
   },
   {
     "task": "Look into water usage monitor",
     "done": false,
     "id": 4,
     "category": "Monitoring",
-    "priority": "Medium"
+    "priority": "Low"
   },
   {
     "task": "Add and look up ssh for media stack and homeassistant",
@@ -57,24 +57,24 @@
   },
   {
     "task": "Add vscode extension for homeassistant",
-    "done": false,
+    "done": true,
     "id": 8,
     "category": "HomeAssistant",
     "priority": "Medium"
   },
   {
     "task": "Add watchman HomeAssistant HACS",
-    "done": false,
+    "done": true,
     "id": 9,
     "category": "HomeAssistant",
     "priority": "Medium"
   },
   {
     "task": "Add phipam for port tracking  ",
-    "done": false,
+    "done": true,
     "id": 10,
     "category": "Monitoring",
-    "priority": "Medium"
+    "priority": "High"
   },
   {
     "task": "Add \u2018tags\u2019 or folders to to do list. Make more dynamic",
@@ -82,5 +82,19 @@
     "id": 11,
     "category": "General",
     "priority": "Medium"
+  },
+  {
+    "task": "Set up n8n - set up weekly and monthly report on power usage ",
+    "done": false,
+    "id": 12,
+    "category": "Docker",
+    "priority": "Medium"
+  },
+  {
+    "task": "Create self hosted DB - pull in power consumption records at regular intervals (hourly?))",
+    "done": false,
+    "id": 13,
+    "category": "General",
+    "priority": "High"
   }
 ]
