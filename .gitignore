@@ -29,3 +29,30 @@ docker-projects/backups/duplicati/config/control_dir_v2/
 **/data/*.sqlite
 **/.env.local
 **/secrets/
+
+# MySQL/MariaDB - Exclude ALL database data directories
+**/mysql_data/
+**/mysql_data_old_backup/
+**/mariadb_data/
+*.ibd
+*.frm
+*.MAD
+*.MAI
+*.CSM
+*.CSV
+ib_logfile*
+ibdata*
+undo00*
+ibtmp*
+*.pid
+*.sock
+
+# n8n - Exclude runtime data
+docker-projects/n8n/n8n_data/database.sqlite*
+docker-projects/n8n/n8n_data/*.log
+docker-projects/n8n/n8n_data/crash.journal
+
+# phpipam - Keep only config files
+docker-projects/phpipam/.env
+!docker-projects/phpipam/docker-compose.yml
+!docker-projects/phpipam/README.md
