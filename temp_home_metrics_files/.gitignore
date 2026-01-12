@@ -1,0 +1,30 @@
+# Environment files with secrets
+.env
+
+# PostgreSQL data directory
+postgres/data/
+**/pgdata/
+
+# Metabase data
+metabase/data/
+
+# Database dumps
+*.sql.gz
+*.dump
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
