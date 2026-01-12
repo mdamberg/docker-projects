@@ -1,0 +1,136 @@
+{
+  "name": "Home Assistant Power Consumption Report",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Daily 8 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://homeassistant:8123/api/states",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI1NTUzNzU2ODc4NGU0ZDBlYjUxOThkMDE4ZDk2MmE3NCIsImlhdCI6MTc2ODAyMDAyMCwiZXhwIjoyMDgzMzgwMDIwfQ.Kj40JyRm33ql-Im4v9tFgH7TGuZeNIvV8Y3nCKO2Rg0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-all-states",
+      "name": "Get All HA States",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter for power and energy sensors\nconst allStates = $input.first().json;\n\nconst powerSensors = allStates.filter(entity => {\n  const id = entity.entity_id.toLowerCase();\n  const state = entity.state;\n  \n  // Check if it's a power or energy sensor with valid data\n  const isPowerOrEnergy = id.includes('power') || id.includes('energy') || id.includes('watt');\n  const hasValidState = state !== 'unavailable' && state !== 'unknown' && !isNaN(parseFloat(state));\n  \n  return isPowerOrEnergy && hasValidState;\n});\n\nreturn powerSensors.map(sensor => ({ json: sensor }));"
+      },
+      "id": "filter-power-sensors",
+      "name": "Filter Power Sensors",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet totalPowerW = 0;\nlet totalEnergyKwh = 0;\nconst deviceReports = [];\n\nitems.forEach(item => {\n  const entity = item.json;\n  const entityId = entity.entity_id;\n  const state = parseFloat(entity.state);\n  const unit = (entity.attributes.unit_of_measurement || '').toLowerCase();\n  const friendlyName = entity.attributes.friendly_name || entityId;\n\n  let reportEntry = {\n    device: friendlyName,\n    entityId: entityId,\n    value: state,\n    unit: entity.attributes.unit_of_measurement || 'unknown'\n  };\n\n  // Categorize by unit type\n  if (unit.includes('w') && !unit.includes('kwh')) {\n    // Power in Watts\n    totalPowerW += state;\n    reportEntry.type = 'Power';\n    reportEntry.normalizedValue = state;\n    reportEntry.normalizedUnit = 'W';\n  } else if (unit.includes('kwh')) {\n    // Energy in kWh\n    totalEnergyKwh += state;\n    reportEntry.type = 'Energy';\n    reportEntry.normalizedValue = state;\n    reportEntry.normalizedUnit = 'kWh';\n  } else if (unit.includes('kw') && !unit.includes('kwh')) {\n    // Power in kW, convert to W\n    totalPowerW += state * 1000;\n    reportEntry.type = 'Power';\n    reportEntry.normalizedValue = state * 1000;\n    reportEntry.normalizedUnit = 'W';\n  } else if (unit.includes('wh') && !unit.includes('kwh')) {\n    // Energy in Wh, convert to kWh\n    totalEnergyKwh += state / 1000;\n    reportEntry.type = 'Energy';\n    reportEntry.normalizedValue = state / 1000;\n    reportEntry.normalizedUnit = 'kWh';\n  } else {\n    reportEntry.type = 'Unknown';\n    reportEntry.normalizedValue = state;\n    reportEntry.normalizedUnit = unit;\n  }\n\n  deviceReports.push(reportEntry);\n});\n\n// Sort devices by normalized value (highest first)\ndeviceReports.sort((a, b) => b.normalizedValue - a.normalizedValue);\n\n// Generate text report\nfunction generateTextReport() {\n  let text = '╔════════════════════════════════════════════╗\\n';\n  text += '║   HOME POWER CONSUMPTION REPORT           ║\\n';\n  text += '╚════════════════════════════════════════════╝\\n\\n';\n  \n  const now = new Date();\n  text += `📅 Generated: ${now.toLocaleString('en-US', { \n    weekday: 'short', \n    year: 'numeric', \n    month: 'short', \n    day: 'numeric', \n    hour: '2-digit', \n    minute: '2-digit' \n  })}\\n\\n`;\n  \n  text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n';\n  text += '📊 SUMMARY\\n';\n  text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n\\n';\n  \n  text += `⚡ Total Current Power: ${totalPowerW.toFixed(2)} W`;\n  if (totalPowerW > 1000) {\n    text += ` (${(totalPowerW/1000).toFixed(2)} kW)`;\n  }\n  text += '\\n';\n  \n  text += `🔋 Total Energy: ${totalEnergyKwh.toFixed(2)} kWh\\n`;\n  text += `📱 Devices Tracked: ${deviceReports.length}\\n\\n`;\n  \n  // Calculate estimated cost (assuming $0.12 per kWh - adjust as needed)\n  const estimatedCost = totalEnergyKwh * 0.12;\n  text += `💰 Estimated Cost: $${estimatedCost.toFixed(2)}\\n\\n`;\n  \n  text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n';\n  text += '📋 BY DEVICE\\n';\n  text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n\\n';\n  \n  // Group by type\n  const powerDevices = deviceReports.filter(d => d.type === 'Power');\n  const energyDevices = deviceReports.filter(d => d.type === 'Energy');\n  \n  if (powerDevices.length > 0) {\n    text += '⚡ CURRENT POWER USAGE:\\n\\n';\n    powerDevices.forEach(device => {\n      text += `  • ${device.device}\\n`;\n      text += `    ${device.normalizedValue.toFixed(2)} ${device.normalizedUnit}\\n`;\n    });\n    text += '\\n';\n  }\n  \n  if (energyDevices.length > 0) {\n    text += '🔋 CUMULATIVE ENERGY:\\n\\n';\n    energyDevices.forEach(device => {\n      text += `  • ${device.device}\\n`;\n      text += `    ${device.normalizedValue.toFixed(2)} ${device.normalizedUnit}\\n`;\n    });\n    text += '\\n';\n  }\n  \n  text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n';\n  text += '🏆 TOP 5 POWER CONSUMERS\\n';\n  text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n\\n';\n  \n  const top5 = powerDevices.slice(0, 5);\n  top5.forEach((device, index) => {\n    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '  ';\n    text += `${medal} ${index + 1}. ${device.device}: ${device.normalizedValue.toFixed(2)} W\\n`;\n  });\n  \n  text += '\\n';\n  text += '═══════════════════════════════════════════════\\n';\n  text += 'Generated by n8n + Home Assistant Integration\\n';\n  text += '═══════════════════════════════════════════════\\n';\n  \n  return text;\n}\n\n// Generate HTML report\nfunction generateHtmlReport() {\n  let html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background: #f5f5f5; }\n    .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }\n    h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }\n    .summary { background: #ecf0f1; padding: 20px; border-radius: 5px; margin: 20px 0; }\n    .summary-item { display: inline-block; margin: 10px 20px 10px 0; }\n    .summary-label { font-weight: bold; color: #7f8c8d; }\n    .summary-value { font-size: 1.3em; color: #2c3e50; }\n    .device-list { margin: 20px 0; }\n    .device-item { padding: 10px; margin: 5px 0; background: #f8f9fa; border-left: 4px solid #3498db; }\n    .device-name { font-weight: bold; color: #2c3e50; }\n    .device-value { color: #27ae60; float: right; font-size: 1.1em; }\n    .section-title { color: #34495e; margin-top: 30px; border-bottom: 2px solid #ecf0f1; padding-bottom: 5px; }\n    .top-consumer { background: #fff3cd; border-left-color: #ffc107; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <h1>⚡ Home Power Consumption Report</h1>\n    <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>\n    \n    <div class=\"summary\">\n      <div class=\"summary-item\">\n        <div class=\"summary-label\">Total Current Power</div>\n        <div class=\"summary-value\">${totalPowerW.toFixed(2)} W</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-label\">Total Energy</div>\n        <div class=\"summary-value\">${totalEnergyKwh.toFixed(2)} kWh</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-label\">Devices Tracked</div>\n        <div class=\"summary-value\">${deviceReports.length}</div>\n      </div>\n      <div class=\"summary-item\">\n        <div class=\"summary-label\">Estimated Cost</div>\n        <div class=\"summary-value\">$${(totalEnergyKwh * 0.12).toFixed(2)}</div>\n      </div>\n    </div>\n    \n    <h2 class=\"section-title\">📊 Current Power Usage</h2>\n    <div class=\"device-list\">\n  `;\n  \n  const powerDevices = deviceReports.filter(d => d.type === 'Power');\n  powerDevices.forEach((device, index) => {\n    const cssClass = index < 3 ? 'device-item top-consumer' : 'device-item';\n    html += `\n      <div class=\"${cssClass}\">\n        <span class=\"device-name\">${device.device}</span>\n        <span class=\"device-value\">${device.normalizedValue.toFixed(2)} ${device.normalizedUnit}</span>\n      </div>\n    `;\n  });\n  \n  html += `\n    </div>\n    \n    <h2 class=\"section-title\">🔋 Cumulative Energy</h2>\n    <div class=\"device-list\">\n  `;\n  \n  const energyDevices = deviceReports.filter(d => d.type === 'Energy');\n  energyDevices.forEach(device => {\n    html += `\n      <div class=\"device-item\">\n        <span class=\"device-name\">${device.device}</span>\n        <span class=\"device-value\">${device.normalizedValue.toFixed(2)} ${device.normalizedUnit}</span>\n      </div>\n    `;\n  });\n  \n  html += `\n    </div>\n  </div>\n</body>\n</html>\n  `;\n  \n  return html;\n}\n\nconst report = {\n  timestamp: new Date().toISOString(),\n  summary: {\n    totalCurrentPowerW: parseFloat(totalPowerW.toFixed(2)),\n    totalCurrentPowerKw: parseFloat((totalPowerW / 1000).toFixed(2)),\n    totalEnergyKwh: parseFloat(totalEnergyKwh.toFixed(2)),\n    deviceCount: deviceReports.length,\n    estimatedCostUsd: parseFloat((totalEnergyKwh * 0.12).toFixed(2))\n  },\n  devices: deviceReports,\n  reportText: generateTextReport(),\n  reportHtml: generateHtmlReport()\n};\n\nreturn [{ json: report }];"
+      },
+      "id": "generate-report",
+      "name": "Generate Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        850,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Power Consumption Report Workflow\n\nThis workflow:\n1. Runs daily at 8 AM (schedule can be modified)\n2. Fetches all states from Home Assistant\n3. Filters for power/energy sensors\n4. Generates a comprehensive report\n5. Outputs text and HTML formats\n\n### To customize:\n- **Schedule**: Edit the cron expression in the first node\n- **HA URL**: If not using Docker networking, change to your HA IP\n- **Cost calculation**: Edit the $0.12/kWh rate in the Generate Report node\n- **Add notifications**: Connect an Email, Telegram, or webhook node after the report generation\n\n### Next steps:\n1. Test by clicking \"Execute Workflow\"\n2. Add your preferred notification method\n3. Save and activate the workflow",
+        "height": 400,
+        "width": 350
+      },
+      "id": "note",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        460
+      ]
+    }
+  ],
+  "connections": {
+    "Schedule Daily 8 AM": {
+      "main": [
+        [
+          {
+            "node": "Get All HA States",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All HA States": {
+      "main": [
+        [
+          {
+            "node": "Filter Power Sensors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Power Sensors": {
+      "main": [
+        [
+          {
+            "node": "Generate Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2026-01-09T00:00:00.000Z",
+  "versionId": "1"
+}
