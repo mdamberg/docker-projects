@@ -1,0 +1,52 @@
+services:
+  phpipam-db:
+    image: mariadb:latest
+    container_name: phpipam-db
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=phpipamadmin
+      - MYSQL_USER=phpipam
+      - MYSQL_PASSWORD=phpipampassword
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - phpipam_net
+
+  phpipam-web:
+    image: phpipam/phpipam-www:latest
+    container_name: phpipam-web
+    restart: unless-stopped
+    environment:
+      - TZ=America/New_York
+      - IPAM_DATABASE_HOST=phpipam-db
+      - IPAM_DATABASE_USER=phpipam
+      - IPAM_DATABASE_PASS=phpipampassword
+      - IPAM_DATABASE_NAME=phpipam
+      - IPAM_DATABASE_PORT=3306
+    ports:
+      - "8081:80"
+    depends_on:
+      - phpipam-db
+    networks:
+      - phpipam_net
+
+  phpipam-cron:
+    image: phpipam/phpipam-cron:latest
+    container_name: phpipam-cron
+    restart: unless-stopped
+    environment:
+      - TZ=America/New_York
+      - IPAM_DATABASE_HOST=phpipam-db
+      - IPAM_DATABASE_USER=phpipam
+      - IPAM_DATABASE_PASS=phpipampassword
+      - IPAM_DATABASE_NAME=phpipam
+      - IPAM_DATABASE_PORT=3306
+      - SCAN_INTERVAL=1h
+    depends_on:
+      - phpipam-db
+    networks:
+      - phpipam_net
+
+networks:
+  phpipam_net:
+    driver: bridge
