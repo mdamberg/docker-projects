@@ -36,6 +36,17 @@
 * VPN Stack
   * [Overview](vpn-stack/README.md)
   * [Gluetun + OpenVPN Notes](vpn-stack/gluetun-openvpn-notes.md)
+* Analytics Stack
+  * [Overview](analytics-stack/README.md)
+  * [Compose](analytics-stack/compose.md)
+  * Services
+    * [PostgreSQL](analytics-stack/services/postgresql.md)
+    * [Metabase](analytics-stack/services/metabase.md)
+    * [n8n Workflows](analytics-stack/services/n8n.md)
+  * Ops
+    * [Setup](analytics-stack/ops/setup.md)
+    * [Backup & Restore](analytics-stack/ops/backup-restore.md)
+    * [Troubleshooting](analytics-stack/ops/troubleshooting.md)
 * Utilities
   * [Ansible Notes](utilities/ansible-notes.md)
   * [Scripts](utilities/scripts.md)
