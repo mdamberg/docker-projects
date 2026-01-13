@@ -1,0 +1,175 @@
+# Sources yml file:
+  # - Tells dbt about your raw datra tables that exist in your data warehouse but ARENT created via dbt. These are populated by n8n and other workflows.
+  # Purose:
+    # - Documentation: Describe what raw tables exists and what they contain
+    # - Lineage: Allow dbt to build lineage graphs that include these source tables
+    # - Testing: Can add tests to raw data  (freshness, nulls, uniqueness, etc)
+    # - Refererence: Allow models to reference these source tables using the source() function
+
+version: 2`
+
+sources:
+  - name: home_metrics_raw   
+  - database: home_metrics
+    schema: public # Where raw tables live
+    description: "Raw data tables for Home Metrics project"
+
+    tables: 
+      - name: raw_media_activity
+        description: "Raw table containing media activity data (Prowlarr, Sonarr, Radarr)"
+        columns:
+          - name: id
+            description: "Unique identifier for each media activity record"
+            tests: 
+              - not_null
+              - unique
+          - name: source
+            description: "Source of the media activity (e.g., Prowlarr, Sonarr, Radarr)"
+            tests:
+              - not_null
+          - name: user_name
+            description: "Username"
+          - name: media_type
+            description: "Type of media activity (e.g., download, delete)"
+          - name: title
+            description: "Title of the media item"
+          - name: series_title
+            description: "Title of the series (if applicable)"
+          - name: duration
+            description: "Duration of the media activity in seconds"
+          - name: watched_at
+            description: "Timestamp when the media was watched"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted into the raw table"
+          - metadata:
+            description: "Additional metadata related to the media activity in JSON format"
+
+# ------------------------- #
+#    Raw Media Library      #   
+# ------------------------- #
+
+      - name: raw_media_library
+        description: "Raw table containing media library"
+        columns:
+          - name: id
+            description: "Unique identifier for each media library record"
+            tests: 
+              - not_null
+              - unique
+          - name: source
+            description: "Source of the media library (e.g., Sonarr, Radarr)"
+          - name: media_type
+            description: "Type of media (e.g., movie, tv show)"
+          - name: library_title
+            description: "Title of the media item in the library"
+          - name: library_name
+            description: "Name of the library"
+          - name: item_count
+            description: "Number of items in the library"
+          - name: total_size_bytes
+            description: "Total size of the library in bytes"
+          - name: recorded_at
+            description: "Timestamp when the library record was recorded"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted into the raw table"
+          - name: metadata
+            description: "Additional metadata related to the media library in JSON format"
+
+# ------------------------- # 
+#       raw_pi_hole         #
+# ------------------------- #
+
+      - name: raw_pihole_metrics
+        description: "Raw table containing Pi-Hole metrics data"
+        columns:
+          - name: id
+            description: "Unique identifier for each Pi-Hole metrics record"
+            tests: 
+              - not_null
+              - unique
+          - name: pihole_instance
+            description: "Identifier for the Pi-Hole instance"
+          - name: total_queries
+            description: "Total number of DNS queries processed"
+          - name: blocked_queries
+            description: "Number of DNS queries that were blocked"
+          - name: percent_blocked
+            description: "Percentage of DNS queries that were blocked"
+          - name: unique_domains
+            description: "Number of unique domains queried"
+          - name: unique_clients
+            description: "Number of unique clients making DNS queries"
+          - name: recorded_at
+            description: "Timestamp when the metrics were recorded"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted into the raw table"
+          - name: top_blocked_domains
+            description: "Top blocked domains in JSON format"
+          - name: top_queries
+            description: "Top queried domains in JSON format"
+      
+# ------------------------- #
+#  raw_power_consumption    #
+# ------------------------- #
+
+      - name: raw_power_consumption
+        description: "Raw table containing power consumption data for House"
+        columns:
+          - name: id
+            description: "Unique identifier for each power consumption record"
+            tests: 
+              - not_null
+              - unique
+          - name: entity_id
+            description: "Identifier for the power consumption entity"
+            tests:
+              - not_null
+          - name: friendly_name
+            description: "Friendly name of the power consumption entity"
+          - name: state
+            description: "Power consumption state value"
+          - name: unit_of_measurement
+            description: "Unit of measurement for the power consumption state"
+          - name: device_class
+            description: "Device class of the power consumption entity"
+          - name: recorded_at
+            description: "Timestamp when the power consumption was recorded"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted into the raw table"
+          - name: attributes
+            description: "Additional attributes related to the power consumption entity in JSON format"
+
+
+# ------------------------- #
+#     raw_system_health     #
+# ------------------------- #
+
+      - name: raw_system_health
+        description: "Raw table containing system health metrics"
+        columns:
+          - name: id
+            description: "Unique identifier for each system health record"
+            tests: 
+              - not_null
+              - unique
+          - name: hostname
+            description: "Hostname of the system"
+          - name: cpu_percent
+            description: "CPU usage percentage"
+          - name: memory_percent
+            description: "Memory usage percentage"
+          - name: disk_percent
+            description: "Disk usage percentage"
+          - name: temperature
+            description: "System temperature in Celsius"
+          - name: recorded_at
+            description: "Timestamp when the system health metrics were recorded"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted into the raw table"
+          - name: metadata
+            description: "Additional metadata related to the system health in JSON format"
+
+
+# ------------------------- #
+#  End of YML source File   # 
+# ------------------------- #
