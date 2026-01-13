@@ -4,6 +4,8 @@ models:
   - name: stg_power_consumption
     description: "Staging table for power consumption data"
     columns:
+      - name: month_recorded_at
+        description: "Month when the power consumption data was recorded"
       - name: id
         description: "Unique identifier for each power consumption record"
         tests: 
@@ -11,7 +13,7 @@ models:
           - not_null
       - name: entity_id
         description: "Identifier for the power consumption entity (e.g., device or meter)"
-      - name: friendly_name
+      - name: power_entity
         description: "Friendly name of the power consumption entity"
       - name: device_state
         description: "Current state or reading of the power consumption entity"
@@ -19,9 +21,9 @@ models:
         description: "Unit of measurement for the power consumption reading"
       - name: device_class
         description: "Device class of the power consumption entity" 
-      - name: recorded_at
+      - name: recorded_at_ts
         description: "Timestamp when the power consumption data was recorded"
-      - name: inserted_at
+      - name: inserted_at_ts
         description: "Timestamp when the record was inserted into the raw table"
       - name: attributes
         description: "Additional attributes related to the power consumption entity in JSON format"
