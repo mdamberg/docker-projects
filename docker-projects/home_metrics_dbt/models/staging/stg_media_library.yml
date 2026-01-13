@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_media_library
+    description: "Staging table for media library data"
+    columns:
+      - name: id
+        description: "Unique identifier for each media library record"
+        tests: 
+          - unique
+          - not_null
+      - name: source
+        description: "Source of the media library (e.g., Sonarr, Radarr)"
+      - name: media_type
+        description: "Type of media (e.g., movie, tv show)"
+      - name: library_name
+        description: "Name of the library"
+      - name: item_count
+        description: "Number of items in the library"
+      - name: total_size_bytes
+        description: "Total size of the library in bytes"
+      - name: recorded_at
+        description: "Timestamp when the library record was recorded"
+      - name: inserted_at
+        description: "Timestamp when the record was inserted into the raw table"
+      - name: metadata
+        description: "Additional metadata related to the media library in JSON format"

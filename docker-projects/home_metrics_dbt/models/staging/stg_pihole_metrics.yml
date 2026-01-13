@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_pihole_metrics
+    description: "Staging table for Pi-hole metrics data"
+    columns:
+      - name: id
+        description: "Unique identifier for each Pi-hole metrics record"
+        tests: 
+          - unique
+          - not_null
+      - name: source
+        description: "Source of the Pi-hole metrics data"
+      - name: total_queries
+        description: "Total number of DNS queries"
+      - name: blocked_queries
+        description: "Number of blocked DNS queries"
+      - name: percent_blocked
+        description: "Percentage of DNS queries that were blocked"
+      - name: clients_count
+        description: "Number of unique clients making DNS requests"
+      - name: domains_count
+        description: "Number of unique domains queried"
+      - name: recorded_at
+        description: "Timestamp when the Pi-hole metrics were recorded"
+      - name: inserted_at
+        description: "Timestamp when the record was inserted into the raw table"
+      - name: metadata
+        description: "Additional metadata related to the Pi-hole metrics in JSON format"

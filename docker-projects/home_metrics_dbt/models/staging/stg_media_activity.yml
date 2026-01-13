@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_media_activity
+    description: "Staging table for media activity data"
+    columns:
+      - name: id
+        description: "Unique identifier for each media activity record"
+        tests: 
+          - unique
+          - not_null
+      - name: source
+        description: "Source of the media activity (e.g., Prowlarr, Sonarr, Radarr)"
+      - name: user_name
+        description: "Username"
+      - name: media_type
+        description: "Type of media activity (e.g., download, delete)"
+      - name: title
+        description: "Title of the media item"
+      - name: series_title
+        description: "Title of the series (if applicable)"
+      - name: duration_seconds
+        description: "Duration of the media activity in seconds"
+      - name: watched_at
+        description: "Timestamp when the media was watched"
+      - name: inserted_at
+        description: "Timestamp when the record was inserted into the raw table"
+      - name: metadata
+        description: "Additional metadata related to the media activity in JSON format"

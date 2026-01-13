@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: stg_system_health
+    description: "Staging table for system health metrics with standardized column names"
+    columns:
+      - name: id
+        description: "Unique identifier for each system health record"
+        tests:
+          - unique
+          - not_null
+      - name: hostname
+        description: "Hostname of the system being monitored"
+        tests:
+          - not_null
+      - name: cpu_usage_percent
+        description: "CPU usage percentage (0-100)"
+      - name: memory_usage_percent
+        description: "Memory usage percentage (0-100)"
+      - name: disk_usage_percent
+        description: "Disk usage percentage (0-100)"
+      - name: temperature_c
+        description: "System temperature in Celsius"
+      - name: recorded_at
+        description: "Timestamp when the system health metrics were recorded"
+        tests:
+          - not_null
+      - name: inserted_at
+        description: "Timestamp when the record was inserted into the raw table"
+      - name: metadata
+        description: "Additional metadata in JSON format"
