@@ -24,7 +24,7 @@
         state as device_state,
         unit_of_measurement,
         device_class,
-        recorded_at_ts,
-        inserted_at_ts,
+        recorded_at,
+        inserted_at,
         attributes
     from raw_power_consumption
