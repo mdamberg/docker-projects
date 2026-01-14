@@ -21,9 +21,13 @@ models:
         description: "Unit of measurement for the power consumption reading"
       - name: device_class
         description: "Device class of the power consumption entity" 
-      - name: recorded_at
+      - name: recorded_date
+        description: "Date when the power consumption data was recorded" 
+      - name: recorded_dateime
         description: "Timestamp when the power consumption data was recorded"
-      - name: inserted_at
+      - name: inserted_date
+        description: "Date when the record was inserted into the raw table"
+      - name: inserted_datetime
         description: "Timestamp when the record was inserted into the raw table"
       - name: attributes
         description: "Additional attributes related to the power consumption entity in JSON format"

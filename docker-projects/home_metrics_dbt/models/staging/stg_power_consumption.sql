@@ -13,7 +13,9 @@
     )
 
     select
-        date_trunc('month', recorded_at) as month_recorded_at,
+        date_trunc('month', recorded_at)::date as month_recorded_at,
+        recorded_at::date as recorded_date,
+        recorded_at as recorded_datetime,
         id,
         entity_id,
         case
@@ -21,10 +23,10 @@
             when entity_id = 'sensor.work_and_gaming_setup_current_consumption' then 'work_and_gaming_setup'
             else null
                 end as power_entity,
-        state as device_state,
+        state::float as device_state,
         unit_of_measurement,
         device_class,
-        recorded_at,
-        inserted_at,
+        inserted_at::date as inserted_date,
+        inserted_at as inserted_datetime,
         attributes
     from raw_power_consumption
