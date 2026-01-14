@@ -4,5 +4,11 @@ phpipam/mysql_data/ib_*
 phpipam/mysql_data/ibdata*
 phpipam/mysql_data/ddl_recovery.log
 
+# n8n data files (large sqlite databases)
+n8n/n8n_data/database.sqlite
+n8n/n8n_data/database.sqlite-shm
+n8n/n8n_data/database.sqlite-wal
+n8n/n8n_data/*.log
+
 # Claude Code local settings
 .claude/settings.local.json

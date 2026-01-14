@@ -149,6 +149,22 @@ services:
     restart: unless-stopped
 
 # ----------------------
+#   Tautulli
+# ----------------------
+  tautulli:
+    image: linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:\media\config\tautulli:/config
+    ports:
+      - "8181:8181"
+    restart: unless-stopped
+
+# ----------------------
 #   Overseerr
 # ----------------------
   overseerr:
