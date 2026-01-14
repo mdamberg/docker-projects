@@ -85,14 +85,14 @@
   },
   {
     "task": "Set up n8n - set up weekly and monthly report on power usage ",
-    "done": false,
+    "done": true,
     "id": 12,
     "category": "Docker",
     "priority": "Medium"
   },
   {
     "task": "Create self hosted DB - pull in power consumption records at regular intervals (hourly?))",
-    "done": false,
+    "done": true,
     "id": 13,
     "category": "General",
     "priority": "High"

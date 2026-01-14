@@ -5,24 +5,34 @@
 
 .DESCRIPTION
     This script navigates to each infrastructure service directory and runs docker-compose up -d
-    Maintains separation of services while providing one-command startup
+    Maintains separation of services while providing one-command startup.
+    Also checks docker-users group membership and can optionally start DBeaver.
 
 .PARAMETER Services
     Optional. Specify which services to start (comma-separated). If not provided, starts all.
-    Valid values: pihole, homeassistant, mediastack, linkding, monitoring, vpn, flash, weather, all
+    Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, weather,
+                  wireguard, n8n, backups, phpipam, all
     Example: .\start-all-services.ps1 -Services "pihole,homeassistant"
+
+.PARAMETER StartDBeaver
+    Optional switch. If specified, starts DBeaver database tool after Docker services.
 
 .EXAMPLE
     .\start-all-services.ps1
     Starts all infrastructure services
 
 .EXAMPLE
-    .\start-all-services.ps1 -Services "pihole,linkace"
-    Starts only Pi-hole and LinkAce
+    .\start-all-services.ps1 -Services "pihole,phpipam"
+    Starts only Pi-hole and phpIPAM
+
+.EXAMPLE
+    .\start-all-services.ps1 -StartDBeaver
+    Starts all services and launches DBeaver
 #>
 
 param(
-    [string]$Services = "all"
+    [string]$Services = "all",
+    [switch]$StartDBeaver
 )
 
 # Get the directory where this script is located
@@ -35,9 +45,12 @@ $InfraServices = @{
     'mediastack' = 'media_stack'
     'linkding' = 'linkding'
     'monitoring' = 'monitoring'
-    'vpn' = 'vpn'
     'flash' = 'flash_todo'
     'weather' = 'weather_api_project'
+    'wireguard' = 'wireguard'
+    'n8n' = 'n8n'
+    'backups' = 'backups'
+    'phpipam' = 'phpipam'
 }
 
 # Parse which services to start
@@ -51,6 +64,25 @@ if ($Services -eq "all") {
 Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host "  Docker Infrastructure Startup Script  " -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan
+
+# Check docker-users group membership
+function Test-DockerUsersGroup {
+    try {
+        $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1]
+        $dockerUsersGroup = Get-LocalGroupMember -Group "docker-users" -ErrorAction SilentlyContinue
+        return ($dockerUsersGroup | Where-Object { $_.Name -like "*$currentUser" }) -ne $null
+    } catch {
+        return $false
+    }
+}
+
+if (-not (Test-DockerUsersGroup)) {
+    Write-Host "[WARNING] Current user is not in the 'docker-users' group!" -ForegroundColor Yellow
+    Write-Host "          This may cause authentication issues with Docker Desktop." -ForegroundColor Yellow
+    Write-Host "          To fix permanently, run as Admin:" -ForegroundColor Cyan
+    Write-Host '          Add-LocalGroupMember -Group "docker-users" -Member "$env:USERNAME"' -ForegroundColor Cyan
+    Write-Host "          Then log out and back in.`n" -ForegroundColor Cyan
+}
 
 # Check if Docker is running, start it if not
 Write-Host "[CHECK] Verifying Docker Desktop is running..." -ForegroundColor Yellow
@@ -202,6 +234,22 @@ if ($FailCount -gt 0) {
 
 Write-Host "`nAll services have restart policies set to 'unless-stopped'." -ForegroundColor Cyan
 Write-Host "They will automatically restart on system reboot once started.`n" -ForegroundColor Cyan
+
+# Start DBeaver if requested
+if ($StartDBeaver) {
+    $DBeaverPath = "$env:LOCALAPPDATA\DBeaver\dbeaver.exe"
+    if (Test-Path $DBeaverPath) {
+        Write-Host "[STARTING] DBeaver..." -ForegroundColor Yellow
+        try {
+            Start-Process -FilePath $DBeaverPath -WindowStyle Normal
+            Write-Host "[SUCCESS] DBeaver started" -ForegroundColor Green
+        } catch {
+            Write-Host "[ERROR] Failed to start DBeaver: $_" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "[WARNING] DBeaver not found at: $DBeaverPath" -ForegroundColor Yellow
+    }
+}
 
 # Return exit code based on results
 if ($FailCount -gt 0) {
