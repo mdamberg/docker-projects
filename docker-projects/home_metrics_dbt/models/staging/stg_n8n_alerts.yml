@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: stg_n8n_alerts
+    description: "Staging table for n8n alerts (workflow failures and data staleness)"
+    columns:
+      - name: id
+        description: "Unique identifier for each alert record"
+        tests:
+          - unique
+          - not_null
+      - name: alert_type
+        description: "Type of alert (workflow_failure, stale_data, no_data, threshold_breach)"
+      - name: severity
+        description: "Severity level (info, warning, error, critical)"
+      - name: alert_source
+        description: "Source of the alert (workflow name or table name)"
+      - name: title
+        description: "Short alert title"
+      - name: message
+        description: "Detailed alert message"
+      - name: triggered_at
+        description: "Timestamp when the alert was triggered"
+      - name: date_triggered
+        description: "Date when the alert was triggered"
+      - name: time_triggered
+        description: "Time when the alert was triggered"
+      - name: resolved_at
+        description: "Timestamp when the alert was resolved (NULL if still active)"
+      - name: is_active
+        description: "Boolean flag indicating if alert is still active (unresolved)"
+      - name: inserted_at
+        description: "Timestamp when the record was inserted"
+      - name: metadata
+        description: "Additional metadata in JSON format"
+      - name: execution_id
+        description: "n8n execution ID (extracted from metadata)"
+      - name: workflow_id
+        description: "Workflow ID (extracted from metadata)"
+      - name: failed_node
+        description: "Node that failed (extracted from metadata)"

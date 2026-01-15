@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: stg_n8n_workflow_runs
+    columns:
+      - name: id
+        description: "Unique identifier for each n8n workflow run record"
+        tests:
+          - unique
+          - not_null
+      - name: workflow_id
+        description: "Identifier for the n8n workflow"
+      - name: workflow_name
+        description: "Name of the n8n workflow"
+      - name: workflow_status
+        description: "Status of the workflow run (e.g., success, failed)"
+      - name: date_started
+        description: "Date when the workflow run started"
+      - name: time_started  
+        description: "Time when the workflow run started"
+      - name: date_finished
+        description: "Date when the workflow run finished"
+      - name: time_finished
+        description: "Time when the workflow run finished"
+      - name: date_inserted
+        description: "Date when the workflow run record was inserted into the raw table"
+      - name: time_of_insertion
+        description: "Time when the workflow run record was inserted into the raw table"
+      - name: metadata
+        description: "Additional metadata in JSON format"
+      - name: execution_id
+        description: "n8n execution ID (extracted from metadata)"

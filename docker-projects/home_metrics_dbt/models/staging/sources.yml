@@ -125,3 +125,49 @@ sources:
             description: "Timestamp when the record was inserted into the raw table"
           - name: metadata
             description: "Additional metadata related to the system health in JSON format"
+
+      - name: raw_n8n_alerts
+        description: "Unified alerts table for workflow failures and data staleness alerts"
+        columns:
+          - name: id
+            description: "Unique identifier for each alert record"
+          - name: alert_type
+            description: "Type of alert (workflow_failure, stale_data, no_data, threshold_breach)"
+          - name: severity
+            description: "Severity level (info, warning, error, critical)"
+          - name: source
+            description: "Source of the alert (workflow name or table name)"
+          - name: title
+            description: "Short alert title"
+          - name: message
+            description: "Detailed alert message"
+          - name: triggered_at
+            description: "Timestamp when the alert was triggered"
+          - name: resolved_at
+            description: "Timestamp when the alert was resolved (NULL if still active)"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted"
+          - name: metadata
+            description: "Additional metadata in JSON format (execution_id, error_stack, etc.)"
+
+      - name: raw_n8n_workflow_runs
+        description: "Raw table tracking n8n workflow executions"
+        columns:
+          - name: id
+            description: "Unique identifier for each workflow run"
+          - name: workflow_id
+            description: "ID of the workflow"
+          - name: workflow_name
+            description: "Name of the workflow"
+          - name: source
+            description: "Source/trigger of the workflow run"
+          - name: status
+            description: "Execution status (success, error, etc.)"
+          - name: started_at
+            description: "Timestamp when the workflow started"
+          - name: finished_at
+            description: "Timestamp when the workflow finished"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted"
+          - name: metadata
+            description: "Additional metadata in JSON format"
