@@ -13,6 +13,16 @@ models:
         description: "Hostname of the system being monitored"
         tests:
           - not_null
+      - name: recorded_date
+        description: "Date when the system health metrics were recorded"
+      - name: recorded_at_ts
+        description: "Timestamp when the system health metrics were recorded"
+        tests:
+          - not_null
+      - name: inserted_date
+        description: "Date when the record was inserted into the raw table"
+      - name: inserted_at_ts
+        description: "Timestamp when the record was inserted into the raw table"
       - name: cpu_usage_percent
         description: "CPU usage percentage (0-100)"
       - name: memory_usage_percent
@@ -21,11 +31,25 @@ models:
         description: "Disk usage percentage (0-100)"
       - name: temperature_c
         description: "System temperature in Celsius"
-      - name: recorded_at
-        description: "Timestamp when the system health metrics were recorded"
-        tests:
-          - not_null
-      - name: inserted_at
-        description: "Timestamp when the record was inserted into the raw table"
+      - name: disk_read_latency_seconds
+        description: "Disk read latency in seconds"
+      - name: disk_write_latency_seconds
+        description: "Disk write latency in seconds"
+      - name: disk_read_bytes_total
+        description: "Total number of bytes read from disk"
+      - name: disk_write_bytes_total
+        description: "Total number of bytes written to disk"
+      - name: network_received_bytes_total
+        description: "Total number of bytes received over the network"
+      - name: network_sent_bytes_total
+        description: "Total number of bytes sent over the network"
+      - name: system_processor_queue_length
+        description: "Length of the processor queue"
+      - name: os_paging_free_bytes
+        description: "Amount of free paging space in bytes"
+      - name: memory_commit_limit
+        description: "Memory commit limit in bytes"
+      - name: memory_committed_bytes
+        description: "Amount of memory committed in bytes"
       - name: metadata
         description: "Additional metadata in JSON format"
