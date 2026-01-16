@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: dim_n8n_entities
+    description: "Dimension table for n8n workflow entities"
+    columns:
+      - name: id
+        description: "Surrogate key for the dimension table"
+        tests:
+          - unique
+          - not_null
+      - name: workflow_id
+        description: "Unique identifier for the n8n workflow"
+      - name: workflow_name
+        description: "Name of the n8n workflow"

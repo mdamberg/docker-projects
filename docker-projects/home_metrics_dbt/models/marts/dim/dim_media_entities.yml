@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: dim_media_entities
+    description: "Dimension table for media entities"
+    columns:
+      - name: id
+        description: "Surrogate key for the dimension table"
+        tests:
+          - unique
+          - not_null
+      - name: source
+        description: "Source of the media entity (e.g., Sonarr, Radarr)"
+      - name: media_type
+        description: "Type of media entity (e.g., movie, show, album)"
+      - name: library_name
+        description: "Name of the media library"
