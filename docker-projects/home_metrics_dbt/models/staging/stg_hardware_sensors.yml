@@ -1,0 +1,32 @@
+
+version: 2
+
+models:
+  - name: stg_hardware_sensors
+    description: "Staging table for hardware sensor metrics"
+    columns:
+      - name: id
+        description: "Unique identifier for each hardware sensor record"
+        tests:
+          - unique
+          - not_null 
+      - name: hostname
+        description: "Hostname of the device reporting the sensor data"
+      - name: sensor_type
+        description: "Type of the sensor (e.g., temperature, fan speed)"
+      - name: sensor_name
+        description: "Name of the sensor"
+      - name: sensor_id
+        description: "Unique identifier for the sensor"
+      - name: value
+        description: "Processed numeric value of the sensor reading"
+      - name: value_min
+        description: "Minimum recorded value for the sensor"
+      - name: value_max
+        description: "Maximum recorded value for the sensor"
+      - name: unit
+        description: "Unit of measurement for the sensor value (e.g., °C, RPM)"
+      - name: hardware_name
+        description: "Name of the hardware component associated with the sensor"
+      - name: hardware_type
+

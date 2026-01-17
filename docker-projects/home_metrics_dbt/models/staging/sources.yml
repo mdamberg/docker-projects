@@ -171,3 +171,35 @@ sources:
             description: "Timestamp when the record was inserted"
           - name: metadata
             description: "Additional metadata in JSON format"
+
+      - name: raw_hardware_sensors
+        description: "Hardware sensor data from LibreHardwareMonitor (temperatures, fans, voltages, power)"
+        columns:
+          - name: id
+            description: "Unique identifier for each sensor reading"
+          - name: hostname
+            description: "Computer hostname"
+          - name: sensor_type
+            description: "Type of sensor (temperature, fan, voltage, power, load, clock)"
+          - name: sensor_name
+            description: "Name of the sensor (e.g., CPU Core #1, GPU Temperature)"
+          - name: sensor_id
+            description: "Unique sensor path identifier"
+          - name: value
+            description: "Current sensor reading"
+          - name: value_min
+            description: "Minimum observed value"
+          - name: value_max
+            description: "Maximum observed value"
+          - name: unit
+            description: "Unit of measurement (°C, RPM, V, W, %, MHz)"
+          - name: hardware_name
+            description: "Name of the hardware component"
+          - name: hardware_type
+            description: "Type of hardware (CPU, GPU, Motherboard, Storage)"
+          - name: recorded_at
+            description: "Timestamp when the reading was captured"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted"
+          - name: metadata
+            description: "Additional metadata in JSON format"
