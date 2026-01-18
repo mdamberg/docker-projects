@@ -1,0 +1,31 @@
+version: 2
+
+models: 
+  - name: dim_date
+    description: "table creating a date spine for time series analysis"
+    columns:
+      - name: date_id
+        description: "provides a unique identifier to each date"
+        tests:
+          - unique
+          - not_null
+      - name: date_day
+        description: "date formatted day"
+      - name: day_of_week
+        description: "the name of a particular day of the week"
+      - name: day_of_week_num
+        description: "the number of the day of the week 1 - 7"
+      - name: month_start_date
+        description: "the date of the start of each month"
+      - name: month_end_date
+        description: "the last day of the month"
+      - name: month_name
+        description: "the name of the month"
+      - name: month_number
+        description: "the number of the month 1 - 12"
+      - name: year_start_date
+        description: "the first day of the year"
+      - name: year_num
+        description: "four-digit year (e.g., 2025)"
+      - name: is_weekend
+        description: "flag that indicates if that particular day is a weekend"

@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: dim_hardware_entities
+    description: "Dimensions table for hardware entitied"
+    columns:
+      - name: id
+        description: "Surrogate key for the dimension table"
+        tests:
+          - unique
+          - not_null
+      - name: hostname
+        description: "Hostname of the hardware entity"  
+      - name: sensor_type
+        description: "Type of sensor associated with the hardware entity"
+      - name: sensor_name
+        description: "Name of the sensor associated with the hardware entity"
+      - name: sensor_id
+        description: "Unique identifier for the sensor associated with the hardware entity"
+      - name: hardware_name
+        description: "Name of the hardware component associated with the hardware entity"
+      - name: hardware_type
+        description: "Type of hardware component associated with the hardware entity"
