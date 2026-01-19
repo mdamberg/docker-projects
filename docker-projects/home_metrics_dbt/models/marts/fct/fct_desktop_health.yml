@@ -1,0 +1,57 @@
+version: 2
+
+models:
+  - name: fct_desktop_health
+    description: "Fact table containing desktop health metrics at 15-minute intervals, combining system health and hardware sensor data"
+    columns:
+      - name: desktop_health_sk
+        description: "Surrogate key for the fact record"
+        tests:
+          - unique
+          - not_null
+      - name: date_id
+        description: "Foreign key to dim_date"
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+      - name: system_health_id
+        description: "Source ID from system health data"
+      - name: hostname
+        description: "Friendly hostname of the desktop"
+      - name: hostname_id
+        description: "Machine hostname identifier"
+      - name: recorded_date
+        description: "Date the metrics were recorded"
+      - name: recorded_at_ts
+        description: "Timestamp when metrics were recorded"
+      - name: interval_ts
+        description: "Timestamp truncated to 15-minute interval"
+      - name: cpu_percent
+        description: "CPU utilization percentage from system health"
+      - name: cpu_core_temp
+        description: "CPU core temperature in Celsius from hardware sensors"
+      - name: cpu_clock_speed
+        description: "CPU clock speed in MHz from hardware sensors"
+      - name: cpu_load
+        description: "CPU load percentage from hardware sensors"
+      - name: memory_usage_percent
+        description: "Memory (RAM) usage percentage"
+      - name: disk_usage_percent
+        description: "Disk utilization percentage"
+      - name: disk_read_latency_seconds
+        description: "Disk read latency in seconds"
+      - name: disk_write_latency_seconds
+        description: "Disk write latency in seconds"
+      - name: disk_read_bytes_total
+        description: "Total bytes read from disk"
+      - name: disk_write_bytes_total
+        description: "Total bytes written to disk"
+      - name: gpu_clock_speed
+        description: "GPU clock speed in MHz from hardware sensors"
+      - name: gpu_usage
+        description: "GPU utilization percentage from hardware sensors"
+      - name: inserted_date
+        description: "Date the record was inserted"
+      - name: inserted_at_ts
+        description: "Timestamp when record was inserted"
