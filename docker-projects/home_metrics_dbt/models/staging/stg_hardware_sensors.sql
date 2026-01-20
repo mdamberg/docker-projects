@@ -1,3 +1,9 @@
+{{ config( 
+        materialized='view',
+        schema='staging'
+    )   }}
+
+
 with hardware_sensors as (
     select
         hostname,
@@ -5,7 +11,7 @@ with hardware_sensors as (
         sensor_name,
         value::float as sensor_value,
         recorded_at::date as recorded_date,
-        recorded_at as recorded_at_ts,
+        date_trunc('second', recorded_at) as recorded_at_ts,
         inserted_at::date as inserted_date,
         inserted_at as inserted_at_ts
     from {{ source('home_metrics_raw', 'raw_hardware_sensors') }}
@@ -15,9 +21,7 @@ hardware_pivot as (
         hostname,
         recorded_date,
         recorded_at_ts,
-
-        -- if inserted_at differs across rows for the same recorded_at,
-        -- pick the max (or min) as a representative timestamp
+        inserted_date,
         max(inserted_at_ts) as inserted_at_ts,
 
         max(case when sensor_type = 'temperature' and sensor_name = 'Core (Tctl/Tdie)' then sensor_value end) as cpu_core_temp,
@@ -30,8 +34,10 @@ hardware_pivot as (
     group by
         hostname,
         recorded_date,
-        recorded_at_ts
+        recorded_at_ts, 
+        inserted_date
+
 )
 select *
 from hardware_pivot
-order by recorded_at_ts desc;
+order by recorded_at_ts desc

@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: stg_hardware_sensors_detail
+    description: "An unpivoted, long format of raw hardware sensors which will go on to make dim_hardware_sensors"
+    columns:
+      - name: id
+        description: "A unique number assigned to each row"
+        tests:
+          - unique
+          - not_null
+      - name: hostname
+        description: "name of the machine providing the data"
+      - name: sensor_type
+        description: "the category of info being provided"
+      - name: sensor_name
+        description: "the name of the sensor from source"
+      - name: sensor_id
+        description: "id provided for each sensor"
+      - name: value
+        description: " the numerical value for that sensor_name"
+      - name: value_min
+        description: "The minimum value recorded during time window between data grabs"
+      - name: value_max
+        description: "The maximum value recorded during time window between data grabs"
+      - name: unit
+        description: "the unit of measurement for that value"
+      - name: hardware_name
+        description: "the computer/component that information is coming from"
+      - name: hardware_type
+        description: "the category of component that information is coming from"
+      - name: recorded_at
+        description: "the time and date the data was recorded"
+      - name: inserted_at
+        description: "The time and date the data was inserted"
+      - name: metadata
+        description: "an array of all the above data"
+
+     
+

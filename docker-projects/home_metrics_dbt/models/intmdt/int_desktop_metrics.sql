@@ -16,7 +16,7 @@ with system_health as (
         inserted_date,
         inserted_at_ts,
         date_trunc('hour', recorded_at_ts) +
-            (floor(extract(minute from recorded_at_ts) / 15) * interval '15 minutes') as interval_ts,
+            (floor(extract(minute from recorded_at_ts) / 15) * interval '15 minutes') as interval_ts,       -- rounds to 15 min intervals
         cpu_percent,
         memory_usage_percent,
         disk_usage_percent,
@@ -27,7 +27,7 @@ with system_health as (
     from {{ ref('stg_system_health') }}
 ),
 
-hardware_sensors as (
+hardware_sensors_raw as (
     select
         hostname,
         recorded_date,
@@ -35,17 +35,37 @@ hardware_sensors as (
         inserted_date,
         inserted_at_ts,
         date_trunc('hour', recorded_at_ts) +
-            (floor(extract(minute from recorded_at_ts) / 15) * interval '15 minutes') as interval_ts,
+            (floor(extract(minute from recorded_at_ts) / 15) * interval '15 minutes') as interval_ts,       -- rounds to 15 min intervals
         cpu_core_temp,
         cpu_clock_speed,
         cpu_load,
         gpu_clock_speed,
         gpu_usage
     from {{ ref('stg_hardware_sensors') }}
+),
+
+-- Aggregate to ensure one row per interval_ts
+hardware_sensors as (
+    select
+        {{ dbt_utils.generate_surrogate_key(['hostname', 'interval_ts']) }} as hardware_sensors_id,
+        hostname,
+        interval_ts,
+        max(recorded_date) as recorded_date,
+        max(recorded_at_ts) as recorded_at_ts,
+        max(inserted_date) as inserted_date,
+        max(inserted_at_ts) as inserted_at_ts,
+        avg(cpu_core_temp) as cpu_core_temp,
+        avg(cpu_clock_speed) as cpu_clock_speed,
+        avg(cpu_load) as cpu_load,
+        avg(gpu_clock_speed) as gpu_clock_speed,
+        avg(gpu_usage) as gpu_usage
+    from hardware_sensors_raw
+    group by hostname, interval_ts
 )
 
 select
     sh.system_health_id,
+    hs.hardware_sensors_id,
     sh.hostname,
     sh.hostname_id,
     sh.recorded_date,
