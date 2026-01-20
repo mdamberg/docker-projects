@@ -18,9 +18,12 @@
         recorded_at as recorded_datetime,
         id,
         entity_id,
+
+        -- this method is not scalable and needs to be amended in the future
         case
             when entity_id = 'sensor.basement_entertainment_center_current_consumption' then 'basement_entertainment_center'
             when entity_id = 'sensor.work_and_gaming_setup_current_consumption' then 'work_and_gaming_setup'
+             when entity_id = 'sensor.living_room_entertainment_wall_current_consumption' then 
             else null
                 end as power_entity,
         state::float as device_state,
