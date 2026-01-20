@@ -6,7 +6,7 @@
 with hardware_objects as (
 
     select
-        distinct {{ dbt_utils.generate_surrogate_key(['hostname', 'sensor_name', 'sensor_id','id']) }} as id,
+        distinct {{ dbt_utils.generate_surrogate_key(['id', 'hostname', 'sensor_name', 'sensor_id',]) }} as id,
         case when hostname = 'DESKTOP-QGA3DvB' then 'server_desktop' else hostname end as hostname,
         sensor_type,
         sensor_name,
