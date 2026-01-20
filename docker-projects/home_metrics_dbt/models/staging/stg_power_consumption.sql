@@ -13,23 +13,25 @@
     )
 
     select
-        date_trunc('month', recorded_at)::date as month_recorded_at,
-        recorded_at::date as recorded_date,
-        recorded_at as recorded_datetime,
-        id,
-        entity_id,
+        date_trunc('month', rc.recorded_at)::date as month_recorded_at,
+        rc.recorded_at::date as recorded_date,
+        rc.recorded_at as recorded_datetime,
+        rc.id,
+        rc.entity_id,
 
         -- this method is not scalable and needs to be amended in the future
         case
-            when entity_id = 'sensor.basement_entertainment_center_current_consumption' then 'basement_entertainment_center'
-            when entity_id = 'sensor.work_and_gaming_setup_current_consumption' then 'work_and_gaming_setup'
-             when entity_id = 'sensor.living_room_entertainment_wall_current_consumption' then 
-            else null
-                end as power_entity,
-        state::float as device_state,
-        unit_of_measurement,
-        device_class,
-        inserted_at::date as inserted_date,
-        inserted_at as inserted_datetime,
-        attributes
-    from raw_power_consumption
+            when rc.entity_id = 'sensor.basement_entertainment_center_current_consumption' then mpe.power_entity
+            when rc.entity_id = 'sensor.work_and_gaming_setup_current_consumption' then mpe.power_entity
+             when rc.entity_id = 'sensor.living_room_entertainment_wall_current_consumption' then mpe.power_entity
+                else null
+                    end as power_entity,
+        rc.state::float as device_state,
+        rc.unit_of_measurement,
+        rc.device_class,
+        rc.inserted_at::date as inserted_date,
+        rc.inserted_at as inserted_datetime,
+        rc.attributes
+    from raw_power_consumption rc
+    join {{ ref('map_power_entity') }} mpe
+        on rc.entity_id = mpe.entity_id
