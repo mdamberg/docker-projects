@@ -5,6 +5,7 @@
 
 with hardware_sensors as (
     select
+        id,
         hostname,
         sensor_type,
         sensor_name,
@@ -26,7 +27,8 @@ with hardware_sensors as (
 
 hardware_pivot as (
 	select
-		hostname,
+		id,
+        hostname,
 		recorded_date,
 		recorded_at_ts,
 		inserted_date,
@@ -37,6 +39,6 @@ hardware_pivot as (
 		max(case when hs.sensor_type = 'clock' and hs.sensor_name = 'GPU Core' then hs.sensor_value end) as gpu_clock_speed,
 		max(case when hs.sensor_type = 'load' and hs.sensor_name = 'GPU Core' then hs.sensor_value end) as gpu_usage
 	from hardware_sensors hs
-	group by hostname, recorded_date, recorded_at_ts, inserted_date, inserted_at_ts
+	group by id, hostname, recorded_date, recorded_at_ts, inserted_date, inserted_at_ts
 )
 select * from hardware_pivot
