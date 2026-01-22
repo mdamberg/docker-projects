@@ -4,27 +4,32 @@ models:
   - name: stg_hardware_sensors
     description: "Pivoted hardware sensor metrics - one row per 15-minute collection interval per hostname"
     columns:
+      - name: host_key  
+        description: "Surrogate key for the hostname"
+        tests:
+          - not_null
+      - name: sensor_key
+        description: "Surrogate key for the sensor on a particular hostname"
+        tests:
+          - not_null
+      - name: reading_key
+        description: "Surrogate key for the specific sensor reading at a particular time"
+        tests:
+          - not_null
+          - unique
       - name: hostname
         description: "Hostname of the device reporting the sensor data"
         tests:
           - not_null
-      - name: recorded_date
-        description: "Date when the sensor data was recorded"
-      - name: recorded_at_ts
-        description: "Timestamp when the sensor data was recorded"
-        tests:
-          - not_null
-      - name: inserted_date
-        description: "the date of data insertion"
-      - name: inserted_at_ts
-        description: "Timestamp when the record was inserted"
-      - name: cpu_core_temp
-        description: "CPU core temperature (Tctl/Tdie) in Celsius"
-      - name: cpu_clock_speed
-        description: "CPU clock speed (Cores Average) in MHz"
-      - name: cpu_load
-        description: "CPU total load percentage"
-      - name: gpu_clock_speed
-        description: "GPU core clock speed in MHz"
-      - name: gpu_usage
-        description: "GPU core load percentage"
+      - name: sensor_type
+        description: "Type of sensor reporting the data"
+      - name: sensor_id
+        description: "Identifier for the specific sensor on the device"
+      - name: sensor_value
+        description: "The recorded value from the sensor"
+      - name: sensor_name
+        description: "Name of the sensor as reported by the device"
+      - name: hardware_name
+        description: "Name of the hardware component associated with the sensor"
+      - name: hardware_type
+        description: "Type of hardware component associated with the sensor"
