@@ -1,0 +1,39 @@
+version: 2
+  
+models: 
+  - name: stg_media_library_metrics
+    description: "Staging table for media library metrics data" 
+    columns:
+      - name: media_source_key
+        description: "Surrogate key for the media source"
+        tests:
+          - not_null
+      - name: library_key
+        description: "Surrogate key for the library"
+        tests:
+          - not_null
+      - name: library_snapshot_key
+        description: "Surrogate key for the library snapshot"
+        tests:
+          - unique
+          - not_null
+      - name: source
+        description: "Source of the media library metrics"
+      - name: media_type
+        description: "Type of media in the library"
+      - name: library_name
+        description: "Name of the media library"
+      - name: item_count
+        description: "Number of items in the media library"
+      - name: total_size_bytes
+        description: "Total size of items in the media library in bytes"
+      - name: date_recorded
+        description: "Date when the metrics were recorded"
+      - name: recorded_at_ts
+        description: "Timestamp when the metrics were recorded"
+      - name: date_inserted
+        description: "Date when the metrics were inserted into the staging table"
+      - name: inserted_at_ts
+        description: "Timestamp when the metrics were inserted into the staging table"
+      - name: metadata
+        description: "Metadata associated with the metrics"

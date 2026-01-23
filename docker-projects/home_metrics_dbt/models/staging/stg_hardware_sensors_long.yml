@@ -1,13 +1,21 @@
 version: 2
 
 models:
-  - name: stg_hardware_sensors_detail
+  - name: stg_hardware_sensors_long
     description: "An unpivoted, long format of raw hardware sensors which will go on to make dim_hardware_sensors"
     columns:
-      - name: id
+      - name: reading_key
         description: "A unique number assigned to each row"
         tests:
           - unique
+          - not_null
+      - name: sensor_key
+        description: "A unique identifier for each sensor on a particular hostname"
+        tests:
+          - not_null
+      - name: host_key
+        description: "A unique identifier for each hostname"
+        tests:
           - not_null
       - name: hostname
         description: "name of the machine providing the data"
@@ -17,21 +25,23 @@ models:
         description: "the name of the sensor from source"
       - name: sensor_id
         description: "id provided for each sensor"
-      - name: value
-        description: " the numerical value for that sensor_name"
-      - name: value_min
-        description: "The minimum value recorded during time window between data grabs"
-      - name: value_max
-        description: "The maximum value recorded during time window between data grabs"
-      - name: unit
-        description: "the unit of measurement for that value"
       - name: hardware_name
         description: "the computer/component that information is coming from"
       - name: hardware_type
         description: "the category of component that information is coming from"
+      - name: sensor_value
+        description: " the numerical value for that sensor_name"
+      - name: sensor_value_min
+        description: "The minimum value recorded during time window between data grabs"
+      - name: sensor_value_max
+        description: "The maximum value recorded during time window between data grabs"
+      - name: unit
+        description: "the unit of measurement for that value"
       - name: recorded_at
         description: "the time and date the data was recorded"
-      - name: inserted_at
+      - name: recorded_date
+        description: "the date portion of the recorded_at timestamp"
+      - name: inserted_at_ts
         description: "The time and date the data was inserted"
       - name: metadata
         description: "an array of all the above data"

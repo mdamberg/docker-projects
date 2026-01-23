@@ -2,7 +2,7 @@ version: 2
 
 sources:
   - name: home_metrics_raw
-    schema: public
+    schema: raw
     description: "Raw data tables for Home Metrics project"
 
     tables:
@@ -35,18 +35,50 @@ sources:
             description: "Additional metadata related to the media activity in JSON format"
 
       - name: raw_media_library
-        description: "Raw table containing media library"
+        description: "Raw table containing individual media items (title, genre, year)"
         loaded_at_field: inserted_at
         freshness:
           warn_after: {count: 25, period: hour}
           error_after: {count: 48, period: hour}
         columns:
           - name: id
-            description: "Unique identifier for each media library record"
+            description: "Unique identifier for each media item record"
           - name: source
-            description: "Source of the media library (e.g., Sonarr, Radarr)"
+            description: "Source of the media (plex, sonarr, radarr)"
           - name: media_type
-            description: "Type of media (e.g., movie, tv show)"
+            description: "Type of media (movie, tv_show)"
+          - name: library_name
+            description: "Name of the library"
+          - name: title
+            description: "Title of the media item"
+          - name: genre
+            description: "Genre(s) of the media item"
+          - name: year
+            description: "Release year"
+          - name: overview
+            description: "Description/synopsis of the media"
+          - name: ratings
+            description: "Rating value"
+          - name: recorded_at
+            description: "Timestamp when the record was recorded"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted"
+          - name: metadata
+            description: "Additional metadata in JSON format"
+
+      - name: raw_media_library_metrics
+        description: "Raw table containing aggregated media library metrics (counts, sizes)"
+        loaded_at_field: inserted_at
+        freshness:
+          warn_after: {count: 25, period: hour}
+          error_after: {count: 48, period: hour}
+        columns:
+          - name: id
+            description: "Unique identifier for each media library metrics record"
+          - name: source
+            description: "Source of the media library (plex, sonarr, radarr, prowlarr)"
+          - name: media_type
+            description: "Type of media (movie, tv_show, indexer)"
           - name: library_name
             description: "Name of the library"
           - name: item_count
@@ -54,11 +86,11 @@ sources:
           - name: total_size_bytes
             description: "Total size of the library in bytes"
           - name: recorded_at
-            description: "Timestamp when the library record was recorded"
+            description: "Timestamp when the metrics were recorded"
           - name: inserted_at
-            description: "Timestamp when the record was inserted into the raw table"
+            description: "Timestamp when the record was inserted"
           - name: metadata
-            description: "Additional metadata related to the media library in JSON format"
+            description: "Additional metadata in JSON format"
 
       - name: raw_pihole_metrics
         description: "Raw table containing Pi-Hole metrics data"

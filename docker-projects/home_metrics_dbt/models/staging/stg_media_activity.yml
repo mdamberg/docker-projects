@@ -4,9 +4,15 @@ models:
   - name: stg_media_activity
     description: "Staging table for media activity data"
     columns:
-      - name: id
-        description: "Unique identifier for each media activity record"
+      - name: media_source_key
+        description: "Unique identifier for each media source"
         tests: 
+          - not_null
+      - name: user_key
+        description: "Unique identifier for each user within a media source"
+      - name: media_activity_key
+        description: "Unique identifier for each media activity record"
+        tests:
           - unique
           - not_null
       - name: source
