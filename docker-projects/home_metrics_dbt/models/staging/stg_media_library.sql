@@ -15,10 +15,13 @@ select
     source,
     media_type,
     case 
-        when library_name = 'Unknown' and media_type = 'movie'  then 'radarr'
-        when library_name = 'Unknown' and media_type = 'tv_show' then 'sonarr'
+        when media_type = 'movie'  then 'radarr'
+        when media_type = 'tv_show' then 'sonarr'
             end as library_name,
-    total_size_bytes,
+    title,
+    genre,
+    cast(year as varchar(15)) as year,
+    ratings,
     recorded_at::date as date_recorded,
     recorded_at as recorded_at_ts,
     inserted_at::date as date_inserted,
