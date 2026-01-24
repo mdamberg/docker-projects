@@ -6,7 +6,10 @@
 with raw_system_health as (
 
     select
-        id,
+    -- Generate a surrogate key for system_health_id using hostname
+        {{ dbt_utils.generate_surrogate_key(['hostname']) }} as system_health_id,
+    -- Generate a surrogate key for system_health_record_id using hostname and recorded_at
+        {{ dbt_utils.generate_surrogate_key(['hostname', 'recorded_at']) }} as system_health_record_id,
         'server_desktop' as hostname,
         hostname as hostname_id,
         recorded_at::date as recorded_date,

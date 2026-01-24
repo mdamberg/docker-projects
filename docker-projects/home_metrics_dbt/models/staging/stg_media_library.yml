@@ -4,14 +4,13 @@ models:
   - name: stg_media_library
     description: "Staging table for media library data"
     columns:
-      - name: media_source)_key
+      - name: media_source_key
         description: "Surrogate key for the media source"
         tests:
           - not_null
       - name: media_type_key
-        description: "Surrogate key for the media type"
-        tests: 
-          - unique
+        description: "Surrogate key for the media type (not unique per row - shared by items of same source/type)"
+        tests:
           - not_null
       - name: source
         description: "Source of the media library (e.g., Sonarr, Radarr)"

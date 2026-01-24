@@ -10,7 +10,9 @@ with raw_media_library as (
         {{ source('home_metrics_raw', 'raw_media_library') }}
 )
 select
+-- Dimension Key
     {{ dbt_utils.generate_surrogate_key(['source']) }} as media_source_key,
+-- Media Type Key
     {{ dbt_utils.generate_surrogate_key(['source', 'media_type']) }} as media_type_key,
     source,
     media_type,

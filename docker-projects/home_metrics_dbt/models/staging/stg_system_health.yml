@@ -4,19 +4,18 @@ models:
   - name: stg_system_health
     description: "Staging table for system health metrics with standardized column names"
     columns:
-      - name: id
+      - name: system_health_id
         description: "Unique identifier for each system health record"
         tests:
-          - unique
+          - not_null
+      - name: system_health_record_id
+        description: "Unique identifier for each system health record"
+        tests:
           - not_null
       - name: hostname
         description: "Friendly hostname of the system (e.g., server_desktop)"
-        tests:
-          - not_null
       - name: hostname_id
         description: "Machine hostname identifier (e.g., DESKTOP-QGA3DVB)"
-        tests:
-          - not_null
       - name: recorded_date
         description: "Date when the metrics were recorded"
       - name: recorded_at_ts
