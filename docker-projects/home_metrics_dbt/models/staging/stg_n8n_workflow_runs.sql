@@ -18,7 +18,13 @@ with workflow_runs as (
 )
 
 select
-    id,
+    -- Primary key (unique row identifier)
+    id as workflow_run_pk,
+    -- Surrogate key for unique row identification
+    {{ dbt_utils.generate_surrogate_key(['id']) }} as workflow_run_skey,
+    -- Dimension keys (for grouping/joining)
+    {{ dbt_utils.generate_surrogate_key(['workflow_id']) }} as workflow_key,
+    {{ dbt_utils.generate_surrogate_key(['workflow_id', 'status']) }} as workflow_status_key,
     workflow_id,
     workflow_name,
     metadata->>'execution_id' as execution_id,
