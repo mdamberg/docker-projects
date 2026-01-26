@@ -6,9 +6,17 @@ models:
     columns:
       - name: month_recorded_at
         description: "Month when the power consumption data was recorded"
-      - name: id
-        description: "Unique identifier for each power consumption record"
+      - name: power_consumption_record_id
+        description: "Record number for the power consumption data"
+        tests:
+          - not_null
+      - name: power_consumption_entity_id
+        description: "Unique identifier for each power consumption entity"
         tests: 
+          - not_null
+      - name: power_consumption_record_entity
+        description: "Unique identifier for each power consumption record"
+        tests:
           - unique
           - not_null
       - name: entity_id

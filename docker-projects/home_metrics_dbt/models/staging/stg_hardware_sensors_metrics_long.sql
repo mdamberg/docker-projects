@@ -48,9 +48,9 @@ select
     sensor_value_min,
     sensor_value_max,
     unit,
-    recorded_at,
+    cast({{ to_local_time('recorded_at') }} as timestamp) as recorded_at,
     recorded_date,
-    inserted_at_ts,
+    cast({{ to_local_time('inserted_at_ts') }} as timestamp) as inserted_at_ts,
     metadata
 from deduplication
 where rn = 1

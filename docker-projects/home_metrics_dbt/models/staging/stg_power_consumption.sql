@@ -13,10 +13,12 @@
     )
 
     select
+    -- Generate a surrogate key for unique power consumption records
+        {{ dbt_utils.generate_surrogate_key(['id']) }} as power_consumption_record_id,
     -- Generate a surrogate key for power_consumption_id using entity_id and power_entity
-        {{ dbt_utils.generate_surrogate_key(['rc.entity_id', 'power_entity']) }} as power_consumption_id,
+        {{ dbt_utils.generate_surrogate_key(['rc.entity_id', 'power_entity']) }} as power_consumption_entity_id,
     -- Generate a surrogate key for power_consumption_record_id using entity_id    
-        {{ dbt_utils.generate_surrogate_key(['rc.entity_id']) }} as power_consumption_record_id,
+        {{ dbt_utils.generate_surrogate_key(['rc.entity_id']) }} as power_consumption_record_entity,
         rc.entity_id,
 
         -- this method is not scalable and needs to be amended in the future
@@ -31,9 +33,9 @@
         rc.device_class,
         date_trunc('month', rc.recorded_at)::date as month_recorded_at,
         rc.recorded_at::date as recorded_date,
-        rc.recorded_at as recorded_datetime,
+        cast({{ to_local_time('rc.recorded_at') }} as timestamp) as recorded_datetime,
         rc.inserted_at::date as inserted_date,
-        rc.inserted_at as inserted_datetime,
+        cast({{ to_local_time('rc.inserted_at') }} as timestamp) as inserted_datetime,
         rc.attributes
     from raw_power_consumption rc
     join {{ ref('map_power_entity') }} mpe

@@ -25,8 +25,8 @@ select
     cast(year as varchar(15)) as year,
     ratings,
     recorded_at::date as date_recorded,
-    recorded_at as recorded_at_ts,
+    cast({{ to_local_time('recorded_at') }} as timestamp) as recorded_at_ts,
     inserted_at::date as date_inserted,
-    inserted_at as inserted_at_ts,
+    cast({{ to_local_time('inserted_at') }} as timestamp) as inserted_at_ts,
     metadata
 from raw_media_library

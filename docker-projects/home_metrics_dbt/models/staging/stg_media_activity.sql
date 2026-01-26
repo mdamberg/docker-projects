@@ -37,8 +37,8 @@
         title,
         series_title,
         duration_seconds,
-        watched_at,
-        inserted_at,
+        cast({{ to_local_time('watched_at') }} as timestamp) as watched_at,
+        cast({{ to_local_time('inserted_at') }} as timestamp) as inserted_at,
         metadata
     from dedupe
     where rn = 1

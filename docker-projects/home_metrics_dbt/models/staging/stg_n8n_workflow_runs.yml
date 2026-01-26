@@ -3,13 +3,17 @@ version: 2
 models:
   - name: stg_n8n_workflow_runs
     columns:
-      - name: id
+      - name: workflow_run_pk
         description: "Unique identifier for each n8n workflow run record"
         tests:
           - unique
           - not_null
-      - name: workflow_id
+      - name: workflow_run_skey
         description: "Identifier for the n8n workflow"
+      - name: workflow_key
+        description: "n8n workflow ID"
+      - name: workflow_status_key
+        description: "Identifier for the workflow run status"
       - name: workflow_name
         description: "Name of the n8n workflow"
       - name: workflow_status

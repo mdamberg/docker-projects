@@ -31,12 +31,12 @@ select
     status as workflow_status,
    
     cast(started_at as date) as date_started,
-    cast(started_at as time) as time_started,
+    cast({{ to_local_time('started_at') }} as time) as time_started,
     
     cast(finished_at as date) as date_finished,
-    cast(finished_at as time) as time_finished,
+    cast({{ to_local_time('finished_at') }} as time) as time_finished,
     
     cast(inserted_at as date) as date_inserted,
-    cast(inserted_at as time) as time_of_insertion,
+    cast({{ to_local_time('inserted_at') }} as time) as time_of_insertion,
     metadata
 from workflow_runs
