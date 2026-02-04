@@ -44,9 +44,9 @@ select
     item_count,
     total_size_bytes,
     date_recorded,
-    cast({{ to_local_time('recorded_at') }} as timestamp) as recorded_at_ts,
+    cast({{ to_local_time('recorded_at_ts') }} as timestamp) as recorded_at_ts,
     date_inserted,
-    cast({{ to_local_time('inserted_at') }} as timestamp) as inserted_at_ts,
+    cast({{ to_local_time('inserted_at_ts') }} as timestamp) as inserted_at_ts,
     metadata
 from dedupe
 where rn = 1

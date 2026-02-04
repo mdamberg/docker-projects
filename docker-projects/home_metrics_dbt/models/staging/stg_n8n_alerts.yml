@@ -4,7 +4,7 @@ models:
   - name: stg_n8n_alerts
     description: "Staging table for n8n alerts (workflow failures and data staleness)"
     columns:
-      - name: id
+      - name: alert_pk
         description: "Unique identifier for each alert record"
         tests:
           - unique

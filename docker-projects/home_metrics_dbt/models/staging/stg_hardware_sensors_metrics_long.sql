@@ -32,12 +32,11 @@ deduplication as (
 
 select
     -- host row key
-    {{ dbt_utils.generate_surrogate_key(['hostname']) }} as host_key,
+    {{ dbt_utils.generate_surrogate_key(['hostname']) }} as host_id,
     -- sensor row key
     {{ dbt_utils.generate_surrogate_key(['hostname','sensor_id']) }} as sensor_key,
     -- table grain key
-    {{ dbt_utils.generate_surrogate_key(['hostname','sensor_id','recorded_at']) }} as reading_key,
-
+    {{ dbt_utils.generate_surrogate_key(['hostname','sensor_id','recorded_at']) }} as host_record_id,
     hostname,
     sensor_type,
     sensor_name,

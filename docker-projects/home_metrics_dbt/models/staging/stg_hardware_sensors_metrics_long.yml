@@ -4,7 +4,7 @@ models:
   - name: stg_hardware_sensors_long
     description: "An unpivoted, long format of raw hardware sensors which will go on to make dim_hardware_sensors"
     columns:
-      - name: reading_key
+      - name: host_record_id
         description: "A unique number assigned to each row"
         tests:
           - unique
@@ -13,7 +13,7 @@ models:
         description: "A unique identifier for each sensor on a particular hostname"
         tests:
           - not_null
-      - name: host_key
+      - name: host_id
         description: "A unique identifier for each hostname"
         tests:
           - not_null

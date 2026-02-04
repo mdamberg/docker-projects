@@ -259,3 +259,45 @@ sources:
             description: "Timestamp when the record was inserted"
           - name: metadata
             description: "Additional metadata in JSON format"
+
+      - name: raw_transactions
+        description: "Raw table containing financial transaction data imported from budgeting app CSV exports"
+        loaded_at_field: inserted_at
+        freshness:
+          warn_after: {count: 30, period: day}
+          error_after: {count: 60, period: day}
+        columns:
+          - name: id
+            description: "Unique identifier for each transaction record"
+          - name: transaction_date
+            description: "Date of the transaction"
+          - name: original_date
+            description: "Original date of the transaction (before any adjustments)"
+          - name: account_type
+            description: "Type of account (e.g., Credit Card, Checking, Savings)"
+          - name: account_name
+            description: "Name of the account"
+          - name: account_number
+            description: "Last digits of the account number"
+          - name: institution_name
+            description: "Name of the financial institution (e.g., Wells Fargo, Chase)"
+          - name: name
+            description: "Merchant or transaction name"
+          - name: custom_name
+            description: "User-defined custom name for the transaction"
+          - name: amount
+            description: "Transaction amount (negative for debits, positive for credits)"
+          - name: description
+            description: "Full transaction description from the institution"
+          - name: category
+            description: "Transaction category (e.g., Shopping, Groceries, Bills)"
+          - name: note
+            description: "User-added notes for the transaction"
+          - name: ignored_from
+            description: "If set, transaction is excluded from reports/budgets"
+          - name: tax_deductible
+            description: "Whether the transaction is marked as tax deductible"
+          - name: transaction_tags
+            description: "User-defined tags for the transaction"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted into the raw table"

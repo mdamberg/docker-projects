@@ -4,7 +4,7 @@ models:
   - name: stg_hardware_sensors
     description: "Pivoted hardware sensor metrics - one row per 15-minute collection interval per hostname"
     columns:
-      - name: host_key  
+      - name: host_id  
         description: "Surrogate key for the hostname"
         tests:
           - not_null
@@ -12,7 +12,7 @@ models:
         description: "Surrogate key for the sensor on a particular hostname"
         tests:
           - not_null
-      - name: reading_key
+      - name: host_record_id
         description: "Surrogate key for the specific sensor reading at a particular time"
         tests:
           - not_null

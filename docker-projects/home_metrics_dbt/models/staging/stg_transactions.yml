@@ -1,0 +1,46 @@
+version: 2
+
+models:
+  - name: stg_transactions
+    description: "Staging table for financial transaction data with type casting and key generation"
+    columns:
+      - name: transaction_pk
+        description: "Primary key from raw table"
+        tests:
+          - unique
+          - not_null
+      - name: transaction_skey
+        description: "Surrogate key for unique row identification"
+        tests:
+          - unique
+          - not_null
+      - name: account_key
+        description: "Dimension key for grouping by account (1-to-many)"
+        tests:
+          - not_null
+      - name: category_key
+        description: "Dimension key for grouping by category (1-to-many)"
+        tests:
+          - not_null
+      - name: account_type
+        description: "Type of account (e.g., Credit Card, Checking, Savings)"
+      - name: account_name
+        description: "Name of the account"
+      - name: account_number
+        description: "Last digits of the account number"
+      - name: transaction_name
+        description: "Merchant or transaction name"
+      - name: transaction_amount
+        description: "Transaction amount (negative for debits, positive for credits)"
+      - name: description
+        description: "Full transaction description from the institution"
+      - name: category
+        description: "Transaction category (e.g., Shopping, Groceries, Bills)"
+      - name: transaction_date
+        description: "Date of the transaction"
+      - name: transaction_time
+        description: "Time of the transaction in local timezone (America/Chicago)"
+      - name: date_inserted
+        description: "Date the record was inserted into the raw table"
+      - name: time_of_insertion
+        description: "Time the record was inserted in local timezone (America/Chicago)"

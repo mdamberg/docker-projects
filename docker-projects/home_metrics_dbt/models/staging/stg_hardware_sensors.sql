@@ -21,11 +21,11 @@ with src as (
 )
 
 select
-    {{ dbt_utils.generate_surrogate_key(['hostname']) }} as host_key,
+    {{ dbt_utils.generate_surrogate_key(['hostname']) }} as host_id,
     {{ dbt_utils.generate_surrogate_key(['hostname','sensor_id']) }} as sensor_key,
 
     -- pick ONE of these depending on your desired grain:
-    {{ dbt_utils.generate_surrogate_key(['hostname','sensor_id','recorded_at']) }} as reading_key,
+    {{ dbt_utils.generate_surrogate_key(['hostname','sensor_id','recorded_at']) }} as host_record_id,
     hostname,
     sensor_type,
     sensor_name,

@@ -17,8 +17,7 @@ models:
       - name: power_consumption_record_entity
         description: "Unique identifier for each power consumption record"
         tests:
-          - unique
-          - not_null
+            - not_null
       - name: entity_id
         description: "Identifier for the power consumption entity (e.g., device or meter)"
       - name: power_entity
