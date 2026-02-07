@@ -50,9 +50,10 @@ if ($ExistingTask) {
 }
 
 # Create the scheduled task action
+# Include -StartLibreHardwareMonitor flag for hardware sensor collection workflow
 $Action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
-    -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$StartScriptPath`""
+    -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$StartScriptPath`" -StartLibreHardwareMonitor"
 
 # Create the trigger (at system startup)
 $Trigger = New-ScheduledTaskTrigger -AtStartup
@@ -91,6 +92,7 @@ try {
     Write-Host "  • When the system boots" -ForegroundColor White
     Write-Host "  • Before user login" -ForegroundColor White
     Write-Host "  • Even after power loss" -ForegroundColor White
+    Write-Host "  • LibreHardwareMonitor will also start (for hardware sensors workflow)" -ForegroundColor White
 
     Write-Host "`nTo verify, check Task Scheduler:" -ForegroundColor Yellow
     Write-Host "  1. Press Win+R, type 'taskschd.msc', press Enter" -ForegroundColor White

@@ -1,0 +1,750 @@
+{
+  "name": "Media Library Data Collection",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Run Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8181/api/v2",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "Xr9UEqUarIPJUr0DkwndQDWihtSxXQlK"
+            },
+            {
+              "name": "cmd",
+              "value": "get_libraries"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-tautulli-libraries",
+      "name": "Get Plex Libraries",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 200]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8989/api/v3/series",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "6e88db56c704442b9eb1d3f65e5f8d79"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-sonarr-series",
+      "name": "Get Sonarr Series",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 500]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:7878/api/v3/movie",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "4c45340702c4488abee858fa4633639e"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-radarr-movies",
+      "name": "Get Radarr Movies",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 800]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:9696/api/v1/indexer",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "4b01f5ebd9f940719e5fc927fc5282c7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-prowlarr-indexers",
+      "name": "Get Prowlarr Indexers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 1100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process Tautulli/Plex library data for METRICS (aggregated)\nconst input = $input.first().json;\nconst now = new Date().toISOString();\n\nlet libraries = [];\nif (input && input.response && input.response.data) {\n  libraries = input.response.data;\n} else if (Array.isArray(input)) {\n  libraries = input;\n} else {\n  return [{ json: { source: 'plex', media_type: 'unknown', library_name: 'No Libraries Found', item_count: 0, total_size_bytes: null, recorded_at: now, inserted_at: now, metadata: '{}' } }];\n}\n\nif (!libraries || libraries.length === 0) {\n  return [{ json: { source: 'plex', media_type: 'unknown', library_name: 'No Libraries Found', item_count: 0, total_size_bytes: null, recorded_at: now, inserted_at: now, metadata: '{}' } }];\n}\n\nconst records = libraries.map(lib => {\n  let mediaType = lib.section_type || 'unknown';\n  if (mediaType === 'show') mediaType = 'tv_show';\n  \n  return {\n    json: {\n      source: 'plex',\n      media_type: mediaType,\n      library_name: lib.section_name || 'Unknown Library',\n      item_count: parseInt(lib.count) || 0,\n      total_size_bytes: null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        section_id: lib.section_id,\n        section_type: lib.section_type,\n        parent_count: lib.parent_count,\n        child_count: lib.child_count,\n        is_active: lib.is_active\n      })\n    }\n  };\n});\n\nreturn records;"
+      },
+      "id": "transform-plex-metrics",
+      "name": "Transform Plex Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 100]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract section_ids from Plex libraries for item-level fetch\nconst input = $input.first().json;\n\nlet libraries = [];\nif (input && input.response && input.response.data) {\n  libraries = input.response.data;\n} else if (Array.isArray(input)) {\n  libraries = input;\n}\n\nif (!libraries || libraries.length === 0) {\n  return [];\n}\n\n// Return each library as separate item for looping\nreturn libraries.map(lib => ({\n  json: {\n    section_id: lib.section_id,\n    section_name: lib.section_name,\n    section_type: lib.section_type\n  }\n}));"
+      },
+      "id": "extract-plex-sections",
+      "name": "Extract Plex Sections",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 250]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8181/api/v2",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "Xr9UEqUarIPJUr0DkwndQDWihtSxXQlK"
+            },
+            {
+              "name": "cmd",
+              "value": "get_library_media_info"
+            },
+            {
+              "name": "section_id",
+              "value": "={{ $json.section_id }}"
+            },
+            {
+              "name": "length",
+              "value": "10000"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-plex-library-items",
+      "name": "Get Plex Library Items",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Plex library items into individual media records\nconst input = $input.first().json;\nconst now = new Date().toISOString();\n\nlet items = [];\nif (input && input.response && input.response.data && input.response.data.data) {\n  items = input.response.data.data;\n}\n\nif (!items || items.length === 0) {\n  return [];\n}\n\nreturn items.map(item => {\n  let mediaType = item.media_type || 'unknown';\n  if (mediaType === 'show' || mediaType === 'season' || mediaType === 'episode') mediaType = 'tv_show';\n  \n  return {\n    json: {\n      source: 'plex',\n      media_type: mediaType,\n      library_name: item.library_name || 'Unknown Library',\n      title: (item.title || 'Unknown').substring(0, 255),\n      genre: (item.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: parseInt(item.year) || null,\n      overview: null,\n      ratings: item.rating ? item.rating.toString() : null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        rating_key: item.rating_key,\n        added_at: item.added_at,\n        last_played: item.last_played,\n        play_count: item.play_count,\n        file_size: item.file_size,\n        bitrate: item.bitrate,\n        duration: item.duration\n      })\n    }\n  };\n});"
+      },
+      "id": "transform-plex-items",
+      "name": "Transform Plex Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 250]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process Sonarr series data into library METRICS (aggregated)\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [{ json: { source: 'sonarr', media_type: 'tv_show', library_name: 'Sonarr Library', item_count: 0, total_size_bytes: 0, recorded_at: now, inserted_at: now, metadata: '{}' } }];\n}\n\nlet totalSeries = allItems.length;\nlet totalEpisodes = 0;\nlet totalSizeBytes = 0;\nlet monitoredCount = 0;\n\nallItems.forEach(item => {\n  const show = item.json;\n  totalEpisodes += show.episodeCount || 0;\n  totalSizeBytes += show.sizeOnDisk || 0;\n  if (show.monitored) monitoredCount++;\n});\n\nreturn [{\n  json: {\n    source: 'sonarr',\n    media_type: 'tv_show',\n    library_name: 'Sonarr Library',\n    item_count: totalSeries,\n    total_size_bytes: totalSizeBytes,\n    recorded_at: now,\n    inserted_at: now,\n    metadata: JSON.stringify({\n      total_episodes: totalEpisodes,\n      monitored_series: monitoredCount,\n      unmonitored_series: totalSeries - monitoredCount\n    })\n  }\n}];"
+      },
+      "id": "transform-sonarr-metrics",
+      "name": "Transform Sonarr Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Sonarr series into individual media items\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [];\n}\n\nreturn allItems.map(item => {\n  const show = item.json;\n  return {\n    json: {\n      source: 'sonarr',\n      media_type: 'tv_show',\n      library_name: 'Sonarr Library',\n      title: (show.title || 'Unknown').substring(0, 255),\n      genre: (show.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: show.year || null,\n      overview: (show.overview || '').substring(0, 500),\n      ratings: show.ratings?.value?.toString() || null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        tvdb_id: show.tvdbId,\n        imdb_id: show.imdbId,\n        status: show.status,\n        network: show.network,\n        runtime: show.runtime,\n        episode_count: show.episodeCount,\n        season_count: show.seasonCount,\n        size_on_disk: show.sizeOnDisk,\n        monitored: show.monitored\n      })\n    }\n  };\n});"
+      },
+      "id": "transform-sonarr-items",
+      "name": "Transform Sonarr Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 550]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process Radarr movie data into library METRICS (aggregated)\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [{ json: { source: 'radarr', media_type: 'movie', library_name: 'Radarr Library', item_count: 0, total_size_bytes: 0, recorded_at: now, inserted_at: now, metadata: '{}' } }];\n}\n\nlet totalMovies = allItems.length;\nlet totalSizeBytes = 0;\nlet monitoredCount = 0;\nlet downloadedCount = 0;\n\nallItems.forEach(item => {\n  const movie = item.json;\n  totalSizeBytes += movie.sizeOnDisk || 0;\n  if (movie.monitored) monitoredCount++;\n  if (movie.hasFile) downloadedCount++;\n});\n\nreturn [{\n  json: {\n    source: 'radarr',\n    media_type: 'movie',\n    library_name: 'Radarr Library',\n    item_count: totalMovies,\n    total_size_bytes: totalSizeBytes,\n    recorded_at: now,\n    inserted_at: now,\n    metadata: JSON.stringify({\n      downloaded_movies: downloadedCount,\n      missing_movies: totalMovies - downloadedCount,\n      monitored_movies: monitoredCount,\n      unmonitored_movies: totalMovies - monitoredCount\n    })\n  }\n}];"
+      },
+      "id": "transform-radarr-metrics",
+      "name": "Transform Radarr Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 700]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Transform Radarr movies into individual media items\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [];\n}\n\nreturn allItems.map(item => {\n  const movie = item.json;\n  return {\n    json: {\n      source: 'radarr',\n      media_type: 'movie',\n      library_name: 'Radarr Library',\n      title: (movie.title || 'Unknown').substring(0, 255),\n      genre: (movie.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: movie.year || null,\n      overview: (movie.overview || '').substring(0, 500),\n      ratings: movie.ratings?.imdb?.value?.toString() || movie.ratings?.tmdb?.value?.toString() || null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        tmdb_id: movie.tmdbId,\n        imdb_id: movie.imdbId,\n        studio: movie.studio,\n        runtime: movie.runtime,\n        certification: movie.certification,\n        size_on_disk: movie.sizeOnDisk,\n        has_file: movie.hasFile,\n        monitored: movie.monitored\n      })\n    }\n  };\n});"
+      },
+      "id": "transform-radarr-items",
+      "name": "Transform Radarr Items",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 850]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process Prowlarr indexer data (metrics only - no items)\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [{ json: { source: 'prowlarr', media_type: 'indexer', library_name: 'Prowlarr Indexers', item_count: 0, total_size_bytes: null, recorded_at: now, inserted_at: now, metadata: '{}' } }];\n}\n\nlet totalIndexers = allItems.length;\nlet enabledCount = 0;\nlet publicCount = 0;\nlet privateCount = 0;\nconst indexerNames = [];\n\nallItems.forEach(item => {\n  const indexer = item.json;\n  if (indexer.enable) enabledCount++;\n  if (indexer.privacy === 'public') publicCount++;\n  if (indexer.privacy === 'private') privateCount++;\n  indexerNames.push({\n    name: indexer.name,\n    protocol: indexer.protocol,\n    privacy: indexer.privacy,\n    enabled: indexer.enable\n  });\n});\n\nreturn [{\n  json: {\n    source: 'prowlarr',\n    media_type: 'indexer',\n    library_name: 'Prowlarr Indexers',\n    item_count: totalIndexers,\n    total_size_bytes: null,\n    recorded_at: now,\n    inserted_at: now,\n    metadata: JSON.stringify({\n      enabled_indexers: enabledCount,\n      disabled_indexers: totalIndexers - enabledCount,\n      public_indexers: publicCount,\n      private_indexers: privateCount,\n      indexers: indexerNames\n    })\n  }\n}];"
+      },
+      "id": "transform-prowlarr",
+      "name": "Transform Prowlarr Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 1100]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library_metrics"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "item_count": "={{ $json.item_count }}",
+            "total_size_bytes": "={{ $json.total_size_bytes }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-plex-metrics",
+      "name": "Insert Plex Metrics",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 100],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "title": "={{ $json.title }}",
+            "genre": "={{ $json.genre }}",
+            "year": "={{ $json.year }}",
+            "overview": "={{ $json.overview }}",
+            "ratings": "={{ $json.ratings }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-plex-items",
+      "name": "Insert Plex Items",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1500, 250],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library_metrics"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "item_count": "={{ $json.item_count }}",
+            "total_size_bytes": "={{ $json.total_size_bytes }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-sonarr-metrics",
+      "name": "Insert Sonarr Metrics",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 400],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "title": "={{ $json.title }}",
+            "genre": "={{ $json.genre }}",
+            "year": "={{ $json.year }}",
+            "overview": "={{ $json.overview }}",
+            "ratings": "={{ $json.ratings }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-sonarr-items",
+      "name": "Insert Sonarr Items",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 550],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library_metrics"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "item_count": "={{ $json.item_count }}",
+            "total_size_bytes": "={{ $json.total_size_bytes }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-radarr-metrics",
+      "name": "Insert Radarr Metrics",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 700],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "title": "={{ $json.title }}",
+            "genre": "={{ $json.genre }}",
+            "year": "={{ $json.year }}",
+            "overview": "={{ $json.overview }}",
+            "ratings": "={{ $json.ratings }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-radarr-items",
+      "name": "Insert Radarr Items",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 850],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_media_library_metrics"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source": "={{ $json.source }}",
+            "media_type": "={{ $json.media_type }}",
+            "library_name": "={{ $json.library_name }}",
+            "item_count": "={{ $json.item_count }}",
+            "total_size_bytes": "={{ $json.total_size_bytes }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-prowlarr-metrics",
+      "name": "Insert Prowlarr Metrics",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 1100],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Media Library Data Collection\n\n### Two Data Paths:\n1. **Metrics** → `raw_media_library_metrics` (aggregated counts/sizes)\n2. **Items** → `raw_media_library` (individual titles with genre/year)\n\n### Setup Required:\n1. **PostgreSQL Credential**: Select on all Insert nodes\n2. **Create Tables**: Ensure both tables exist in database\n\n### Data Collected:\n- **Plex**: Library metrics + individual items per library\n- **Sonarr**: Series metrics + individual shows\n- **Radarr**: Movie metrics + individual movies\n- **Prowlarr**: Indexer metrics only\n\n### Schedule:\nRuns every 6 hours automatically",
+        "height": 380,
+        "width": 360
+      },
+      "id": "note",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 1200]
+    }
+  ],
+  "connections": {
+    "Run Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Plex Libraries",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Sonarr Series",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Radarr Movies",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Prowlarr Indexers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Plex Libraries",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Sonarr Series",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Radarr Movies",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Prowlarr Indexers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Plex Libraries": {
+      "main": [
+        [
+          {
+            "node": "Transform Plex Metrics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Plex Sections",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Plex Sections": {
+      "main": [
+        [
+          {
+            "node": "Get Plex Library Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Plex Library Items": {
+      "main": [
+        [
+          {
+            "node": "Transform Plex Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Plex Items": {
+      "main": [
+        [
+          {
+            "node": "Insert Plex Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Plex Metrics": {
+      "main": [
+        [
+          {
+            "node": "Insert Plex Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Sonarr Series": {
+      "main": [
+        [
+          {
+            "node": "Transform Sonarr Metrics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Transform Sonarr Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Sonarr Metrics": {
+      "main": [
+        [
+          {
+            "node": "Insert Sonarr Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Sonarr Items": {
+      "main": [
+        [
+          {
+            "node": "Insert Sonarr Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Radarr Movies": {
+      "main": [
+        [
+          {
+            "node": "Transform Radarr Metrics",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Transform Radarr Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Radarr Metrics": {
+      "main": [
+        [
+          {
+            "node": "Insert Radarr Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Radarr Items": {
+      "main": [
+        [
+          {
+            "node": "Insert Radarr Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Prowlarr Indexers": {
+      "main": [
+        [
+          {
+            "node": "Transform Prowlarr Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Prowlarr Data": {
+      "main": [
+        [
+          {
+            "node": "Insert Prowlarr Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}

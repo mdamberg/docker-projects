@@ -1,0 +1,172 @@
+{
+  "name": "System Health Metrics Collection",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Run Every 15 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:9182/metrics",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "get-windows-metrics",
+      "name": "Get Windows Metrics",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Prometheus metrics from windows_exporter\nconst metricsText = $input.first().json.data || $input.first().json;\nconst now = new Date().toISOString();\n\n// Helper function to extract metric value\nfunction getMetric(text, metricName, labels = {}) {\n  const lines = text.split('\\n');\n  for (const line of lines) {\n    if (line.startsWith('#') || !line.trim()) continue;\n    if (line.startsWith(metricName)) {\n      // Check if labels match\n      let labelsMatch = true;\n      for (const [key, value] of Object.entries(labels)) {\n        if (!line.includes(`${key}=\"${value}\"`)) {\n          labelsMatch = false;\n          break;\n        }\n      }\n      if (labelsMatch) {\n        const parts = line.split(' ');\n        return parseFloat(parts[parts.length - 1]);\n      }\n    }\n  }\n  return null;\n}\n\n// Helper to get all metrics matching a pattern\nfunction getAllMetrics(text, metricName) {\n  const lines = text.split('\\n');\n  const results = [];\n  for (const line of lines) {\n    if (line.startsWith('#') || !line.trim()) continue;\n    if (line.startsWith(metricName + '{') || line.startsWith(metricName + ' ')) {\n      const parts = line.split(' ');\n      const value = parseFloat(parts[parts.length - 1]);\n      results.push({ line, value });\n    }\n  }\n  return results;\n}\n\nconst text = typeof metricsText === 'string' ? metricsText : JSON.stringify(metricsText);\n\n// Get hostname\nlet hostname = 'unknown';\nconst hostnameMatch = text.match(/windows_os_info\\{[^}]*hostname=\"([^\"]+)\"/);\nif (hostnameMatch) {\n  hostname = hostnameMatch[1];\n}\n\n// Memory calculation\nconst memoryFreeBytes = getMetric(text, 'windows_memory_available_bytes');\nconst memoryTotalBytes = getMetric(text, 'windows_cs_physical_memory_bytes');\nlet memoryPercent = null;\nif (memoryFreeBytes !== null && memoryTotalBytes !== null && memoryTotalBytes > 0) {\n  const memoryUsedBytes = memoryTotalBytes - memoryFreeBytes;\n  memoryPercent = (memoryUsedBytes / memoryTotalBytes) * 100;\n}\n\n// Disk calculation (C: drive)\nconst diskFreeBytes = getMetric(text, 'windows_logical_disk_free_bytes', { volume: 'C:' });\nconst diskTotalBytes = getMetric(text, 'windows_logical_disk_size_bytes', { volume: 'C:' });\nlet diskPercent = null;\nif (diskFreeBytes !== null && diskTotalBytes !== null && diskTotalBytes > 0) {\n  const diskUsedBytes = diskTotalBytes - diskFreeBytes;\n  diskPercent = (diskUsedBytes / diskTotalBytes) * 100;\n}\n\n// CPU calculation from idle time\nlet cpuPercent = null;\nconst cpuIdleMetrics = getAllMetrics(text, 'windows_cpu_time_total');\nlet totalIdle = 0;\nlet totalAll = 0;\nlet coreCount = 0;\nconst coresSeen = new Set();\n\nfor (const m of cpuIdleMetrics) {\n  const coreMatch = m.line.match(/core=\"([^\"]+)\"/);\n  const modeMatch = m.line.match(/mode=\"([^\"]+)\"/);\n  if (coreMatch && modeMatch) {\n    const core = coreMatch[1];\n    const mode = modeMatch[1];\n    if (!coresSeen.has(core)) {\n      coresSeen.add(core);\n      coreCount++;\n    }\n    totalAll += m.value;\n    if (mode === 'idle') {\n      totalIdle += m.value;\n    }\n  }\n}\n\nif (totalAll > 0) {\n  const lifetimeIdlePercent = (totalIdle / totalAll) * 100;\n  cpuPercent = 100 - lifetimeIdlePercent;\n}\n\n// Disk I/O metrics (C: drive)\nconst diskReadLatency = getMetric(text, 'windows_logical_disk_read_latency_seconds_total', { volume: 'C:' });\nconst diskWriteLatency = getMetric(text, 'windows_logical_disk_write_latency_seconds_total', { volume: 'C:' });\nconst diskReadBytes = getMetric(text, 'windows_logical_disk_read_bytes_total', { volume: 'C:' });\nconst diskWriteBytes = getMetric(text, 'windows_logical_disk_write_bytes_total', { volume: 'C:' });\n\n// Network metrics - sum all adapters or get primary\n// Get the first Ethernet or Wi-Fi adapter\nlet netBytesReceived = null;\nlet netBytesSent = null;\n\nconst netReceivedMetrics = getAllMetrics(text, 'windows_net_bytes_received_total');\nconst netSentMetrics = getAllMetrics(text, 'windows_net_bytes_sent_total');\n\n// Sum all physical adapters (exclude loopback)\nfor (const m of netReceivedMetrics) {\n  if (!m.line.includes('Loopback') && !m.line.includes('isatap')) {\n    const val = m.value;\n    if (val && !isNaN(val)) {\n      netBytesReceived = (netBytesReceived || 0) + val;\n    }\n  }\n}\n\nfor (const m of netSentMetrics) {\n  if (!m.line.includes('Loopback') && !m.line.includes('isatap')) {\n    const val = m.value;\n    if (val && !isNaN(val)) {\n      netBytesSent = (netBytesSent || 0) + val;\n    }\n  }\n}\n\n// System metrics\nconst processorQueueLength = getMetric(text, 'windows_system_processor_queue_length');\nconst pagingFreeBytes = getMetric(text, 'windows_os_paging_free_bytes');\nconst memoryCommitLimit = getMetric(text, 'windows_memory_commit_limit');\nconst memoryCommittedBytes = getMetric(text, 'windows_memory_committed_bytes');\n\n// Additional metadata\nconst systemUptime = getMetric(text, 'windows_system_system_up_time');\nconst processes = getMetric(text, 'windows_os_processes');\nconst threads = getMetric(text, 'windows_os_threads');\n\n// Build metadata object\nconst metadata = {\n  core_count: coreCount,\n  memory_total_gb: memoryTotalBytes ? (memoryTotalBytes / 1073741824).toFixed(2) : null,\n  memory_free_gb: memoryFreeBytes ? (memoryFreeBytes / 1073741824).toFixed(2) : null,\n  disk_total_gb: diskTotalBytes ? (diskTotalBytes / 1073741824).toFixed(2) : null,\n  disk_free_gb: diskFreeBytes ? (diskFreeBytes / 1073741824).toFixed(2) : null,\n  system_uptime_seconds: systemUptime,\n  process_count: processes,\n  thread_count: threads\n};\n\nreturn [{\n  json: {\n    hostname: hostname,\n    recorded_at: now,\n    inserted_at: now,\n    cpu_percent: cpuPercent ? parseFloat(cpuPercent.toFixed(2)) : null,\n    memory_percent: memoryPercent ? parseFloat(memoryPercent.toFixed(2)) : null,\n    disk_percent: diskPercent ? parseFloat(diskPercent.toFixed(2)) : null,\n    temperature_c: null,\n    windows_logical_disk_read_latency_seconds_total: diskReadLatency ? parseFloat(diskReadLatency.toFixed(4)) : null,\n    windows_logical_disk_write_latency_seconds_total: diskWriteLatency ? parseFloat(diskWriteLatency.toFixed(4)) : null,\n    windows_logical_disk_read_bytes_total: diskReadBytes ? Math.round(diskReadBytes) : null,\n    windows_logical_disk_write_bytes_total: diskWriteBytes ? Math.round(diskWriteBytes) : null,\n    windows_net_bytes_received_total: netBytesReceived ? Math.round(netBytesReceived) : null,\n    windows_net_bytes_sent_total: netBytesSent ? Math.round(netBytesSent) : null,\n    windows_system_processor_queue_length: processorQueueLength ? parseFloat(processorQueueLength.toFixed(2)) : null,\n    windows_os_paging_free_bytes: pagingFreeBytes ? Math.round(pagingFreeBytes) : null,\n    windows_memory_commit_limit: memoryCommitLimit ? Math.round(memoryCommitLimit) : null,\n    windows_memory_committed_bytes: memoryCommittedBytes ? Math.round(memoryCommittedBytes) : null,\n    metadata: JSON.stringify(metadata)\n  }\n}];"
+      },
+      "id": "transform-metrics",
+      "name": "Transform Metrics",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [750, 500]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_system_health"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "hostname": "={{ $json.hostname }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "inserted_at": "={{ $json.inserted_at }}",
+            "cpu_percent": "={{ $json.cpu_percent }}",
+            "memory_percent": "={{ $json.memory_percent }}",
+            "disk_percent": "={{ $json.disk_percent }}",
+            "temperature_c": "={{ $json.temperature_c }}",
+            "windows_logical_disk_read_latency_seconds_total": "={{ $json.windows_logical_disk_read_latency_seconds_total }}",
+            "windows_logical_disk_write_latency_seconds_total": "={{ $json.windows_logical_disk_write_latency_seconds_total }}",
+            "windows_logical_disk_read_bytes_total": "={{ $json.windows_logical_disk_read_bytes_total }}",
+            "windows_logical_disk_write_bytes_total": "={{ $json.windows_logical_disk_write_bytes_total }}",
+            "windows_net_bytes_received_total": "={{ $json.windows_net_bytes_received_total }}",
+            "windows_net_bytes_sent_total": "={{ $json.windows_net_bytes_sent_total }}",
+            "windows_system_processor_queue_length": "={{ $json.windows_system_processor_queue_length }}",
+            "windows_os_paging_free_bytes": "={{ $json.windows_os_paging_free_bytes }}",
+            "windows_memory_commit_limit": "={{ $json.windows_memory_commit_limit }}",
+            "windows_memory_committed_bytes": "={{ $json.windows_memory_committed_bytes }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-system-health",
+      "name": "Insert System Health",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1000, 500],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## System Health Metrics Collection\n\n### Setup Required:\n1. **Windows Exporter**: Must be running on port 9182\n2. **PostgreSQL Credential**: Select on Insert node\n\n### Data Collected:\n- **CPU**: Usage percentage\n- **Memory**: Used %, commit limit, committed bytes\n- **Disk**: C: drive %, read/write latency, read/write bytes\n- **Network**: Total bytes sent/received (all adapters)\n- **System**: Processor queue length, paging free bytes\n- **Metadata**: Core count, GB values, uptime, process counts\n\n### Schedule:\nRuns every 15 minutes automatically\n\n### Notes:\n- Temperature requires additional hardware sensors\n- Disk/network bytes are cumulative counters\n- Uses host.docker.internal to reach Windows host",
+        "height": 420,
+        "width": 340
+      },
+      "id": "note",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 720]
+    }
+  ],
+  "connections": {
+    "Run Every 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Windows Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Windows Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Windows Metrics": {
+      "main": [
+        [
+          {
+            "node": "Transform Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Metrics": {
+      "main": [
+        [
+          {
+            "node": "Insert System Health",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}

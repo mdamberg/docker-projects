@@ -17,6 +17,10 @@
 .PARAMETER StartDBeaver
     Optional switch. If specified, starts DBeaver database tool after Docker services.
 
+.PARAMETER StartLibreHardwareMonitor
+    Optional switch. If specified, starts LibreHardwareMonitor for hardware sensor collection.
+    Required for the Hardware Sensors n8n workflow.
+
 .EXAMPLE
     .\start-all-services.ps1
     Starts all infrastructure services
@@ -28,11 +32,20 @@
 .EXAMPLE
     .\start-all-services.ps1 -StartDBeaver
     Starts all services and launches DBeaver
+
+.EXAMPLE
+    .\start-all-services.ps1 -StartLibreHardwareMonitor
+    Starts all services and launches LibreHardwareMonitor for hardware sensor collection
+
+.EXAMPLE
+    .\start-all-services.ps1 -StartDBeaver -StartLibreHardwareMonitor
+    Starts all services plus both DBeaver and LibreHardwareMonitor
 #>
 
 param(
     [string]$Services = "all",
-    [switch]$StartDBeaver
+    [switch]$StartDBeaver,
+    [switch]$StartLibreHardwareMonitor
 )
 
 # Get the directory where this script is located
@@ -52,6 +65,7 @@ $InfraServices = @{
     'backups' = 'backups'
     'phpipam' = 'phpipam'
     'homemetrics' = '..\temp_home_metrics_files'
+    'lightdash' = 'lightdash'
 }
 
 # Parse which services to start
@@ -235,6 +249,51 @@ if ($FailCount -gt 0) {
 
 Write-Host "`nAll services have restart policies set to 'unless-stopped'." -ForegroundColor Cyan
 Write-Host "They will automatically restart on system reboot once started.`n" -ForegroundColor Cyan
+
+# Start LibreHardwareMonitor if requested (required for hardware sensors workflow)
+if ($StartLibreHardwareMonitor) {
+    # Common installation paths for LibreHardwareMonitor
+    $LHMPaths = @(
+        "C:\Program Files\LibreHardwareMonitor\LibreHardwareMonitor.exe",
+        "C:\Program Files (x86)\LibreHardwareMonitor\LibreHardwareMonitor.exe",
+        "$env:LOCALAPPDATA\Programs\LibreHardwareMonitor\LibreHardwareMonitor.exe",
+        "$env:USERPROFILE\Downloads\LibreHardwareMonitor\LibreHardwareMonitor.exe"
+    )
+
+    $LHMPath = $null
+    foreach ($Path in $LHMPaths) {
+        if (Test-Path $Path) {
+            $LHMPath = $Path
+            break
+        }
+    }
+
+    if ($LHMPath) {
+        # Check if already running
+        $LHMProcess = Get-Process -Name "LibreHardwareMonitor" -ErrorAction SilentlyContinue
+        if ($LHMProcess) {
+            Write-Host "[OK] LibreHardwareMonitor is already running" -ForegroundColor Green
+        } else {
+            Write-Host "[STARTING] LibreHardwareMonitor..." -ForegroundColor Yellow
+            try {
+                # Start with elevated privileges (required for hardware access)
+                Start-Process -FilePath $LHMPath -WindowStyle Minimized
+                Start-Sleep -Seconds 2
+                Write-Host "[SUCCESS] LibreHardwareMonitor started" -ForegroundColor Green
+                Write-Host "          HTTP server should be available at http://localhost:8085" -ForegroundColor Cyan
+                Write-Host "          (Ensure 'Remote Web Server' is enabled in LHM options)" -ForegroundColor Cyan
+            } catch {
+                Write-Host "[ERROR] Failed to start LibreHardwareMonitor: $_" -ForegroundColor Red
+            }
+        }
+    } else {
+        Write-Host "[WARNING] LibreHardwareMonitor not found. Checked paths:" -ForegroundColor Yellow
+        foreach ($Path in $LHMPaths) {
+            Write-Host "          - $Path" -ForegroundColor Yellow
+        }
+        Write-Host "          Download from: https://github.com/LibreHardwareMonitor/LibreHardwareMonitor" -ForegroundColor Cyan
+    }
+}
 
 # Start DBeaver if requested
 if ($StartDBeaver) {

@@ -96,5 +96,26 @@
     "id": 13,
     "category": "General",
     "priority": "High"
+  },
+  {
+    "task": "Set up alert for fridge filters ",
+    "done": true,
+    "id": 14,
+    "category": "General",
+    "priority": "Low"
+  },
+  {
+    "task": "Create agentic n8n workflow that summarizes all daily tech news",
+    "done": false,
+    "id": 15,
+    "category": "Docker",
+    "priority": "Medium"
+  },
+  {
+    "task": "Create n8n workflow the provides detailed daily weather report \u2014> send to me ",
+    "done": false,
+    "id": 16,
+    "category": "General",
+    "priority": "High"
   }
 ]

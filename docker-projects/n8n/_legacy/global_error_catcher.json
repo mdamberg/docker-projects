@@ -1,0 +1,124 @@
+{
+  "name": "Global Error Catcher",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "On Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [250, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract error details from the failed workflow\nconst errorData = $input.first().json;\nconst now = new Date().toISOString();\n\nconst execution = errorData.execution || {};\nconst workflow = errorData.workflow || {};\nconst error = execution.error || {};\n\n// Build error message\nlet errorMessage = error.message || 'Unknown error';\n\n// Build title\nconst title = `Workflow Failed: ${workflow.name || 'Unknown'}`;\n\n// Build metadata\nconst metadata = {\n  execution_id: execution.id,\n  execution_url: execution.url,\n  execution_mode: execution.mode,\n  workflow_id: workflow.id,\n  last_node_executed: execution.lastNodeExecuted,\n  error_stack: error.stack,\n  retry_of: execution.retryOf\n};\n\nreturn [{\n  json: {\n    alert_type: 'workflow_failure',\n    severity: 'error',\n    source: workflow.name || 'Unknown Workflow',\n    title: title,\n    message: `[${execution.lastNodeExecuted || 'N/A'}] ${errorMessage}`,\n    triggered_at: now,\n    metadata: JSON.stringify(metadata),\n    // For Discord notification\n    alert_title: `🚨 ${title}`,\n    alert_body: `**Error:** ${errorMessage}\\n**Node:** ${execution.lastNodeExecuted || 'N/A'}\\n**Execution ID:** ${execution.id || 'N/A'}`\n  }\n}];"
+      },
+      "id": "transform-error",
+      "name": "Transform Error Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [500, 400]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_n8n_alerts"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "alert_type": "={{ $json.alert_type }}",
+            "severity": "={{ $json.severity }}",
+            "source": "={{ $json.source }}",
+            "title": "={{ $json.title }}",
+            "message": "={{ $json.message }}",
+            "triggered_at": "={{ $json.triggered_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "log-to-database",
+      "name": "Log to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [750, 300],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "YOUR_DISCORD_WEBHOOK_URL",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"{{ $json.alert_title }}\",\n  \"embeds\": [{\n    \"title\": \"Workflow Failure Details\",\n    \"description\": {{ JSON.stringify($json.alert_body) }},\n    \"color\": 15158332,\n    \"timestamp\": \"{{ $json.triggered_at }}\",\n    \"footer\": {\n      \"text\": \"n8n Error Catcher\"\n    }\n  }]\n}",
+        "options": {}
+      },
+      "id": "send-discord-alert",
+      "name": "Send Discord Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 500]
+    },
+    {
+      "parameters": {
+        "content": "## Global Error Catcher\n\n### What This Does:\nAutomatically catches errors from ANY workflow and:\n1. Logs to raw_n8n_alerts table\n2. Sends Discord notification\n\n### Setup:\n1. **Import this workflow**\n2. **Select PostgreSQL credential** on 'Log to Database' node\n3. **Add Discord webhook URL** on 'Send Discord Alert' node\n4. **Activate this workflow**\n5. **Set as default error workflow:**\n   - Go to Settings → Workflows\n   - Set 'Error Workflow' to this workflow\n\n### Fields Logged:\n- alert_type: 'workflow_failure'\n- severity: 'error'\n- source: workflow name\n- title: short description\n- message: error details\n- metadata: execution ID, URL, stack trace",
+        "height": 440,
+        "width": 380
+      },
+      "id": "note",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, 550]
+    }
+  ],
+  "connections": {
+    "On Workflow Error": {
+      "main": [
+        [
+          {
+            "node": "Transform Error Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Error Data": {
+      "main": [
+        [
+          {
+            "node": "Log to Database",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Discord Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}

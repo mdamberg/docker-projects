@@ -1,0 +1,74 @@
+services:
+  lightdash:
+    image: lightdash/lightdash:latest
+    container_name: lightdash
+    restart: unless-stopped
+    depends_on:
+      lightdash-db:
+        condition: service_healthy
+    environment:
+      # Lightdash internal database
+      PGHOST: lightdash-db
+      PGPORT: 5432
+      PGUSER: lightdash
+      PGPASSWORD: lightdash
+      PGDATABASE: lightdash
+
+      # Security
+      LIGHTDASH_SECRET: ${LIGHTDASH_SECRET:-changemeplease123456789}
+
+      # Site settings
+      SITE_URL: http://localhost:8080
+      ALLOW_MULTIPLE_ORGS: "false"
+
+      # Headless browser for exports (optional)
+      HEADLESS_BROWSER_HOST: headless-browser
+      HEADLESS_BROWSER_PORT: 3000
+    ports:
+      - "8080:8080"
+    volumes:
+      # Mount your dbt project
+      - ../home_metrics_dbt:/usr/app/dbt:ro
+    networks:
+      - lightdash
+      - home-metrics
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  lightdash-db:
+    image: postgres:15-alpine
+    container_name: lightdash-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lightdash
+      POSTGRES_PASSWORD: lightdash
+      POSTGRES_DB: lightdash
+    volumes:
+      - lightdash_pgdata:/var/lib/postgresql/data
+    networks:
+      - lightdash
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lightdash -d lightdash"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  headless-browser:
+    image: browserless/chrome:latest
+    container_name: lightdash-browser
+    restart: unless-stopped
+    networks:
+      - lightdash
+
+networks:
+  lightdash:
+    name: lightdash
+    driver: bridge
+  home-metrics:
+    external: true
+
+volumes:
+  lightdash_pgdata:

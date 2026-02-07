@@ -27,5 +27,7 @@ models:
         description: "the first day of the year"
       - name: year_num
         description: "four-digit year (e.g., 2025)"
-      - name: is_weekend
+      - name: is_weekend_flag
         description: "flag that indicates if that particular day is a weekend"
+      - name: is_bom_flag
+        description: "flag that indicates if that particular day is the beginning of the month"

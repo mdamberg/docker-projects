@@ -1,0 +1,201 @@
+{
+  "name": "Hardware Sensors Collection",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Run Every 5 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://host.docker.internal:8085/data.json",
+        "options": {}
+      },
+      "id": "get-sensor-data",
+      "name": "Get Sensor Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse LibreHardwareMonitor JSON and extract sensor readings\nconst data = $input.first().json;\nconst now = new Date().toISOString();\nconst results = [];\n\n// Get hostname from computer name\nlet hostname = 'unknown';\nif (data.Children && data.Children[0]) {\n  hostname = data.Children[0].Text || 'unknown';\n}\n\n// Sensor types we want to collect\nconst sensorTypes = ['Temperature', 'Fan', 'Voltage', 'Power', 'Load', 'Clock'];\n\n// Recursively find all sensors\nfunction findSensors(node, hardwareName = '', hardwareType = '') {\n  if (!node) return;\n  \n  // Update hardware context\n  if (node.ImageURL && node.ImageURL.includes('cpu')) {\n    hardwareType = 'CPU';\n    hardwareName = node.Text || hardwareName;\n  } else if (node.ImageURL && node.ImageURL.includes('gpu')) {\n    hardwareType = 'GPU';\n    hardwareName = node.Text || hardwareName;\n  } else if (node.ImageURL && node.ImageURL.includes('mainboard')) {\n    hardwareType = 'Motherboard';\n    hardwareName = node.Text || hardwareName;\n  } else if (node.ImageURL && node.ImageURL.includes('hdd') || node.ImageURL && node.ImageURL.includes('ssd')) {\n    hardwareType = 'Storage';\n    hardwareName = node.Text || hardwareName;\n  } else if (node.ImageURL && node.ImageURL.includes('ram')) {\n    hardwareType = 'Memory';\n    hardwareName = node.Text || hardwareName;\n  }\n  \n  // Check if this is a sensor node\n  if (node.Type && sensorTypes.includes(node.Type) && node.SensorId) {\n    // Parse the value (remove unit)\n    let value = null;\n    let unit = '';\n    \n    if (node.RawValue) {\n      const match = node.RawValue.match(/([\\d.]+)\\s*(.*)/);\n      if (match) {\n        value = parseFloat(match[1]);\n        unit = match[2].trim();\n      }\n    }\n    \n    let valueMin = null;\n    if (node.RawMin) {\n      const match = node.RawMin.match(/([\\d.]+)/);\n      if (match) valueMin = parseFloat(match[1]);\n    }\n    \n    let valueMax = null;\n    if (node.RawMax) {\n      const match = node.RawMax.match(/([\\d.]+)/);\n      if (match) valueMax = parseFloat(match[1]);\n    }\n    \n    results.push({\n      hostname: hostname,\n      sensor_type: node.Type.toLowerCase(),\n      sensor_name: node.Text,\n      sensor_id: node.SensorId,\n      value: value,\n      value_min: valueMin,\n      value_max: valueMax,\n      unit: unit,\n      hardware_name: hardwareName,\n      hardware_type: hardwareType,\n      recorded_at: now,\n      metadata: JSON.stringify({\n        display_value: node.Value,\n        display_min: node.Min,\n        display_max: node.Max\n      })\n    });\n  }\n  \n  // Recurse into children\n  if (node.Children && node.Children.length > 0) {\n    for (const child of node.Children) {\n      findSensors(child, hardwareName, hardwareType);\n    }\n  }\n}\n\n// Start parsing from root\nfindSensors(data);\n\nif (results.length === 0) {\n  return [{ json: { skip: true, message: 'No sensor data found' } }];\n}\n\nreturn results.map(r => ({ json: r }));"
+      },
+      "id": "transform-data",
+      "name": "Transform Sensor Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "skip-check",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-has-data",
+      "name": "Has Sensor Data?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [950, 500]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_hardware_sensors"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "hostname": "={{ $json.hostname }}",
+            "sensor_type": "={{ $json.sensor_type }}",
+            "sensor_name": "={{ $json.sensor_name }}",
+            "sensor_id": "={{ $json.sensor_id }}",
+            "value": "={{ $json.value }}",
+            "value_min": "={{ $json.value_min }}",
+            "value_max": "={{ $json.value_max }}",
+            "unit": "={{ $json.unit }}",
+            "hardware_name": "={{ $json.hardware_name }}",
+            "hardware_type": "={{ $json.hardware_type }}",
+            "recorded_at": "={{ $json.recorded_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "insert-to-db",
+      "name": "Insert to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1200, 500],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Hardware Sensors Collection\n\n### What This Does:\nCollects hardware sensor data from LibreHardwareMonitor and stores in raw_hardware_sensors.\n\n### Prerequisites:\n1. LibreHardwareMonitor running\n2. HTTP Server enabled (Options → Remote Web Server → Run)\n3. Default port: 8085\n\n### Data Collected:\n- **Temperatures**: CPU, GPU, motherboard, storage\n- **Fan Speeds**: All detected fans (RPM)\n- **Voltages**: CPU, RAM, motherboard\n- **Power**: CPU/GPU wattage\n- **Load**: CPU/GPU usage %\n- **Clocks**: CPU/GPU frequencies\n\n### Schedule:\nRuns every 5 minutes\n\n### Setup:\n1. Select PostgreSQL credential\n2. Ensure LibreHardwareMonitor is running\n3. Activate workflow",
+        "height": 480,
+        "width": 340
+      },
+      "id": "note",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 720]
+    }
+  ],
+  "connections": {
+    "Run Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Get Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Sensor Data": {
+      "main": [
+        [
+          {
+            "node": "Transform Sensor Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Sensor Data": {
+      "main": [
+        [
+          {
+            "node": "Has Sensor Data?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Sensor Data?": {
+      "main": [
+        [
+          {
+            "node": "Insert to Database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}

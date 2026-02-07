@@ -30,11 +30,13 @@ models:
         description: "Last digits of the account number"
       - name: transaction_name
         description: "Merchant or transaction name"
+      - name: transaction_type
+        description: "Type of transaction (e.g., debit, credit)"
       - name: transaction_amount
         description: "Transaction amount (negative for debits, positive for credits)"
       - name: description
         description: "Full transaction description from the institution"
-      - name: category
+      - name: transaction_category
         description: "Transaction category (e.g., Shopping, Groceries, Bills)"
       - name: transaction_date
         description: "Date of the transaction"

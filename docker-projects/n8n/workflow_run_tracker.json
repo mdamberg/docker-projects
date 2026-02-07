@@ -1,0 +1,250 @@
+{
+  "name": "Workflow Run Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Run Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://localhost:5678/api/v1/executions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "includeData",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "get-executions",
+      "name": "Get Recent Executions",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [450, 500],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "N8N_API_CREDENTIAL_ID",
+          "name": "n8n API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://localhost:5678/api/v1/workflows",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "get-workflows",
+      "name": "Get Workflows List",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [650, 500],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "N8N_API_CREDENTIAL_ID",
+          "name": "n8n API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get workflows list from current input (Get Workflows List node)\nconst workflowsResponse = $input.first().json;\nconst workflowsList = workflowsResponse.data || workflowsResponse || [];\n\n// Build lookup map: workflowId -> workflowName\nconst workflowNames = {};\nfor (const wf of workflowsList) {\n  workflowNames[wf.id] = wf.name;\n}\n\n// Get executions from previous node\nconst executionsData = $('Get Recent Executions').first().json;\nconst executions = executionsData.data || executionsData || [];\n\n// Get cutoff time (last 2 hours)\nconst cutoffTime = new Date(Date.now() - 2 * 60 * 60 * 1000);\n\nconst results = [];\n\nfor (const exec of executions) {\n  const startedAt = new Date(exec.startedAt);\n  \n  // Only process recent executions\n  if (startedAt < cutoffTime) continue;\n  \n  // Look up workflow name from our map\n  const workflowId = exec.workflowId || '';\n  const workflowName = workflowNames[workflowId] || 'Unknown';\n  \n  results.push({\n    workflow_id: String(workflowId),\n    workflow_name: workflowName,\n    source: exec.mode || 'manual',\n    status: exec.status || 'unknown',\n    started_at: exec.startedAt,\n    finished_at: exec.stoppedAt || null,\n    metadata: JSON.stringify({\n      execution_id: exec.id,\n      mode: exec.mode,\n      retryOf: exec.retryOf,\n      retrySuccessId: exec.retrySuccessId\n    })\n  });\n}\n\nif (results.length === 0) {\n  return [{ json: { skip: true, message: 'No new executions to log' } }];\n}\n\nreturn results.map(r => ({ json: r }));"
+      },
+      "id": "transform-data",
+      "name": "Transform Execution Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "skip-check",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-has-data",
+      "name": "Has Executions?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1050, 500]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_n8n_workflow_runs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "workflow_id": "={{ $json.workflow_id }}",
+            "workflow_name": "={{ $json.workflow_name }}",
+            "source": "={{ $json.source }}",
+            "status": "={{ $json.status }}",
+            "started_at": "={{ $json.started_at }}",
+            "finished_at": "={{ $json.finished_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {
+          "onConflict": "nothing"
+        }
+      },
+      "id": "insert-to-db",
+      "name": "Log to Database",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1300, 400],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Workflow Run Tracker\n\n### What This Does:\nPolls n8n API every hour and logs ALL workflow executions (success + error) to raw_n8n_workflow_runs.\n\n### Setup:\n1. Create n8n API Key:\n   - Settings → n8n API → Create API Key\n2. Create HTTP Header Auth credential:\n   - Name: 'X-N8N-API-KEY'\n   - Value: your API key\n3. Select credentials on nodes\n4. Activate workflow\n\n### Table: raw_n8n_workflow_runs\n- workflow_id\n- workflow_name\n- source (trigger type)\n- status (success/error)\n- started_at\n- finished_at\n- metadata",
+        "height": 420,
+        "width": 340
+      },
+      "id": "note",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 700]
+    }
+  ],
+  "connections": {
+    "Run Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Executions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Recent Executions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent Executions": {
+      "main": [
+        [
+          {
+            "node": "Get Workflows List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Workflows List": {
+      "main": [
+        [
+          {
+            "node": "Transform Execution Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transform Execution Data": {
+      "main": [
+        [
+          {
+            "node": "Has Executions?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Executions?": {
+      "main": [
+        [
+          {
+            "node": "Log to Database",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}

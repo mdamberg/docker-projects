@@ -1,0 +1,243 @@
+{
+  "name": "Workflow Health Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Run Every Hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 400]
+    },
+    {
+      "parameters": {},
+      "id": "manual-trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 600]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  'raw_system_health' AS table_name,\n  MAX(recorded_at) AS last_recorded,\n  EXTRACT(EPOCH FROM (NOW() - MAX(recorded_at)))/60 AS minutes_since_last,\n  20 AS threshold_minutes,\n  CASE WHEN EXTRACT(EPOCH FROM (NOW() - MAX(recorded_at)))/60 > 20 THEN true ELSE false END AS is_stale\nFROM raw_system_health\nWHERE recorded_at > NOW() - INTERVAL '24 hours'\n\nUNION ALL\n\nSELECT \n  'raw_media_library' AS table_name,\n  MAX(recorded_at) AS last_recorded,\n  EXTRACT(EPOCH FROM (NOW() - MAX(recorded_at)))/60 AS minutes_since_last,\n  420 AS threshold_minutes,\n  CASE WHEN EXTRACT(EPOCH FROM (NOW() - MAX(recorded_at)))/60 > 420 THEN true ELSE false END AS is_stale\nFROM raw_media_library\nWHERE recorded_at > NOW() - INTERVAL '24 hours';",
+        "options": {}
+      },
+      "id": "check-data-freshness",
+      "name": "Check Data Freshness",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [450, 500],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check for stale data and build alert records\nconst items = $input.all();\nconst now = new Date().toISOString();\n\nconst alerts = [];\nconst staleWorkflows = [];\nconst healthyWorkflows = [];\n\nfor (const item of items) {\n  const data = item.json;\n  \n  if (!data.last_recorded) {\n    staleWorkflows.push({\n      table: data.table_name,\n      status: 'NO DATA',\n      message: `No data found in ${data.table_name} in last 24 hours`\n    });\n    \n    alerts.push({\n      alert_type: 'no_data',\n      severity: 'warning',\n      source: data.table_name,\n      title: `No Data: ${data.table_name}`,\n      message: `No data found in ${data.table_name} in last 24 hours`,\n      triggered_at: now,\n      metadata: JSON.stringify({ table: data.table_name, threshold_minutes: data.threshold_minutes })\n    });\n    continue;\n  }\n  \n  if (data.is_stale) {\n    const minutesAgo = Math.round(data.minutes_since_last);\n    const hoursAgo = (minutesAgo / 60).toFixed(1);\n    const timeAgo = minutesAgo > 60 ? `${hoursAgo} hours` : `${minutesAgo} minutes`;\n    \n    staleWorkflows.push({\n      table: data.table_name,\n      status: 'STALE',\n      minutes_since_last: minutesAgo,\n      threshold_minutes: data.threshold_minutes,\n      message: `${data.table_name} is stale - last data ${timeAgo} ago (threshold: ${data.threshold_minutes} min)`\n    });\n    \n    alerts.push({\n      alert_type: 'stale_data',\n      severity: 'warning',\n      source: data.table_name,\n      title: `Stale Data: ${data.table_name}`,\n      message: `Last data ${timeAgo} ago (threshold: ${data.threshold_minutes} min)`,\n      triggered_at: now,\n      metadata: JSON.stringify({ \n        table: data.table_name, \n        minutes_since_last: minutesAgo, \n        threshold_minutes: data.threshold_minutes,\n        last_recorded: data.last_recorded\n      })\n    });\n  } else {\n    healthyWorkflows.push({\n      table: data.table_name,\n      status: 'OK',\n      minutes_since_last: Math.round(data.minutes_since_last)\n    });\n  }\n}\n\nconst hasIssues = staleWorkflows.length > 0;\n\nlet alertTitle = hasIssues ? '⚠️ Data Pipeline Issues Detected' : '✅ All Workflows Healthy';\nlet alertBody = '';\n\nif (hasIssues) {\n  alertBody = '**Stale/Missing Data:**\\n';\n  for (const w of staleWorkflows) {\n    alertBody += `- ${w.message}\\n`;\n  }\n  alertBody += '\\n';\n}\n\nalertBody += '**Healthy Workflows:**\\n';\nfor (const w of healthyWorkflows) {\n  alertBody += `- ${w.table}: OK (${w.minutes_since_last} min ago)\\n`;\n}\n\nreturn [{\n  json: {\n    has_issues: hasIssues,\n    stale_count: staleWorkflows.length,\n    healthy_count: healthyWorkflows.length,\n    alert_title: alertTitle,\n    alert_body: alertBody,\n    alerts: alerts,\n    checked_at: now\n  }\n}];"
+      },
+      "id": "analyze-freshness",
+      "name": "Analyze Freshness",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [700, 500]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-check",
+              "leftValue": "={{ $json.has_issues }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-issues",
+      "name": "Has Issues?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [950, 500]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split alerts array into individual items for DB insertion\nconst alerts = $json.alerts || [];\nreturn alerts.map(alert => ({ json: alert }));"
+      },
+      "id": "split-alerts",
+      "name": "Split Alerts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 300]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": "raw_n8n_alerts"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "alert_type": "={{ $json.alert_type }}",
+            "severity": "={{ $json.severity }}",
+            "source": "={{ $json.source }}",
+            "title": "={{ $json.title }}",
+            "message": "={{ $json.message }}",
+            "triggered_at": "={{ $json.triggered_at }}",
+            "metadata": "={{ $json.metadata }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "log-alerts-to-db",
+      "name": "Log Alerts to DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [1450, 300],
+      "credentials": {
+        "postgres": {
+          "id": "POSTGRES_CREDENTIAL_ID",
+          "name": "Home Metrics Postgres"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "YOUR_DISCORD_WEBHOOK_URL",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"{{ $json.alert_title }}\",\n  \"embeds\": [{\n    \"title\": \"Data Pipeline Status\",\n    \"description\": {{ JSON.stringify($json.alert_body) }},\n    \"color\": 16744256,\n    \"timestamp\": \"{{ $json.checked_at }}\",\n    \"footer\": {\n      \"text\": \"Home Metrics Monitor\"\n    }\n  }]\n}",
+        "options": {}
+      },
+      "id": "send-discord-alert",
+      "name": "Send Discord Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 500]
+    },
+    {
+      "parameters": {
+        "content": "## Workflow Health Monitor\n\n### What This Does:\nChecks data freshness and logs to raw_n8n_alerts:\n1. Queries each table for last data timestamp\n2. If stale → logs alert + sends Discord\n\n### Thresholds:\n- raw_system_health: 20 min\n- raw_media_library: 7 hours (420 min)\n\n### Alert Types:\n- stale_data: Data older than threshold\n- no_data: No data in last 24 hours\n\n### Setup:\n1. Select PostgreSQL credential on both Postgres nodes\n2. Add Discord webhook URL\n3. Activate workflow",
+        "height": 400,
+        "width": 380
+      },
+      "id": "note",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [180, 720]
+    }
+  ],
+  "connections": {
+    "Run Every Hour": {
+      "main": [
+        [
+          {
+            "node": "Check Data Freshness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check Data Freshness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Data Freshness": {
+      "main": [
+        [
+          {
+            "node": "Analyze Freshness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Freshness": {
+      "main": [
+        [
+          {
+            "node": "Has Issues?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Issues?": {
+      "main": [
+        [
+          {
+            "node": "Split Alerts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Discord Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Split Alerts": {
+      "main": [
+        [
+          {
+            "node": "Log Alerts to DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1
+}
