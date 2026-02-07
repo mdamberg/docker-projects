@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_hardware_sensors_long
+  - name: stg_hardware_sensors_metrics_long
     description: "An unpivoted, long format of raw hardware sensors which will go on to make dim_hardware_sensors"
     columns:
       - name: host_record_id

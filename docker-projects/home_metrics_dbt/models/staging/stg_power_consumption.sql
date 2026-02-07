@@ -19,7 +19,12 @@
         {{ dbt_utils.generate_surrogate_key(['rc.entity_id', 'power_entity']) }} as power_consumption_entity_id,
     -- Generate a surrogate key for power_consumption_record_id using entity_id    
         {{ dbt_utils.generate_surrogate_key(['rc.entity_id']) }} as power_consumption_record_entity,
-        rc.entity_id,
+        case
+            when rc.entity_id = 'sensor.basement_entertainment_center_current_consumption' then 'sensor.basement_entertainment_center'
+            when rc.entity_id = 'sensor.work_and_gaming_setup_current_consumption' then 'sensor.work_and_gaming_setup'
+             when rc.entity_id = 'sensor.living_room_entertainment_wall_current_consumption' then 'sensor.living_room_entertainment_wall'
+                else null
+                    end as entity_name,
 
         -- this method is not scalable and needs to be amended in the future
         case

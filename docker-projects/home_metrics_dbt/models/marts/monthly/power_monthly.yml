@@ -6,7 +6,7 @@ models:
     columns:
       - name: month_recorded
         description: "Month when the power consumption data was recorded"
-      - name: entity_id
+      - name: entity_name
         description: "Identifier for the power consumption entity (e.g., device or meter)"
       - name: power_entity
         description: "Friendly name of the power consumption entity"

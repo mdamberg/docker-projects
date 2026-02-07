@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: monthly_transactions
+    description: "Monthly aggregated transaction summary by account"
+    columns:
+      - name: period_start_date
+        description: "First day of the month"
+      - name: period_end_date
+        description: "Last day of the month"
+      - name: account_key
+        description: "Unique identifier for the account"
+      - name: account_type
+        description: "Type of account (checking, credit, etc.)"
+      - name: account_name
+        description: "Name of the account"
+      - name: account_number
+        description: "Account number"
+      - name: total_income
+        description: "Total credits for the period"
+      - name: total_expense
+        description: "Total debits for the period"
+      - name: net_income
+        description: "Income minus expenses"
+      - name: transaction_count
+        description: "Number of transactions in the period"

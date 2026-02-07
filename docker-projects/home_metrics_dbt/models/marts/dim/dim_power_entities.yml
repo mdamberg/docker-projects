@@ -9,8 +9,8 @@ models:
         tests:
           - unique
           - not_null
-      - name: entity_id
-        description: "Unique identifier for the power consumption entity (e.g., device or meter)"
+      - name: entity_name
+        description: "Unique name for the power consumption entity (e.g., device or meter)"
         tests:
           - unique
           - not_null
