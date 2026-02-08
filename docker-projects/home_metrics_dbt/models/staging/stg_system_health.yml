@@ -8,35 +8,95 @@ models:
         description: "Unique identifier for each system health record"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: system_health_record_id
         description: "Unique identifier for each system health record"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hostname
         description: "Friendly hostname of the system (e.g., server_desktop)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hostname_id
         description: "Machine hostname identifier (e.g., DESKTOP-QGA3DVB)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: recorded_date
         description: "Date when the metrics were recorded"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: recorded_at_ts
         description: "Timestamp when the metrics were recorded"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: inserted_date
         description: "Date when the record was inserted"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: inserted_at_ts
         description: "Timestamp when the record was inserted"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: cpu_percent
         description: "CPU usage percentage (0-100)"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: memory_usage_percent
         description: "Memory (RAM) usage percentage (0-100)"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: disk_usage_percent
         description: "Disk usage percentage (0-100)"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: disk_read_latency_seconds
         description: "Disk read latency in seconds"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: disk_write_latency_seconds
         description: "Disk write latency in seconds"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: disk_read_bytes_total
         description: "Total bytes read from disk"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: disk_write_bytes_total
         description: "Total bytes written to disk"
+        config:
+          meta:
+            dimension:
+              type: number

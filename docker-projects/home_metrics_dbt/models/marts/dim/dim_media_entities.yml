@@ -9,9 +9,25 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: source
         description: "Source of the media entity (e.g., Sonarr, Radarr)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_type
         description: "Type of media entity (e.g., movie, show, album)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: library_name
         description: "Name of the media library"
+        config:
+          meta:
+            dimension:
+              type: string

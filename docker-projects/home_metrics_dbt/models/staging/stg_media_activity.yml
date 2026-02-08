@@ -6,30 +6,78 @@ models:
     columns:
       - name: media_source_key
         description: "Unique identifier for each media source"
-        tests: 
+        tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: user_key
         description: "Unique identifier for each user within a media source"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_activity_key
         description: "Unique identifier for each media activity record"
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: source
         description: "Source of the media activity (e.g., Prowlarr, Sonarr, Radarr)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: user_name
         description: "Username"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_type
         description: "Type of media activity (e.g., download, delete)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: title
         description: "Title of the media item"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: series_title
         description: "Title of the series (if applicable)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: duration_seconds
         description: "Duration of the media activity in seconds"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: watched_at
         description: "Timestamp when the media was watched"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: inserted_at
         description: "Timestamp when the record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: metadata
         description: "Additional metadata related to the media activity in JSON format"
+        config:
+          meta:
+            dimension:
+              type: string

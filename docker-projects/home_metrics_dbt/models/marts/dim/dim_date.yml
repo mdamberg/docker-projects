@@ -1,6 +1,6 @@
 version: 2
 
-models: 
+models:
   - name: dim_date
     description: "table creating a date spine for time series analysis"
     columns:
@@ -9,25 +9,74 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: number
       - name: date_day
         description: "date formatted day"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: day_of_week
         description: "the name of a particular day of the week"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: day_of_week_num
         description: "the number of the day of the week 1 - 7"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: month_start_date
         description: "the date of the start of each month"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: month_end_date
         description: "the last day of the month"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: month_name
         description: "the name of the month"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: month_number
         description: "the number of the month 1 - 12"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: year_start_date
         description: "the first day of the year"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: year_num
         description: "four-digit year (e.g., 2025)"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: is_weekend_flag
         description: "flag that indicates if that particular day is a weekend"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: is_bom_flag
-        description: "flag that indicates if that particular day is the beginning of the month"
+        description: "flag that indicates if that particular day is the beginning of the
+          month"
+        config:
+          meta:
+            dimension:
+              type: number

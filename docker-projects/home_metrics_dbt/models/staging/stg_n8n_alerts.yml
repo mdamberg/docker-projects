@@ -9,33 +9,122 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: number
       - name: alert_type
-        description: "Type of alert (workflow_failure, stale_data, no_data, threshold_breach)"
+        description: "Type of alert (workflow_failure, stale_data, no_data,
+          threshold_breach)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: severity
         description: "Severity level (info, warning, error, critical)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: alert_source
         description: "Source of the alert (workflow name or table name)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: title
         description: "Short alert title"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: message
         description: "Detailed alert message"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: triggered_at
         description: "Timestamp when the alert was triggered"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: date_triggered
         description: "Date when the alert was triggered"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: time_triggered
         description: "Time when the alert was triggered"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: resolved_at
         description: "Timestamp when the alert was resolved (NULL if still active)"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: is_active
         description: "Boolean flag indicating if alert is still active (unresolved)"
+        config:
+          meta:
+            dimension:
+              type: boolean
       - name: inserted_at
         description: "Timestamp when the record was inserted"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: metadata
         description: "Additional metadata in JSON format"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: execution_id
         description: "n8n execution ID (extracted from metadata)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_id
         description: "Workflow ID (extracted from metadata)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: failed_node
         description: "Node that failed (extracted from metadata)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_skey
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_type_key
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_severity_key
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: triggered_at_local
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: timestamp

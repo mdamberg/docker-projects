@@ -51,23 +51,29 @@ cleaning as (
         inserted_at::date as date_inserted,
         cast({{ to_local_time('inserted_at') }} as time) as time_of_insertion
     from transactions_data
+),
+dedupes as (        -- due to multiple ingestions of the same data, we have some duplicates in the raw data. This CTE deduplicates exact matches (same date, account, name, amount)
+    select
+        transaction_pk,
+        transaction_skey,
+        account_key,
+        category_key,
+        account_type,
+        account_name,
+        account_number,
+        account_holder,
+        transaction_name,
+        case when transaction_amount > 0 then 'Credit' else 'Debit' end as transaction_type,
+        transaction_amount,
+        transaction_category,
+        transaction_date,
+        transaction_time,
+        date_inserted,
+        time_of_insertion,
+        row_number() over(partition by transaction_date, account_key, transaction_name, transaction_amount order by transaction_date) as rn
+    from cleaning
 )
-
 select
-    transaction_pk,
-    transaction_skey,
-    account_key,
-    category_key,
-    account_type,
-    account_name,
-    account_number,
-    account_holder,
-    transaction_name,
-    case when transaction_amount > 0 then 'Credit' else 'Debit' end as transaction_type,
-    transaction_amount,
-    transaction_category,
-    transaction_date,
-    transaction_time,
-    date_inserted,
-    time_of_insertion
-from cleaning
+    *
+from dedupes
+where rn = 1 -- deduplicate exact matches (same date, account, name, amount)

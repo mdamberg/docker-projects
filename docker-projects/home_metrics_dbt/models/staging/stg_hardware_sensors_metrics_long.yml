@@ -2,49 +2,115 @@ version: 2
 
 models:
   - name: stg_hardware_sensors_metrics_long
-    description: "An unpivoted, long format of raw hardware sensors which will go on to make dim_hardware_sensors"
+    description: "An unpivoted, long format of raw hardware sensors which will go on
+      to make dim_hardware_sensors"
     columns:
       - name: host_record_id
         description: "A unique number assigned to each row"
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_key
         description: "A unique identifier for each sensor on a particular hostname"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: host_id
         description: "A unique identifier for each hostname"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hostname
         description: "name of the machine providing the data"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_type
         description: "the category of info being provided"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_name
         description: "the name of the sensor from source"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_id
         description: "id provided for each sensor"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hardware_name
         description: "the computer/component that information is coming from"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hardware_type
         description: "the category of component that information is coming from"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_value
         description: " the numerical value for that sensor_name"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: sensor_value_min
         description: "The minimum value recorded during time window between data grabs"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: sensor_value_max
         description: "The maximum value recorded during time window between data grabs"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: unit
         description: "the unit of measurement for that value"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: recorded_at
         description: "the time and date the data was recorded"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: recorded_date
         description: "the date portion of the recorded_at timestamp"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: inserted_at_ts
         description: "The time and date the data was inserted"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: metadata
         description: "an array of all the above data"
-
-     
-
+        config:
+          meta:
+            dimension:
+              type: string

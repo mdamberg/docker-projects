@@ -2,34 +2,75 @@ version: 2
 
 models:
   - name: stg_hardware_sensors
-    description: "Pivoted hardware sensor metrics - one row per 15-minute collection interval per hostname"
+    description: "Pivoted hardware sensor metrics - one row per 15-minute collection
+      interval per hostname"
     columns:
-      - name: host_id  
+      - name: host_id
         description: "Surrogate key for the hostname"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_key
         description: "Surrogate key for the sensor on a particular hostname"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: host_record_id
         description: "Surrogate key for the specific sensor reading at a particular time"
         tests:
           - not_null
           - unique
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hostname
         description: "Hostname of the device reporting the sensor data"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_type
         description: "Type of sensor reporting the data"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_id
         description: "Identifier for the specific sensor on the device"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: sensor_value
         description: "The recorded value from the sensor"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: sensor_name
         description: "Name of the sensor as reported by the device"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hardware_name
         description: "Name of the hardware component associated with the sensor"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: hardware_type
         description: "Type of hardware component associated with the sensor"
+        config:
+          meta:
+            dimension:
+              type: string

@@ -1,6 +1,6 @@
 version: 2
 
-models: 
+models:
   - name: dim_power_entities
     description: "Dimension table for power consumption entities"
     columns:
@@ -9,12 +9,28 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: entity_name
         description: "Unique name for the power consumption entity (e.g., device or meter)"
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: power_entity
         description: "Friendly name of the power consumption entity"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: device_class
         description: "Device class of the power consumption entity"
+        config:
+          meta:
+            dimension:
+              type: string

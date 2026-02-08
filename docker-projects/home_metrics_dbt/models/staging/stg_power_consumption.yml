@@ -6,35 +6,92 @@ models:
     columns:
       - name: month_recorded_at
         description: "Month when the power consumption data was recorded"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: power_consumption_record_id
         description: "Record number for the power consumption data"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: power_consumption_entity_id
         description: "Unique identifier for each power consumption entity"
-        tests: 
+        tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: power_consumption_record_entity
         description: "Unique identifier for each power consumption record"
         tests:
-            - not_null
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: entity_name
         description: "Identifier for the power consumption entity (e.g., device or meter)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: power_entity
         description: "Friendly name of the power consumption entity"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: device_state
         description: "Current state or reading of the power consumption entity"
-      - name: unit_of_measurement 
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: unit_of_measurement
         description: "Unit of measurement for the power consumption reading"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: device_class
-        description: "Device class of the power consumption entity" 
+        description: "Device class of the power consumption entity"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: recorded_date
-        description: "Date when the power consumption data was recorded" 
-      - name: recorded_dateime
-        description: "Timestamp when the power consumption data was recorded"
+        description: "Date when the power consumption data was recorded"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: inserted_date
         description: "Date when the record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: inserted_datetime
         description: "Timestamp when the record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: attributes
-        description: "Additional attributes related to the power consumption entity in JSON format"
+        description: "Additional attributes related to the power consumption entity in
+          JSON format"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: recorded_datetime
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: timestamp

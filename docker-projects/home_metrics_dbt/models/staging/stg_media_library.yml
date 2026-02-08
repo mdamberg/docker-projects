@@ -8,31 +8,88 @@ models:
         description: "Surrogate key for the media source"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_type_key
-        description: "Surrogate key for the media type (not unique per row - shared by items of same source/type)"
+        description: "Surrogate key for the media type (not unique per row - shared by
+          items of same source/type)"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: source
         description: "Source of the media library (e.g., Sonarr, Radarr)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_type
         description: "Type of media (e.g., movie, tv show)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: library_name
         description: "Name of the library"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: title
         description: "Title of the media item"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: genre
         description: "Genre(s) of the media item"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: year
         description: "Release year"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: ratings
         description: "Rating value"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: date_recorded
         description: "Timestamp when the library record was recorded"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: recorded_at_ts
         description: "Timestamp when the media library data was recorded"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: date_inserted
         description: "Timestamp when the record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: inserted_at_ts
         description: "Timestamp when the record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: metadata
         description: "Additional metadata related to the media library in JSON format"
+        config:
+          meta:
+            dimension:
+              type: string

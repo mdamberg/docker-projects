@@ -9,7 +9,19 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_id
         description: "Unique identifier for the n8n workflow"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_name
         description: "Name of the n8n workflow"
+        config:
+          meta:
+            dimension:
+              type: string

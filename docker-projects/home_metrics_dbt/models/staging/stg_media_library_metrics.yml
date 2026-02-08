@@ -1,39 +1,91 @@
 version: 2
-  
-models: 
+
+models:
   - name: stg_media_library_metrics
-    description: "Staging table for media library metrics data" 
+    description: "Staging table for media library metrics data"
     columns:
       - name: media_source_key
         description: "Surrogate key for the media source"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: library_key
         description: "Surrogate key for the library"
         tests:
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: library_snapshot_key
         description: "Surrogate key for the library snapshot"
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: source
         description: "Source of the media library metrics"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_type
         description: "Type of media in the library"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: library_name
         description: "Name of the media library"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: item_count
         description: "Number of items in the media library"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: total_size_bytes
         description: "Total size of items in the media library in bytes"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: date_recorded
         description: "Date when the metrics were recorded"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: recorded_at_ts
         description: "Timestamp when the metrics were recorded"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: date_inserted
         description: "Date when the metrics were inserted into the staging table"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: inserted_at_ts
         description: "Timestamp when the metrics were inserted into the staging table"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: metadata
         description: "Metadata associated with the metrics"
+        config:
+          meta:
+            dimension:
+              type: string

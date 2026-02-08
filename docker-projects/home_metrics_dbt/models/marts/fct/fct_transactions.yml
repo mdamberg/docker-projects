@@ -1,0 +1,69 @@
+models:
+  - name: fct_transactions
+    columns:
+      - name: transaction_pk
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: account_key
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: category_key
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_date
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: transaction_time
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: account_type
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_holder
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_name
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_category
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_amount
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number

@@ -8,29 +8,91 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: number
       - name: workflow_run_skey
         description: "Identifier for the n8n workflow"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_key
         description: "n8n workflow ID"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_status_key
         description: "Identifier for the workflow run status"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_name
         description: "Name of the n8n workflow"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: workflow_status
         description: "Status of the workflow run (e.g., success, failed)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: date_started
         description: "Date when the workflow run started"
-      - name: time_started  
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_started
         description: "Time when the workflow run started"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: date_finished
         description: "Date when the workflow run finished"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: time_finished
         description: "Time when the workflow run finished"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: date_inserted
         description: "Date when the workflow run record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: time_of_insertion
         description: "Time when the workflow run record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: timestamp
       - name: metadata
         description: "Additional metadata in JSON format"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: execution_id
         description: "n8n execution ID (extracted from metadata)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_id
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
