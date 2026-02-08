@@ -28,5 +28,13 @@ with raw_system_health as (
 )
 
 select
-    *
+    system_health_id,
+    system_health_record_id,
+    hostname,
+    hostname_id,
+    recorded_date,
+    cast(recorded_at_ts as time) as recorded_at_time,
+    inserted_date,
+    cast(inserted_at_ts as time) as inserted_at_time,
+
 from raw_system_health
