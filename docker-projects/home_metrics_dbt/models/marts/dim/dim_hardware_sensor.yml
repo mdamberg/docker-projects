@@ -1,0 +1,45 @@
+models:
+  - name: dim_hardware_sensor
+    columns:
+      - name: sensor_id
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: host_id
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: hostname
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: sensor_type
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: sensor_name
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: hardware_name
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: hardware_type
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
