@@ -13,7 +13,7 @@ with transactions as (
         transaction_time,
         account_type,
         account_name,
-        account_number
+        account_number,
         account_holder,
         transaction_name,
         case    
