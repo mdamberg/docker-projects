@@ -56,8 +56,23 @@ models:
             dimension:
               type: string
       - name: transaction_amount
-        description: ""
+        description: "Transaction amount (positive for credits, negative for debits)"
         config:
           meta:
             dimension:
               type: number
+            metrics:
+              total_income:
+                type: sum
+                label: "Total Income"
+                description: "Sum of all credit transactions"
+                sql: "CASE WHEN ${transaction_type} = 'Credit' THEN ${transaction_amount} ELSE 0 END"
+              total_expenses:
+                type: sum
+                label: "Total Expenses"
+                description: "Sum of all debit transactions (as positive value)"
+                sql: "CASE WHEN ${transaction_type} = 'Debit' THEN ABS(${transaction_amount}) ELSE 0 END"
+              net_amount:
+                type: sum
+                label: "Net Amount"
+                description: "Total income minus total expenses"
