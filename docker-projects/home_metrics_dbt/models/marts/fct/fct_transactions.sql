@@ -16,6 +16,7 @@ with transactions as (
         account_number,
         account_holder,
         transaction_name,
+        transaction_type,
         case    
             when transaction_category ilike '%STDNT LN%' then 'Student Loan'
                 else transaction_category 

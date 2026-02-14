@@ -8,6 +8,7 @@ with months as (
         account_number,
         transaction_name,
         transaction_category,
+        transaction_type,
         transaction_amount
     from {{ ref('dim_date') }} dd 
     left join {{ ref('fct_transactions') }} ft
