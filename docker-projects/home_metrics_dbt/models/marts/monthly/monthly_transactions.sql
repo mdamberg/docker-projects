@@ -1,7 +1,7 @@
 with months as (
     select  
-        dd.month_start_date ,
-        dd.month_end_date ,
+        dd.month_start_date,
+        dd.month_end_date,
     	transaction_date,
         account_type,
         account_name,
@@ -13,6 +13,7 @@ with months as (
     from {{ ref('dim_date') }} dd 
     left join {{ ref('fct_transactions') }} ft
     	on ft.transaction_date between dd.month_start_date and dd.month_end_date 
+        and dd.month_start_date <= current_date
 )
 select * 
 from months
