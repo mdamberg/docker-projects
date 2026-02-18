@@ -21,7 +21,9 @@ with transactions as (
             when transaction_category ilike '%STDNT LN%' then 'Student Loan'
                 else transaction_category 
                     end as transaction_category,
-        transaction_amount
+        transaction_amount,
+        row_number() over( )
     from {{ ref('stg_transactions') }}
+    where transaction_category not in ('Savings Transfer', 'Internal Transfer')
 )
 select * from transactions

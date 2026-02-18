@@ -3,7 +3,7 @@
     schema='staging'
 ) }}
 
-with raw_system_health as (
+with raw_system_health_cte as (
 
     select
     -- Generate a surrogate key for system_health_id using hostname
@@ -35,6 +35,5 @@ select
     recorded_date,
     cast(recorded_at_ts as time) as recorded_at_time,
     inserted_date,
-    cast(inserted_at_ts as time) as inserted_at_time,
-
-from raw_system_health
+    cast(inserted_at_ts as time) as inserted_at_time
+from raw_system_health_cte

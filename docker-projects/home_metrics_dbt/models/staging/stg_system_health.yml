@@ -38,7 +38,7 @@ models:
           meta:
             dimension:
               type: date
-      - name: recorded_at_ts
+      - name: recorded_at_time
         description: "Timestamp when the metrics were recorded"
         tests:
           - not_null
@@ -52,7 +52,7 @@ models:
           meta:
             dimension:
               type: date
-      - name: inserted_at_ts
+      - name: inserted_at_time
         description: "Timestamp when the record was inserted"
         config:
           meta:
