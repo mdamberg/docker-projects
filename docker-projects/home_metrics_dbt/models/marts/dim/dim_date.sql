@@ -22,6 +22,7 @@ WITH date_spine AS (
         extract(MONTH FROM date_day)::smallint AS month_number,
         date_trunc('year', date_day)::date AS year_start_date,
         extract(YEAR FROM date_day)::int AS year_num,
+        date_trunc('week', date_day)::date AS week_start_date,
         extract(DOW FROM date_day) IN (0, 6) AS is_weekend,
         date_day = date_trunc('month', date_day)::date as is_bom
     from date_spine
@@ -32,6 +33,7 @@ SELECT
     date_day,
     day_of_week,
     day_of_week_num,
+    week_start_date,
     month_start_date,
     month_end_date,
     month_name,
@@ -39,5 +41,6 @@ SELECT
     year_start_date,
     year_num,
     case when is_weekend = true then 1 else 0 end as is_weekend_flag,
-    case when is_bom = true then 1 else 0 end as is_bom_flag
+    case when is_bom = true then 1 else 0 end as is_bom_flag,
+    ((week_start_date - '2025-03-07'::date) / 7) * -1 % 2 as is_payweek
 FROM dim_date_cte

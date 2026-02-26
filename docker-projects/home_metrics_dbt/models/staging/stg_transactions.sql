@@ -65,7 +65,25 @@ dedupes as (        -- due to multiple ingestions of the same data, we have some
         transaction_name,
         case when transaction_amount > 0 then 'Credit' else 'Debit' end as transaction_type,
         transaction_amount,
-        transaction_category,
+        case 
+            when transaction_name like '%Venmo%' or transaction_name like 'ZELLE%' then 'Entertainment & Rec.' 
+            when transaction_name like 'FIRSTMARK PAYMENTS%' then 'Loan Payment'
+            when transaction_name like 'MN DEPT OF REVEN MNSTTAXRFD%' 
+                or transaction_name like 'MN DRIVER AND VEHICLE%' 
+                or transaction_name like '%AUTO%' 
+                or transaction_name like 'DMV%'
+                or transaction_name in ('CITY OF HUDSON', 'City of Hudson, WI')
+                    then 'Auto & Transport' 
+            when (transaction_name like 'ONLINE TRANSFER REF%' and transaction_name like '%CASH BACK VISA%') 
+                or transaction_name like '%PLATINUM CARD XXXXXXXXXXXX4113%' 
+                or transaction_name like '%CARD 2294%'
+                or transaction_name = 'INTEREST CHARGE ON PURCHASES'
+                    then 'Credit Card Payment'
+            when transaction_name like 'PURCHASE AUTHORIZED%'then 'Shopping'
+            when transaction_name like 'RECURRING PAYMENT AUTHORIZED%' then 'Bills & Utilities'
+            when transaction_name = 'WF *STILLWATERDENTISTRY OAK PARK HEIGMN' or transaction_name like 'FAIRVIEW%' then 'Medical'
+            when transaction_name like '%CREDIT SYSTEMS%' or transaction_name like '%DEPT OF REV' then 'Taxes'
+                else transaction_category end as transaction_category,
         transaction_date,
         transaction_time,
         date_inserted,

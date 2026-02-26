@@ -31,6 +31,12 @@ models:
           meta:
             dimension:
               type: number
+      - name: week_start_date
+        description: "the date of the start of each week"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: month_start_date
         description: "the date of the start of each month"
         config:

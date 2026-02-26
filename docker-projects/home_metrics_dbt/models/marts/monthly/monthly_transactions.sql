@@ -19,7 +19,7 @@ with months as (
         transaction_type,
         transaction_amount
     from {{ ref('dim_date') }} dd 
-    left join {{ ref('fct_transactions') }} ft
+    join {{ ref('fct_transactions') }} ft
     	on ft.transaction_date between dd.month_start_date and dd.month_end_date 
         and dd.month_start_date <= current_date
         and dd.is_bom_flag = 1
