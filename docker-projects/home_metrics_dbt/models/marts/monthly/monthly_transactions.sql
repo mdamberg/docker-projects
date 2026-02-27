@@ -10,6 +10,7 @@ with months as (
         category_key,
         dd.month_start_date,
         dd.month_end_date,
+        dd.is_payweek,
     	transaction_date,
         account_type,
         account_name,
@@ -17,7 +18,9 @@ with months as (
         transaction_name,
         transaction_category,
         transaction_type,
-        transaction_amount
+        transaction_amount,
+        is_recurring_payment_flag,
+        is_large_transaction_flag
     from {{ ref('dim_date') }} dd 
     join {{ ref('fct_transactions') }} ft
     	on ft.transaction_date between dd.month_start_date and dd.month_end_date 

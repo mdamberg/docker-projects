@@ -73,3 +73,15 @@ models:
           meta:
             dimension:
               type: number
+      - name: is_recurring_payment_flag
+        description: "1 if transaction description contains 'RECURRING PAYMENT', 0 otherwise"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_large_transaction_flag
+        description: "1 if absolute transaction amount > $1000, 0 otherwise"
+        config:
+          meta:
+            dimension:
+              type: number

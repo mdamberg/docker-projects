@@ -44,7 +44,7 @@ cleaning as (
                 end as account_holder,
         name as transaction_name,
         cast(amount as numeric(12,2)) * -1 as transaction_amount,   -- switched to negative for debits
-        -- description, duplicate column
+        description,
         category as transaction_category,
         cast(transaction_date as date) as transaction_date,
         cast({{ to_local_time('transaction_date') }} as time) as transaction_time,
@@ -84,6 +84,11 @@ dedupes as (        -- due to multiple ingestions of the same data, we have some
             when transaction_name = 'WF *STILLWATERDENTISTRY OAK PARK HEIGMN' or transaction_name like 'FAIRVIEW%' then 'Medical'
             when transaction_name like '%CREDIT SYSTEMS%' or transaction_name like '%DEPT OF REV' then 'Taxes'
                 else transaction_category end as transaction_category,
+        case
+            when transaction_amount < 0 and description ilike '%RECURRING PAYMENT%' then 1
+                else 0
+                    end as is_recurring_payment_flag,
+        case when transaction_amount < -3000 then 1 else 0 end as is_large_transaction_flag,  -- only flags large expenses (debits), not income
         transaction_date,
         transaction_time,
         date_inserted,

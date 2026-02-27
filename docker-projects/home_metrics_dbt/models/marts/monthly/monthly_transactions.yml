@@ -65,8 +65,8 @@ models:
               total_income:
                 type: sum
                 label: "Total Income"
-                description: "Sum of all credit transactions"
-                sql: "CASE WHEN ${transaction_type} = 'Credit' THEN ${transaction_amount} ELSE 0 END"
+                description: "Sum of transactions categorized as Income"
+                sql: "CASE WHEN ${transaction_category} = 'Income' THEN ${transaction_amount} ELSE 0 END"
               total_expenses:
                 type: sum
                 label: "Total Expenses"
@@ -76,3 +76,25 @@ models:
                 type: sum
                 label: "Net Amount"
                 description: "Total income minus total expenses"
+              regular_expenses:
+                type: sum
+                label: "Regular Expenses"
+                description: "Sum of debit transactions excluding large one-time expenses (>$1000)"
+                sql: "CASE WHEN ${transaction_type} = 'Debit' AND ${is_large_transaction_flag} = 0 THEN ABS(${transaction_amount}) ELSE 0 END"
+              regular_net_amount:
+                type: sum
+                label: "Regular Net Amount"
+                description: "Income minus regular expenses (excludes large transactions)"
+                sql: "CASE WHEN ${transaction_category} = 'Income' THEN ${transaction_amount} WHEN ${is_large_transaction_flag} = 0 THEN ${transaction_amount} ELSE 0 END"
+      - name: is_recurring_payment_flag
+        description: "1 if transaction description contains 'RECURRING PAYMENT', 0 otherwise"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_large_transaction_flag
+        description: "1 if absolute transaction amount > $1000, 0 otherwise"
+        config:
+          meta:
+            dimension:
+              type: number

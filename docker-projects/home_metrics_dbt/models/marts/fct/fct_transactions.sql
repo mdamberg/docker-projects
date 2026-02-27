@@ -22,8 +22,10 @@ with transactions as (
                 else transaction_category 
                     end as transaction_category,
         transaction_amount,
+        is_recurring_payment_flag,
+        is_large_transaction_flag,
         row_number() over( )
     from {{ ref('stg_transactions') }}
-    where transaction_category not in ('Savings Transfer', 'Internal Transfer')
+    where transaction_category not in ('Savings Transfer', 'Internal Transfer', 'Credit Card Payment')
 )
 select * from transactions
