@@ -26,6 +26,6 @@ with transactions as (
         is_large_transaction_flag,
         row_number() over( )
     from {{ ref('stg_transactions') }}
-    where transaction_category not in ('Savings Transfer', 'Internal Transfer', 'Credit Card Payment')
+    where transaction_category not in ('Savings Transfer', 'Internal Transfers', 'Credit Card Payment')
 )
 select * from transactions
