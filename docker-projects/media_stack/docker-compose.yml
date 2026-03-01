@@ -144,6 +144,7 @@ services:
       - C:\media\config\plex:/config
       - C:\media\movies:/movies
       - C:\media\tv:/tv
+      - C:\media\downloads:/downloads
     ports:
       - "32400:32400"
     restart: unless-stopped
