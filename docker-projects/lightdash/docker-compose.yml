@@ -6,6 +6,8 @@ services:
     depends_on:
       lightdash-db:
         condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
       # Lightdash internal database
       PGHOST: lightdash-db
@@ -18,14 +20,22 @@ services:
       LIGHTDASH_SECRET: ${LIGHTDASH_SECRET:-changemeplease123456789}
 
       # Site settings
-      SITE_URL: http://localhost:8080
+      SITE_URL: http://localhost:8090
       ALLOW_MULTIPLE_ORGS: "false"
 
       # Headless browser for exports (optional)
       HEADLESS_BROWSER_HOST: headless-browser
       HEADLESS_BROWSER_PORT: 3000
+
+      # S3 storage (MinIO) for pagination/results
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: lightdash
+      S3_REGION: us-east-1
+      S3_ACCESS_KEY: lightdash
+      S3_SECRET_KEY: lightdash123
+      S3_FORCE_PATH_STYLE: "true"
     ports:
-      - "8080:8080"
+      - "8090:8080"
     volumes:
       # Mount your dbt project
       - ../home_metrics_dbt:/usr/app/dbt:ro
@@ -33,7 +43,7 @@ services:
       - lightdash
       - home-metrics
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -63,6 +73,40 @@ services:
     networks:
       - lightdash
 
+  minio:
+    image: minio/minio:latest
+    container_name: lightdash-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: lightdash
+      MINIO_ROOT_PASSWORD: lightdash123
+    volumes:
+      - minio_data:/data
+    networks:
+      - lightdash
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Init container to create the bucket
+  minio-init:
+    image: minio/mc:latest
+    container_name: lightdash-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 lightdash lightdash123;
+      mc mb myminio/lightdash --ignore-existing;
+      exit 0;
+      "
+    networks:
+      - lightdash
+
 networks:
   lightdash:
     name: lightdash
@@ -72,3 +116,4 @@ networks:
 
 volumes:
   lightdash_pgdata:
+  minio_data:

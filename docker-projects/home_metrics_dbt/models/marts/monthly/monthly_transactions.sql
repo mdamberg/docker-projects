@@ -8,8 +8,7 @@ with months as (
         transaction_pk,
         account_key,
         category_key,
-        dbt_utils.surrogate_key([dd.month_start_date, dd.month_end_date]) as month_key,
-        dbt_utils.surrogate_key([dd.week_start_date, dd.week_end_date]) as week_key,
+    
         dd.month_start_date,
         dd.month_end_date,
         dd.is_payweek,

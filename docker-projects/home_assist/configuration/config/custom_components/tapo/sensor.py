@@ -1,0 +1,149 @@
+from datetime import date, datetime
+from typing import Optional, Union, cast
+
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.typing import StateType
+from plugp100.components.energy import EnergyComponent
+from plugp100.devices.base import TapoDevice
+
+from custom_components.tapo.const import DOMAIN
+from custom_components.tapo.coordinators import HassTapoDeviceData, TapoDataCoordinator
+from custom_components.tapo.entity import CoordinatedTapoEntity
+from custom_components.tapo.hub.sensor import (
+    async_setup_entry as async_setup_hub_sensors,
+)
+from custom_components.tapo.sensors import (
+    CurrentEnergySensorSource,
+    MonthEnergySensorSource,
+    MonthRuntimeSensorSource,
+    SignalSensorSource,
+    TodayEnergySensorSource,
+    TodayRuntimeSensorSource,
+)
+from custom_components.tapo.sensors.tapo_sensor_source import TapoSensorSource
+
+# Supported sensors: Today energy and current power
+SUPPORTED_ENERGY_SENSOR = [
+    CurrentEnergySensorSource,
+    TodayEnergySensorSource,
+    MonthEnergySensorSource,
+    TodayRuntimeSensorSource,
+    MonthRuntimeSensorSource,
+    # TapoThisMonthEnergySensor, hotfix
+]
+
+
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+):
+    # get tapo helper
+    data = cast(HassTapoDeviceData, hass.data[DOMAIN][entry.entry_id])
+    _setup_from_coordinator(
+        hass,
+        data.coordinator,
+        async_add_entities,
+        is_strip=bool(data.child_coordinators),
+    )
+    for child_coordinator in data.child_coordinators:
+        _setup_socket_sensors(child_coordinator, async_add_entities)
+    if data.coordinator.is_hub:
+        await async_setup_hub_sensors(hass, entry, async_add_entities)
+
+
+def _setup_from_coordinator(
+    hass: HomeAssistant,
+    coordinator: TapoDataCoordinator,
+    async_add_entities: AddEntitiesCallback,
+    is_strip: bool = False,
+):
+    sensors = [TapoSensor(coordinator, coordinator.device, SignalSensorSource())]
+    if not is_strip and coordinator.device.has_component(EnergyComponent):
+        sensors.extend(
+            [
+                TapoSensor(coordinator, coordinator.device, factory())
+                for factory in SUPPORTED_ENERGY_SENSOR
+            ]
+        )
+    async_add_entities(sensors, True)
+
+
+def _setup_socket_sensors(
+    coordinator: TapoDataCoordinator,
+    async_add_entities: AddEntitiesCallback,
+):
+    # Strip sockets don't expose wifi stats, so only energy sensors are registered.
+    if coordinator.device.has_component(EnergyComponent):
+        sensors = [
+            SocketTapoSensor(coordinator, coordinator.device, factory())
+            for factory in SUPPORTED_ENERGY_SENSOR
+        ]
+        async_add_entities(sensors, True)
+
+
+class TapoSensor(CoordinatedTapoEntity, SensorEntity):
+    _attr_has_entity_name = True
+
+    def __init__(
+        self,
+        coordinator: TapoDataCoordinator,
+        device: TapoDevice,
+        sensor_source: TapoSensorSource,
+    ):
+        super().__init__(coordinator, device)
+        self._sensor_source = sensor_source
+        self._sensor_config = self._sensor_source.get_config()
+        self._attr_entity_category = (
+            EntityCategory.DIAGNOSTIC if self._sensor_config.is_diagnostic else None
+        )
+        self._attr_name = self._sensor_config.name.strip().title()
+
+    @property
+    def unique_id(self):
+        return super().unique_id + "_" + self._sensor_config.name.replace(" ", "_")
+
+    @property
+    def device_class(self) -> Optional[str]:
+        return self._sensor_config.device_class
+
+    @property
+    def state_class(self) -> Optional[str]:
+        return self._sensor_config.state_class
+
+    @property
+    def native_unit_of_measurement(self) -> Optional[str]:
+        return self._sensor_config.unit_measure
+
+    @property
+    def native_value(self) -> Union[StateType, date, datetime]:
+        return self._sensor_source.get_value(self.coordinator)
+
+
+class SocketTapoSensor(TapoSensor):
+    """Sensor for a power strip child socket.
+
+    Each socket has a unique device_id (e.g. parent_id + "00", "01", ...) so
+    using it as the sole identifier (without a MAC connection) prevents HA from
+    merging all sockets into the strip device via the shared MAC address.
+    The matching identifier in TapoPlugEntity.device_info ensures the switch and
+    sensors for each socket are grouped under the same HA device.
+    """
+
+    @property
+    def unique_id(self):
+        return self.device.device_id + "_" + self._sensor_config.name.replace(" ", "_")
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.device.device_id)},
+            "name": self.device.nickname,
+            "model": self.device.model,
+            "manufacturer": "TP-Link",
+            "sw_version": self.device.firmware_version,
+            "hw_version": self.device.device_info.hardware_version,
+            "via_device": (DOMAIN, self.device._parent_info.device_id),
+        }

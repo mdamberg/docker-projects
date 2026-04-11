@@ -35,87 +35,101 @@
     "priority": "Low"
   },
   {
-    "task": "Add and look up ssh for media stack and homeassistant",
+    "task": "Create and automate HomeAssistant backups ",
     "done": false,
     "id": 5,
     "category": "HomeAssistant",
     "priority": "Medium"
   },
   {
-    "task": "Create and automate HomeAssistant backups ",
-    "done": false,
-    "id": 6,
-    "category": "HomeAssistant",
-    "priority": "Medium"
-  },
-  {
     "task": "Set up remote access for SERVER PC",
     "done": false,
-    "id": 7,
+    "id": 6,
     "category": "Remote Access",
-    "priority": "Medium"
-  },
-  {
-    "task": "Add vscode extension for homeassistant",
-    "done": true,
-    "id": 8,
-    "category": "HomeAssistant",
     "priority": "Medium"
   },
   {
     "task": "Add watchman HomeAssistant HACS",
     "done": true,
-    "id": 9,
+    "id": 7,
     "category": "HomeAssistant",
     "priority": "Medium"
   },
   {
     "task": "Add phipam for port tracking  ",
     "done": true,
-    "id": 10,
+    "id": 8,
     "category": "Monitoring",
     "priority": "High"
   },
   {
     "task": "Add \u2018tags\u2019 or folders to to do list. Make more dynamic",
     "done": true,
-    "id": 11,
+    "id": 9,
     "category": "General",
     "priority": "Medium"
   },
   {
     "task": "Set up n8n - set up weekly and monthly report on power usage ",
     "done": true,
-    "id": 12,
+    "id": 10,
     "category": "Docker",
     "priority": "Medium"
   },
   {
     "task": "Create self hosted DB - pull in power consumption records at regular intervals (hourly?))",
     "done": true,
-    "id": 13,
+    "id": 11,
     "category": "General",
     "priority": "High"
   },
   {
     "task": "Set up alert for fridge filters ",
     "done": true,
-    "id": 14,
+    "id": 12,
     "category": "General",
     "priority": "Low"
   },
   {
-    "task": "Create agentic n8n workflow that summarizes all daily tech news",
+    "task": "Create n8n workflow the provides detailed daily weather report \u2014> send to me ",
     "done": false,
-    "id": 15,
+    "id": 13,
+    "category": "General",
+    "priority": "High"
+  },
+  {
+    "task": "Make N8n workflow for data news",
+    "done": false,
+    "id": 14,
     "category": "Docker",
     "priority": "Medium"
   },
   {
-    "task": "Create n8n workflow the provides detailed daily weather report \u2014> send to me ",
+    "task": "Make upstairs surround sound plan (see surround sound chat on gpt)",
+    "done": false,
+    "id": 15,
+    "category": "General",
+    "priority": "Medium"
+  },
+  {
+    "task": "Decide on Proxmox or VirtualBox for HA migration ",
     "done": false,
     "id": 16,
     "category": "General",
     "priority": "High"
+  },
+  {
+    "task": "Download \u2018The Greatest Beer Run Ever\u2019",
+    "done": false,
+    "id": 17,
+    "category": "General",
+    "priority": "Medium"
+  },
+  {
+    "task": "Develop plan to migrate from windows to Proxmox for homelab",
+    "done": false,
+    "id": 18,
+    "category": "General",
+    "priority": "Medium"
   }
 ]

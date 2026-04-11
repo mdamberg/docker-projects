@@ -1,0 +1,240 @@
+{
+  "name": "Daily Data News Digest",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 7AM Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://news.ycombinator.com/rss",
+        "options": {}
+      },
+      "id": "rss-hackernews",
+      "name": "Hacker News",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [250, -100]
+    },
+    {
+      "parameters": {
+        "url": "https://github.blog/feed/",
+        "options": {}
+      },
+      "id": "rss-github",
+      "name": "GitHub Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [250, 50]
+    },
+    {
+      "parameters": {
+        "url": "https://aws.amazon.com/blogs/big-data/feed/",
+        "options": {}
+      },
+      "id": "rss-aws",
+      "name": "AWS Big Data Blog",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1,
+      "position": [250, 200]
+    },
+    {
+      "parameters": {
+        "operation": "limit",
+        "maxItems": 20
+      },
+      "id": "limit-hn",
+      "name": "Limit HN",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [450, -100]
+    },
+    {
+      "parameters": {
+        "operation": "limit",
+        "maxItems": 5
+      },
+      "id": "limit-github",
+      "name": "Limit GitHub",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [450, 50]
+    },
+    {
+      "parameters": {
+        "operation": "limit",
+        "maxItems": 5
+      },
+      "id": "limit-aws",
+      "name": "Limit AWS",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 3,
+      "position": [450, 200]
+    },
+    {
+      "parameters": {
+        "mode": "append",
+        "options": {}
+      },
+      "id": "merge-feeds",
+      "name": "Merge All Feeds",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [650, 50]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine all items into a single text for AI summarization\nconst items = $input.all();\n\nlet newsText = \"\";\nfor (const item of items) {\n  const title = item.json.title || 'No title';\n  const link = item.json.link || item.json.url || '';\n  const description = item.json.contentSnippet || item.json.description || item.json.content || '';\n  const pubDate = item.json.pubDate || item.json.isoDate || '';\n  \n  // Clean HTML from description\n  const cleanDesc = description.replace(/<[^>]*>/g, '').substring(0, 300);\n  \n  newsText += `## ${title}\\n`;\n  newsText += `Link: ${link}\\n`;\n  newsText += `Published: ${pubDate}\\n`;\n  newsText += `Summary: ${cleanDesc}...\\n\\n`;\n}\n\nreturn [{ json: { newsText, itemCount: items.length } }];"
+      },
+      "id": "code-prepare",
+      "name": "Prepare News Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [850, 50]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"claude-3-5-sonnet-20241022\",\n  \"max_tokens\": 2048,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are a data engineering and analytics news curator. Summarize the following news items into a concise daily digest. Focus on items related to data engineering, analytics, databases, data pipelines, and software engineering. Group them by topic (e.g., Data Engineering, Analytics, Tools, Infrastructure). For each relevant item, provide:\\n- A 1-2 sentence summary\\n- Why it matters for data professionals\\n- The link\\n\\nSkip items that aren't relevant to data/tech. Keep the total summary under 1000 words.\\n\\nHere are today's news items:\\n\\n{{ $json.newsText }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "ai-summarize",
+      "name": "AI Summarize",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1050, 50],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Anthropic API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract the AI response text\nconst response = $input.first().json;\nconst content = response.content[0].text;\n\nreturn [{ json: { summary: content } }];"
+      },
+      "id": "extract-response",
+      "name": "Extract AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 50]
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "to": "your-email@example.com",
+        "subject": "=📊 Daily Data News Digest - {{ $now.format('MMMM d, yyyy') }}",
+        "emailType": "html",
+        "message": "=<html>\n<head>\n<style>\nbody { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; line-height: 1.6; }\nh1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }\nh2 { color: #3498db; margin-top: 20px; }\na { color: #e74c3c; }\n.footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }\n</style>\n</head>\n<body>\n<h1>📊 Daily Data News Digest</h1>\n<p><em>{{ $now.format('EEEE, MMMM d, yyyy') }}</em></p>\n\n<div>{{ $json.summary.replace(/\\n/g, '<br>') }}</div>\n\n<div class=\"footer\">\n<p>Generated by your n8n Data News workflow</p>\n</div>\n</body>\n</html>",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [1450, 50],
+      "credentials": {
+        "smtp": {
+          "id": "YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 7AM Trigger": {
+      "main": [
+        [
+          { "node": "Hacker News", "type": "main", "index": 0 },
+          { "node": "GitHub Blog", "type": "main", "index": 0 },
+          { "node": "AWS Big Data Blog", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Hacker News": {
+      "main": [
+        [{ "node": "Limit HN", "type": "main", "index": 0 }]
+      ]
+    },
+    "GitHub Blog": {
+      "main": [
+        [{ "node": "Limit GitHub", "type": "main", "index": 0 }]
+      ]
+    },
+    "AWS Big Data Blog": {
+      "main": [
+        [{ "node": "Limit AWS", "type": "main", "index": 0 }]
+      ]
+    },
+    "Limit HN": {
+      "main": [
+        [{ "node": "Merge All Feeds", "type": "main", "index": 0 }]
+      ]
+    },
+    "Limit GitHub": {
+      "main": [
+        [{ "node": "Merge All Feeds", "type": "main", "index": 0 }]
+      ]
+    },
+    "Limit AWS": {
+      "main": [
+        [{ "node": "Merge All Feeds", "type": "main", "index": 0 }]
+      ]
+    },
+    "Merge All Feeds": {
+      "main": [
+        [{ "node": "Prepare News Text", "type": "main", "index": 0 }]
+      ]
+    },
+    "Prepare News Text": {
+      "main": [
+        [{ "node": "AI Summarize", "type": "main", "index": 0 }]
+      ]
+    },
+    "AI Summarize": {
+      "main": [
+        [{ "node": "Extract AI Response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Extract AI Response": {
+      "main": [
+        [{ "node": "Send Email", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
