@@ -1,8 +1,12 @@
 -- Create schemas for dbt layer separation
 -- This script runs on initial database creation only
 
--- Raw data layer (default public schema used for raw tables)
--- No need to create 'public' schema as it exists by default
+-- Rename public schema to raw for clarity
+ALTER SCHEMA public RENAME TO raw;
+
+-- Recreate public schema (some extensions/tools expect it to exist)
+CREATE SCHEMA public;
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 -- Staging layer for cleaned/standardized data
 CREATE SCHEMA IF NOT EXISTS staging;
@@ -14,19 +18,23 @@ CREATE SCHEMA IF NOT EXISTS intermediate;
 CREATE SCHEMA IF NOT EXISTS marts;
 
 -- Grant permissions to the metrics_user
+GRANT USAGE ON SCHEMA raw TO metrics_user;
 GRANT USAGE ON SCHEMA staging TO metrics_user;
 GRANT USAGE ON SCHEMA intermediate TO metrics_user;
 GRANT USAGE ON SCHEMA marts TO metrics_user;
 
+GRANT CREATE ON SCHEMA raw TO metrics_user;
 GRANT CREATE ON SCHEMA staging TO metrics_user;
 GRANT CREATE ON SCHEMA intermediate TO metrics_user;
 GRANT CREATE ON SCHEMA marts TO metrics_user;
 
 -- Set default privileges for future tables
+ALTER DEFAULT PRIVILEGES IN SCHEMA raw GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA staging GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA intermediate GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA marts GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 
+COMMENT ON SCHEMA raw IS 'Raw data ingested from n8n workflows';
 COMMENT ON SCHEMA staging IS 'Cleaned and standardized data from raw sources';
 COMMENT ON SCHEMA intermediate IS 'Aggregated and enriched data';
 COMMENT ON SCHEMA marts IS 'Analytics-ready dimensional models';

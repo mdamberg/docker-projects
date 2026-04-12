@@ -33,6 +33,8 @@
   * [Overview](monitoring-stack/README.md)
   * [Compose](monitoring-stack/compose.md)
   * [Troubleshooting](monitoring-stack/troubleshooting.md)
+* Home Assistant
+  * [Overview](home-assistant/README.md)
 * VPN Stack
   * [Overview](vpn-stack/README.md)
   * [Gluetun + OpenVPN Notes](vpn-stack/gluetun-openvpn-notes.md)
