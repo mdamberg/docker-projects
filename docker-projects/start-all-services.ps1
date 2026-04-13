@@ -4,7 +4,7 @@
     Starts all Docker infrastructure services
 
 .DESCRIPTION
-    This script navigates to each infrastructure service directory and runs docker-compose up -d
+    This script navigates to each infrastructure service directory and runs docker compose up -d
     Maintains separation of services while providing one-command startup.
     Also checks docker-users group membership and can optionally start DBeaver.
 
@@ -160,6 +160,15 @@ if (-not (Test-DockerRunning)) {
     Write-Host "[OK] Docker Desktop is already running (version: $DockerVersion)" -ForegroundColor Green
 }
 
+# Create required Docker networks (ignore errors if they already exist)
+Write-Host "[SETUP] Creating required Docker networks..." -ForegroundColor Yellow
+docker network create home-metrics 2>$null
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "[OK] Created home-metrics network" -ForegroundColor Green
+} else {
+    Write-Host "[OK] home-metrics network already exists" -ForegroundColor Green
+}
+
 $SuccessCount = 0
 $FailCount = 0
 $Results = @()
@@ -198,7 +207,7 @@ foreach ($ServiceKey in $ServicesToStart) {
 
     Push-Location $FullPath
     try {
-        $Output = docker-compose up -d 2>&1
+        $Output = docker compose up -d 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[SUCCESS] $ServiceKey is running" -ForegroundColor Green
             $SuccessCount++
@@ -214,7 +223,7 @@ foreach ($ServiceKey in $ServicesToStart) {
             $Results += [PSCustomObject]@{
                 Service = $ServiceKey
                 Status = "FAILED"
-                Message = "docker-compose failed"
+                Message = "docker compose failed"
             }
         }
     } catch {

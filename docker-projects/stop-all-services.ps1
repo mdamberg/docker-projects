@@ -4,7 +4,7 @@
     Stops all Docker infrastructure services
 
 .DESCRIPTION
-    This script navigates to each infrastructure service directory and runs docker-compose down
+    This script navigates to each infrastructure service directory and runs docker compose down
 
 .PARAMETER Services
     Optional. Specify which services to stop (comma-separated). If not provided, stops all.
@@ -42,6 +42,7 @@ $InfraServices = @{
     'backups' = 'backups'
     'phpipam' = 'phpipam'
     'homemetrics' = '..\temp_home_metrics_files'
+    'lightdash' = 'lightdash'
 }
 
 # Parse which services to stop
@@ -94,7 +95,7 @@ foreach ($ServiceKey in $ServicesToStop) {
 
     Push-Location $FullPath
     try {
-        $Output = docker-compose down 2>&1
+        $Output = docker compose down 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host "[SUCCESS] $ServiceKey stopped" -ForegroundColor Green
             $SuccessCount++
