@@ -2,6 +2,7 @@
 #homelab-docs/
 .vscode/
 .claude/
+CLAUDE.local.md
 
 # Home Assistant - Exclude sensitive storage and runtime files
 docker-projects/home_assist/configuration/config/.storage/
