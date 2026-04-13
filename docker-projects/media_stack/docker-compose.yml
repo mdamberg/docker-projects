@@ -204,11 +204,11 @@ services:
     image: mauricenino/dashdot:latest
     container_name: dashdot
     restart: unless-stopped
-    privileged: true
     ports:
       - "3002:3001"
     volumes:
-      - /:/mnt/host:ro
+      - /proc:/mnt/host/proc:ro
+      - /sys:/mnt/host/sys:ro
 
 # ----------------------
 #   Portainer
