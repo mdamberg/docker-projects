@@ -11,8 +11,10 @@ services:
       - HEALTHCHECKS_URL=${HEALTHCHECKS_URL}
     volumes:
       - ./duplicati/config:/config
-      - C:\docker-projects:/source/docker-configs:ro
-      - C:\backups:/backups  # Store backups on C:\ drive
+      - C:\backups:/backups
+      # Source paths for backup
+      - "C:/Users/mattd/OneDrive/Matts Documents/Docker/docker-projects:/source/docker-configs:ro"
+      - "C:/media/config:/source/media-configs:ro"
     ports:
       - 8200:8200
     restart: unless-stopped
