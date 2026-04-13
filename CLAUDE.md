@@ -12,6 +12,15 @@ Windows-based homelab running Docker Desktop with media stack, monitoring, autom
 | home-metrics-infrastructure | `Matts Documents\home-metrics-infrastructure` | mdamberg/home-metrics-infrastructure | Analytics DB layer - Postgres + Metabase (works with dbt models) |
 | Docker-Files | `Matts Documents\GitHub\Docker-Files` | mdamberg/Docker-Files | Empty/abandoned - can be deleted |
 
+### Container Distribution
+
+| Repo | Count | Contains |
+|------|-------|----------|
+| docker-projects | 35 | All homelab services (media, monitoring, automation, utilities) |
+| home-metrics-infrastructure | 2 | Analytics DB layer (home-metrics-postgres, home-metrics-metabase) |
+
+**Note:** Two visualization tools exist - Lightdash (docker-projects) and Metabase (home-metrics-infrastructure). Both can connect to Postgres for analytics.
+
 ### docker-projects (this repo)
 
 ```
