@@ -7,7 +7,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
       - SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
-      - CLI_ARGS=--webservice-password=admin
+      - CLI_ARGS=--webservice-password=${DUPLICATI_WEBPASS}
       - HEALTHCHECKS_URL=${HEALTHCHECKS_URL}
     volumes:
       - ./duplicati/config:/config

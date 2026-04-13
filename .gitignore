@@ -31,6 +31,9 @@ docker-projects/backups/duplicati/config/control_dir_v2/
 **/.env.local
 **/secrets/
 
+# All .env files in docker-projects contain secrets
+docker-projects/**/.env
+
 # MySQL/MariaDB - Exclude ALL database data directories
 **/mysql_data/
 **/mysql_data_old_backup/
@@ -54,7 +57,6 @@ docker-projects/n8n/n8n_data/*.log
 docker-projects/n8n/n8n_data/crash.journal
 
 # phpipam - Keep only config files
-docker-projects/phpipam/.env
 !docker-projects/phpipam/docker-compose.yml
 !docker-projects/phpipam/README.md
 logs/query_log.sql

@@ -5,7 +5,7 @@ services:
     image: ghcr.io/wg-easy/wg-easy:latest
     container_name: wireguard
     environment:
-      # Required: Bcrypt hashed password (password is: WireGuardAdmin2024!)
+      # Required: Bcrypt hashed password
       - PASSWORD_HASH=$$2a$$12$$WjOAt27j1vft0qusjKguW.SpFw7aBSKD6REGEXUQH2EUe9r9WXvba
       # Your public IP or DDNS hostname
       - WG_HOST=damattberghome.duckdns.org

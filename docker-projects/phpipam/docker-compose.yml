@@ -4,9 +4,10 @@ services:
     container_name: phpipam-db
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=phpipamadmin
-      - MYSQL_USER=phpipam
-      - MYSQL_PASSWORD=phpipampassword
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${IPAM_DATABASE_NAME}
     volumes:
       - ./mysql_data:/var/lib/mysql
     networks:
@@ -17,11 +18,11 @@ services:
     container_name: phpipam-web
     restart: unless-stopped
     environment:
-      - TZ=America/New_York
+      - TZ=${TZ}
       - IPAM_DATABASE_HOST=phpipam-db
-      - IPAM_DATABASE_USER=phpipam
-      - IPAM_DATABASE_PASS=phpipampassword
-      - IPAM_DATABASE_NAME=phpipam
+      - IPAM_DATABASE_USER=${MYSQL_USER}
+      - IPAM_DATABASE_PASS=${MYSQL_PASSWORD}
+      - IPAM_DATABASE_NAME=${IPAM_DATABASE_NAME}
       - IPAM_DATABASE_PORT=3306
     ports:
       - "8081:80"
@@ -35,11 +36,11 @@ services:
     container_name: phpipam-cron
     restart: unless-stopped
     environment:
-      - TZ=America/New_York
+      - TZ=${TZ}
       - IPAM_DATABASE_HOST=phpipam-db
-      - IPAM_DATABASE_USER=phpipam
-      - IPAM_DATABASE_PASS=phpipampassword
-      - IPAM_DATABASE_NAME=phpipam
+      - IPAM_DATABASE_USER=${MYSQL_USER}
+      - IPAM_DATABASE_PASS=${MYSQL_PASSWORD}
+      - IPAM_DATABASE_NAME=${IPAM_DATABASE_NAME}
       - IPAM_DATABASE_PORT=3306
       - SCAN_INTERVAL=1h
     depends_on:
