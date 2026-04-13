@@ -2,18 +2,48 @@
 
 Windows-based homelab running Docker Desktop with media stack, monitoring, automation, and analytics services.
 
-## Project Structure
+## Repository Structure
+
+**Three separate git repos:**
+
+| Repo | Path | GitHub | Purpose |
+|------|------|--------|---------|
+| docker-projects | `Matts Documents\Docker` | mdamberg/docker-projects | Main homelab - all Docker services, docs, dbt models |
+| home-metrics-infrastructure | `Matts Documents\home-metrics-infrastructure` | mdamberg/home-metrics-infrastructure | Analytics DB layer - Postgres + Metabase (works with dbt models) |
+| Docker-Files | `Matts Documents\GitHub\Docker-Files` | mdamberg/Docker-Files | Empty/abandoned - can be deleted |
+
+### docker-projects (this repo)
 
 ```
-docker-projects/           # All Docker services
-  ├── <service>/
-  │   ├── docker-compose.yml
-  │   ├── .env             # Service-specific env vars
-  │   └── config/          # Persistent config data
-homelab-docs/              # Documentation
-  ├── SUMMARY.md           # Index of all docs
-  └── <topic>/README.md
+C:\Users\mattd\OneDrive\Matts Documents\Docker\
+├── docker-projects/       # Docker services (compose files, configs)
+│   ├── media_stack/       # Plex, *arr apps, qBittorrent, Portainer
+│   ├── monitoring/        # Uptime Kuma, Glances
+│   ├── n8n/               # Workflow automation
+│   ├── lightdash/         # Analytics dashboards
+│   ├── home_metrics_dbt/  # dbt models for analytics
+│   ├── backups/           # Duplicati
+│   └── ...
+├── homelab-docs/          # Documentation (markdown)
+│   ├── SUMMARY.md         # Index of all docs
+│   ├── TODO.md            # Prioritized action items
+│   └── <topic>/README.md
+├── data-projects/         # Data/analytics experiments
+├── temp_home_metrics_files/ # Temp files for metrics pipeline
+├── CLAUDE.md              # This file
+├── *.ps1                  # PowerShell utility scripts
+└── .gitignore
 ```
+
+### What Goes Where
+
+| Change Type | Location | Example |
+|-------------|----------|---------|
+| New Docker service | `docker-projects/<service>/` | Adding Jellyfin |
+| Service config changes | `docker-projects/<service>/` | Updating compose file |
+| Documentation | `homelab-docs/` | How-to guides, READMEs |
+| dbt models | `docker-projects/home_metrics_dbt/` | SQL transformations |
+| Utility scripts | Root directory | PowerShell helpers |
 
 ## Common Commands
 
