@@ -80,14 +80,14 @@
     "task": "Create n8n workflow the provides detailed daily weather report \u2014> send to me ",
     "done": false,
     "id": 11,
-    "category": "General",
+    "category": "Docker",
     "priority": "High"
   },
   {
     "task": "Make upstairs surround sound plan (see surround sound chat on gpt)",
     "done": false,
     "id": 12,
-    "category": "General",
+    "category": "House-Projects",
     "priority": "Medium"
   },
   {
@@ -115,7 +115,7 @@
     "task": "Add Claude MCP server for n8n (see saved insta post)",
     "done": false,
     "id": 16,
-    "category": "General",
+    "category": "AI",
     "priority": "Medium"
   },
   {
@@ -134,9 +134,9 @@
   },
   {
     "task": "Add Skills.md files for adding new containers (add to start up script, url mounts etc)",
-    "done": false,
+    "done": true,
     "id": 19,
-    "category": "Docker",
+    "category": "AI",
     "priority": "Medium"
   },
   {
@@ -148,29 +148,22 @@
   },
   {
     "task": "Create AI skills folder in repo",
-    "done": false,
+    "done": true,
     "id": 21,
     "category": "AI",
     "priority": "High"
   },
   {
-    "task": "Add local skill Md files for: join debug",
-    "done": false,
-    "id": 22,
-    "category": "General",
-    "priority": "High"
-  },
-  {
     "task": "Add local skill Md files for: DBT model generation",
     "done": false,
-    "id": 23,
+    "id": 22,
     "category": "AI",
     "priority": "High"
   },
   {
     "task": "Add local skill Md files for: query debug ",
-    "done": false,
-    "id": 24,
+    "done": true,
+    "id": 23,
     "category": "AI",
     "priority": "High"
   }
