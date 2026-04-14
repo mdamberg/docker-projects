@@ -50,21 +50,6 @@ services:
     restart: unless-stopped
 
 # ----------------------
-#   Watchtower
-# ----------------------
-  watchtower:
-    image: containrrr/watchtower:latest
-    container_name: watchtower
-    environment:
-      - TZ=${TZ}
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_INCLUDE_RESTARTING=true
-      - WATCHTOWER_SCHEDULE=0 0 4 * * *
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-
-# ----------------------
 #   Radarr
 # ----------------------
   radarr:
@@ -146,6 +131,11 @@ services:
       - C:/media/downloads:/downloads
     ports:
       - "32400:32400"
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          cpus: '4.0'
     restart: unless-stopped
 
 # ----------------------

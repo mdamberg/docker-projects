@@ -71,6 +71,11 @@ services:
     image: browserless/chrome:latest
     container_name: lightdash-browser
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+          cpus: '2.0'
     networks:
       - lightdash
 

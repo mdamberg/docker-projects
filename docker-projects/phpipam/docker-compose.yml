@@ -12,6 +12,11 @@ services:
       - ./mysql_data:/var/lib/mysql
     networks:
       - phpipam_net
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   phpipam-web:
     image: phpipam/phpipam-www:latest
@@ -27,7 +32,8 @@ services:
     ports:
       - "8081:80"
     depends_on:
-      - phpipam-db
+      phpipam-db:
+        condition: service_healthy
     networks:
       - phpipam_net
 
@@ -44,7 +50,8 @@ services:
       - IPAM_DATABASE_PORT=3306
       - SCAN_INTERVAL=1h
     depends_on:
-      - phpipam-db
+      phpipam-db:
+        condition: service_healthy
     networks:
       - phpipam_net
 

@@ -43,6 +43,7 @@ $InfraServices = @{
     'phpipam' = 'phpipam'
     'homemetrics' = '..\temp_home_metrics_files'
     'lightdash' = 'lightdash'
+    'watchtower' = 'watchtower'
 }
 
 # Parse which services to stop
