@@ -8,7 +8,7 @@ services:
      - "53:53/tcp"    # Change from 5335
      - "53:53/udp"    # Change from 5335
     environment:
-      - TZ=America/Chicago
+      - TZ=${TZ:-America/Chicago}
     volumes:
       - ./etc-pihole:/etc/pihole
     cap_add:

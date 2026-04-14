@@ -22,6 +22,7 @@ models:
       +meta:
         hidden: true
     intmdt:
+      +materialized: table
       +meta:
         hidden: true
     marts:

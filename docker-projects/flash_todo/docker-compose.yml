@@ -9,6 +9,7 @@ services:
       - ./templates:/app/templates
     environment:
       - FLASK_APP=app.py
+    restart: unless-stopped
     networks:
       - homarr_net
 

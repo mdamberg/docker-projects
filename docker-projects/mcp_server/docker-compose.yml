@@ -20,7 +20,7 @@ services:
       - "8002:8000"
     volumes:
       - ./mcp_servers/server2:/app
-      - /home/your-user:/host
+      - "C:/Users/mattd:/host"
     networks:
       - mcp-network
     environment:
