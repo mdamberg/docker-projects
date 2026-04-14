@@ -209,6 +209,10 @@
                     <option value="Remote Access">🌐 Remote Access</option>
                     <option value="Scripting">💻 Scripting</option>
                     <option value="Monitoring">📊 Monitoring</option>
+                    <option value="DBT">🔄 DBT</option>
+                    <option value="HomeLab">🖥️ HomeLab</option>
+                    <option value="AI">🤖 AI</option>
+                    <option value="House-Projects">🏡 House-Projects</option>
                     <option value="General" selected>📝 General</option>
                 </select>
                 <select name="priority" class="form-select" style="width: auto; background: #1a1a1a; border: 1px solid #00ffff; color: #ffffff;">
@@ -235,6 +239,14 @@
                         💻 Scripting
                     {% elif category == 'Monitoring' %}
                         📊 Monitoring
+                    {% elif category == 'DBT' %}
+                        🔄 DBT
+                    {% elif category == 'HomeLab' %}
+                        🖥️ HomeLab
+                    {% elif category == 'AI' %}
+                        🤖 AI
+                    {% elif category == 'House-Projects' %}
+                        🏡 House-Projects
                     {% else %}
                         📝 General
                     {% endif %}

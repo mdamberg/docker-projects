@@ -33,6 +33,22 @@ def auto_assign_category(task):
     if any(word in task_lower for word in ['monitor', 'water', 'tracking', 'phpipam', 'phipam']):
         return 'Monitoring'
 
+    # DBT keywords
+    if any(word in task_lower for word in ['dbt', 'transform', 'staging', 'mart', 'data model', 'materialized']):
+        return 'DBT'
+
+    # HomeLab keywords
+    if any(word in task_lower for word in ['homelab', 'home-lab', 'proxmox', 'truenas', 'rack', 'server rack']):
+        return 'HomeLab'
+
+    # AI keywords
+    if any(word in task_lower for word in ['ai', 'llm', 'claude', 'openai', 'ollama', 'chatgpt', 'copilot', 'machine learning']):
+        return 'AI'
+
+    # House-Projects keywords
+    if any(word in task_lower for word in ['house', 'renovation', 'yard', 'garden', 'furniture', 'repair', 'plumbing', 'electrical']):
+        return 'House-Projects'
+
     # Default category
     return 'General'
 
@@ -105,7 +121,7 @@ def index():
     metrics = calculate_metrics(todos)                  # calculate dashboard metrics
 
     # Group todos by category
-    categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring', 'General']
+    categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring', 'DBT', 'HomeLab', 'AI', 'House-Projects', 'General']
     grouped_todos = {}
     for category in categories:
         category_todos = [todo for todo in todos if todo.get('category') == category]

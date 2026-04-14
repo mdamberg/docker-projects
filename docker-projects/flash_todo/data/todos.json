@@ -8,7 +8,7 @@
   },
   {
     "task": "Replace watchtower with WUD",
-    "done": false,
+    "done": true,
     "id": 1,
     "category": "Docker",
     "priority": "Low"
@@ -92,7 +92,7 @@
   },
   {
     "task": "Decide on Proxmox or VirtualBox for HA migration ",
-    "done": false,
+    "done": true,
     "id": 13,
     "category": "General",
     "priority": "High"
@@ -106,7 +106,7 @@
   },
   {
     "task": "Add Claude MD file to project ",
-    "done": false,
+    "done": true,
     "id": 15,
     "category": "General",
     "priority": "Medium"
@@ -123,11 +123,11 @@
     "done": false,
     "id": 17,
     "category": "Docker",
-    "priority": "Medium"
+    "priority": "High"
   },
   {
     "task": "Fix issues listed in code base ",
-    "done": false,
+    "done": true,
     "id": 18,
     "category": "Docker",
     "priority": "High"
