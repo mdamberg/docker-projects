@@ -225,30 +225,38 @@
 
             <hr class="my-4">
 
+            <!-- Sort Controls -->
+            <div class="d-flex gap-2 mb-3 align-items-center">
+                <span style="color: #00ffff; font-size: 13px;">Sort by:</span>
+                <a href="/?sort=category" class="btn btn-sm"
+                   style="{% if sort == 'category' %}background: #9b59b6; border-color: #9b59b6; color: #ffffff;{% else %}color: #9b59b6; border: 1px solid #9b59b6;{% endif %}">
+                    📂 Category
+                </a>
+                <a href="/?sort=urgency" class="btn btn-sm"
+                   style="{% if sort == 'urgency' %}background: #ffff00; border-color: #ffff00; color: #000000;{% else %}color: #ffff00; border: 1px solid #ffff00;{% endif %}">
+                    🔴 Urgency
+                </a>
+            </div>
+
             {% if grouped_todos %}
                 {% for category, category_todos in grouped_todos.items() %}
                 <!-- Category Header -->
                 <div class="category-header">
-                    {% if category == 'Docker' %}
-                        🐳 Docker
-                    {% elif category == 'HomeAssistant' %}
-                        🏠 HomeAssistant
-                    {% elif category == 'Remote Access' %}
-                        🌐 Remote Access
-                    {% elif category == 'Scripting' %}
-                        💻 Scripting
-                    {% elif category == 'Monitoring' %}
-                        📊 Monitoring
-                    {% elif category == 'DBT' %}
-                        🔄 DBT
-                    {% elif category == 'HomeLab' %}
-                        🖥️ HomeLab
-                    {% elif category == 'AI' %}
-                        🤖 AI
-                    {% elif category == 'House-Projects' %}
-                        🏡 House-Projects
-                    {% else %}
-                        📝 General
+                    {% if sort == 'urgency' %}
+                        {% if category == 'High' %}🔴 High Priority
+                        {% elif category == 'Medium' %}🟡 Medium Priority
+                        {% else %}🟢 Low Priority
+                        {% endif %}
+                    {% elif category == 'Docker' %}🐳 Docker
+                    {% elif category == 'HomeAssistant' %}🏠 HomeAssistant
+                    {% elif category == 'Remote Access' %}🌐 Remote Access
+                    {% elif category == 'Scripting' %}💻 Scripting
+                    {% elif category == 'Monitoring' %}📊 Monitoring
+                    {% elif category == 'DBT' %}🔄 DBT
+                    {% elif category == 'HomeLab' %}🖥️ HomeLab
+                    {% elif category == 'AI' %}🤖 AI
+                    {% elif category == 'House-Projects' %}🏡 House-Projects
+                    {% else %}📝 General
                     {% endif %}
                     <span style="color: #00ffff; font-size: 14px;">({{ category_todos|length }} task{{ 's' if category_todos|length > 1 else '' }})</span>
                 </div>
@@ -257,7 +265,8 @@
                 {% for todo in category_todos %}
                 <div class="todo-item {% if todo.done %}done{% endif %}">
                     <div style="flex: 1;">
-                        <form method="POST" action="/update_priority/{{ todo.id }}" style="display: inline-block; margin-right: 8px;">
+                        <form method="POST" action="/update_priority/{{ todo.id }}" style="display: inline-block; margin-right: 4px;">
+                            <input type="hidden" name="sort" value="{{ sort }}">
                             <select name="priority"
                                     class="priority-select"
                                     onchange="this.form.submit()"
@@ -265,6 +274,24 @@
                                 <option value="High" {% if todo.priority == 'High' %}selected{% endif %}>🔴 High</option>
                                 <option value="Medium" {% if todo.priority == 'Medium' %}selected{% endif %}>🟡 Medium</option>
                                 <option value="Low" {% if todo.priority == 'Low' %}selected{% endif %}>🟢 Low</option>
+                            </select>
+                        </form>
+                        <form method="POST" action="/update_category/{{ todo.id }}" style="display: inline-block; margin-right: 8px;">
+                            <input type="hidden" name="sort" value="{{ sort }}">
+                            <select name="category"
+                                    class="priority-select"
+                                    onchange="this.form.submit()"
+                                    style="background: #1a1a1a; border: 1px solid #9b59b6; color: #9b59b6; padding: 2px 4px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">
+                                <option value="Docker" {% if todo.category == 'Docker' %}selected{% endif %}>🐳 Docker</option>
+                                <option value="HomeAssistant" {% if todo.category == 'HomeAssistant' %}selected{% endif %}>🏠 HA</option>
+                                <option value="Remote Access" {% if todo.category == 'Remote Access' %}selected{% endif %}>🌐 Remote</option>
+                                <option value="Scripting" {% if todo.category == 'Scripting' %}selected{% endif %}>💻 Script</option>
+                                <option value="Monitoring" {% if todo.category == 'Monitoring' %}selected{% endif %}>📊 Monitor</option>
+                                <option value="DBT" {% if todo.category == 'DBT' %}selected{% endif %}>🔄 DBT</option>
+                                <option value="HomeLab" {% if todo.category == 'HomeLab' %}selected{% endif %}>🖥️ Lab</option>
+                                <option value="AI" {% if todo.category == 'AI' %}selected{% endif %}>🤖 AI</option>
+                                <option value="House-Projects" {% if todo.category == 'House-Projects' %}selected{% endif %}>🏡 House</option>
+                                <option value="General" {% if todo.category == 'General' %}selected{% endif %}>📝 General</option>
                             </select>
                         </form>
                         {% if todo.done %}

@@ -119,19 +119,30 @@ def index():
     """Main page - shows all todos with metrics and category grouping"""
     todos = load_todos()                                # get todos from file
     metrics = calculate_metrics(todos)                  # calculate dashboard metrics
+    sort = request.args.get('sort', 'category')         # 'category' (default) or 'urgency'
 
-    # Group todos by category
     categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring', 'DBT', 'HomeLab', 'AI', 'House-Projects', 'General']
+
     grouped_todos = {}
-    for category in categories:
-        category_todos = [todo for todo in todos if todo.get('category') == category]
-        if category_todos:  # Only include categories that have todos
-            grouped_todos[category] = category_todos
+    if sort == 'urgency':
+        # Group by priority: High → Medium → Low
+        for priority in ['High', 'Medium', 'Low']:
+            priority_todos = [todo for todo in todos if todo.get('priority') == priority]
+            if priority_todos:
+                grouped_todos[priority] = priority_todos
+    else:
+        # Group by category (default)
+        for category in categories:
+            category_todos = [todo for todo in todos if todo.get('category') == category]
+            if category_todos:
+                grouped_todos[category] = category_todos
 
     return render_template('index.html',
                          todos=todos,
                          metrics=metrics,
-                         grouped_todos=grouped_todos)
+                         grouped_todos=grouped_todos,
+                         sort=sort,
+                         categories=categories)
 
 
 # User types task, selects category/priority & clicks add -> browser sends POST request to /add
@@ -172,13 +183,30 @@ def toggle_todo(todo_id):
 @app.route('/update_priority/<int:todo_id>', methods=['POST'])
 def update_priority(todo_id):
     """Update the priority of a todo"""
-    priority = request.form.get('priority')       # Get new priority from form
-    if priority in ['High', 'Medium', 'Low']:     # Valid priority?
-        todos = load_todos()                      # Load todos
-        if 0 <= todo_id < len(todos):             # Valid ID?
-            todos[todo_id]['priority'] = priority # Update priority
-            save_todos(todos)                     # Save
-    return redirect(url_for('index'))             # Back to homepage
+    priority = request.form.get('priority')
+    sort = request.form.get('sort', 'category')   # preserve current sort view
+    if priority in ['High', 'Medium', 'Low']:
+        todos = load_todos()
+        if 0 <= todo_id < len(todos):
+            todos[todo_id]['priority'] = priority
+            save_todos(todos)
+    return redirect(url_for('index', sort=sort))
+
+
+# Update category of a todo
+@app.route('/update_category/<int:todo_id>', methods=['POST'])
+def update_category(todo_id):
+    """Update the category of a todo"""
+    category = request.form.get('category')
+    sort = request.form.get('sort', 'category')   # preserve current sort view
+    valid_categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring',
+                        'DBT', 'HomeLab', 'AI', 'House-Projects', 'General']
+    if category in valid_categories:
+        todos = load_todos()
+        if 0 <= todo_id < len(todos):
+            todos[todo_id]['category'] = category
+            save_todos(todos)
+    return redirect(url_for('index', sort=sort))
 
 
 # Click "Delete" on todo -> Goes to /delete/ -> Removes todo at index 1: todos.pop(1)

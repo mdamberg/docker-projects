@@ -138,5 +138,40 @@
     "id": 19,
     "category": "Docker",
     "priority": "Medium"
+  },
+  {
+    "task": "Add local skill Md files for: query creation ",
+    "done": false,
+    "id": 20,
+    "category": "AI",
+    "priority": "High"
+  },
+  {
+    "task": "Create AI skills folder in repo",
+    "done": false,
+    "id": 21,
+    "category": "AI",
+    "priority": "High"
+  },
+  {
+    "task": "Add local skill Md files for: join debug",
+    "done": false,
+    "id": 22,
+    "category": "General",
+    "priority": "High"
+  },
+  {
+    "task": "Add local skill Md files for: DBT model generation",
+    "done": false,
+    "id": 23,
+    "category": "AI",
+    "priority": "High"
+  },
+  {
+    "task": "Add local skill Md files for: query debug ",
+    "done": false,
+    "id": 24,
+    "category": "AI",
+    "priority": "High"
   }
 ]
