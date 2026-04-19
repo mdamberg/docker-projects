@@ -7,34 +7,100 @@ models:
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: number
       - name: account_skey
         description: "Surrogate key based on teller_account_id"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: teller_account_id
         description: "Teller's unique account identifier"
         tests:
           - unique
           - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: enrollment_id
         description: "Teller enrollment identifier"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: institution_name
         description: "Name of the financial institution"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: institution_id
         description: "Teller's institution identifier"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_name
         description: "Account name as shown in banking app"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_type
         description: "Standardized account type (checking, savings, credit)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_subtype
         description: "Original Teller account subtype"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_status
         description: "Account connection status"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: currency
         description: "Currency code (USD)"
-      - name: account_number
-        description: "Last four digits of account number"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_holder
         description: "Derived account holder (Matt or Jessica)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: inserted_at
         description: "Timestamp when the record was first inserted"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: updated_at
         description: "Timestamp when the record was last updated"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name_friendly
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: last_four
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string

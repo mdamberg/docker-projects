@@ -4,10 +4,6 @@
 ) }}
 
 with accounts_data as (
-    select * from {{ source('home_metrics_raw', 'raw_teller_accounts') }}
-),
-
-cleaned as (
     select
         id as account_pk,
         teller_account_id,
@@ -29,19 +25,15 @@ cleaned as (
             when last_four = '4113' then 'Jessica CapitalOne Credit Card'
             when last_four = '2410' then 'Jessica WF Credit Card'
                 end as account_name_friendly,   
-        account_name,
         account_type,
         account_subtype,
         account_status,
         currency,
         last_four,
-        account_status,
-        currency,
-        last_four,
         inserted_at,
         updated_at
-    from accounts_data
+    from {{ source('home_metrics_raw', 'raw_teller_accounts') }}
     where account_status = 'open'
 )
 
-select * from cleaned
+select * from accounts_data
