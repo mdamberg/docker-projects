@@ -261,7 +261,7 @@ sources:
             description: "Additional metadata in JSON format"
 
       - name: raw_transactions
-        description: "Raw table containing financial transaction data imported from budgeting app CSV exports"
+        description: "Raw table containing financial transaction data imported from budgeting app CSV exports (legacy - being replaced by Teller)"
         loaded_at_field: inserted_at
         freshness:
           warn_after: {count: 30, period: day}
@@ -301,3 +301,93 @@ sources:
             description: "User-defined tags for the transaction"
           - name: inserted_at
             description: "Timestamp when the record was inserted into the raw table"
+
+      - name: raw_teller_accounts
+        description: "Bank accounts connected via Teller API"
+        loaded_at_field: updated_at
+        freshness:
+          warn_after: {count: 25, period: hour}
+          error_after: {count: 48, period: hour}
+        columns:
+          - name: id
+            description: "Unique identifier for each account record (internal)"
+          - name: teller_account_id
+            description: "Teller's unique account identifier"
+          - name: enrollment_id
+            description: "Teller enrollment identifier"
+          - name: institution_name
+            description: "Name of the financial institution"
+          - name: institution_id
+            description: "Teller's institution identifier"
+          - name: account_name
+            description: "Account name as shown in banking app"
+          - name: account_type
+            description: "Account type (depository, credit)"
+          - name: account_subtype
+            description: "Account subtype (checking, savings, credit_card)"
+          - name: account_status
+            description: "Account connection status"
+          - name: currency
+            description: "Currency code (USD)"
+          - name: last_four
+            description: "Last four digits of account number"
+          - name: inserted_at
+            description: "Timestamp when the record was first inserted"
+          - name: updated_at
+            description: "Timestamp when the record was last updated"
+
+      - name: raw_teller_balances
+        description: "Daily account balance snapshots from Teller API"
+        loaded_at_field: inserted_at
+        freshness:
+          warn_after: {count: 25, period: hour}
+          error_after: {count: 48, period: hour}
+        columns:
+          - name: id
+            description: "Unique identifier for each balance record"
+          - name: teller_account_id
+            description: "Reference to the Teller account"
+          - name: ledger_balance
+            description: "Posted/ledger balance"
+          - name: available_balance
+            description: "Available balance for spending"
+          - name: recorded_at
+            description: "Timestamp when balance was recorded"
+          - name: inserted_at
+            description: "Timestamp when the record was inserted"
+
+      - name: raw_teller_transactions
+        description: "Financial transactions from Teller API"
+        loaded_at_field: updated_at
+        freshness:
+          warn_after: {count: 25, period: hour}
+          error_after: {count: 48, period: hour}
+        columns:
+          - name: id
+            description: "Unique identifier for each transaction record (internal)"
+          - name: teller_transaction_id
+            description: "Teller's unique transaction identifier"
+          - name: teller_account_id
+            description: "Reference to the Teller account"
+          - name: transaction_date
+            description: "Date of the transaction"
+          - name: description
+            description: "Transaction description from bank"
+          - name: amount
+            description: "Transaction amount (negative for debits)"
+          - name: status
+            description: "Transaction status (pending, posted)"
+          - name: type
+            description: "Transaction type"
+          - name: category
+            description: "Teller-assigned category"
+          - name: merchant_name
+            description: "Merchant or counterparty name"
+          - name: merchant_category
+            description: "Merchant category"
+          - name: running_balance
+            description: "Account balance after transaction"
+          - name: inserted_at
+            description: "Timestamp when the record was first inserted"
+          - name: updated_at
+            description: "Timestamp when the record was last updated"

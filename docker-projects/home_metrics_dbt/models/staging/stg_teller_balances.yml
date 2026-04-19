@@ -1,0 +1,50 @@
+models:
+  - name: stg_teller_balances
+    description: "Daily account balance snapshots from Teller API, enriched with
+      account details"
+    columns:
+      - name: balance_pk
+        description: "Primary key from raw table"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: account_skey
+        description: "Reference to account surrogate key"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_account_id
+        description: "Teller's unique account identifier"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: ledger_balance
+        description: "Posted/ledger balance"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: available_balance
+        description: "Available balance for spending"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: recorded_at
+        description: "Full timestamp when balance was recorded"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: inserted_at
+        description: "Timestamp when the record was inserted"
+        config:
+          meta:
+            dimension:
+              type: string

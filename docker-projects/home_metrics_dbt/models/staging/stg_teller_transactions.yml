@@ -1,0 +1,99 @@
+models:
+  - name: stg_teller_transactions
+    description: "Cleaned financial transactions from Teller API with account enrichment"
+    columns:
+      - name: transaction_pk
+        description: "Primary key from raw table"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: teller_transaction_id
+        description: "Teller's unique transaction identifier"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_account_id
+        description: "Teller's account identifier"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_amount
+        description: "Transaction amount (negative for debits)"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_type
+        description: "Credit or Debit"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_category
+        description: "Transaction category"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_status
+        description: "Transaction status (pending, posted)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: running_balance
+        description: "Account balance after transaction"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_date
+        description: "Date of the transaction"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: account_skey
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_description
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_name
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_category
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: inserted_at
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: updated_at
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
