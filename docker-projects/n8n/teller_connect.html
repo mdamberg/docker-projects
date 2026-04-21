@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Connect Bank Account - Teller</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 { color: #333; }
+    button {
+      background: #0066ff;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:hover { background: #0052cc; }
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      text-align: left;
+      display: none;
+    }
+    .token {
+      word-break: break-all;
+      background: #fff;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>Connect a Bank Account</h1>
+  <p>Click the button below to link a new bank account via Teller.</p>
+
+  <button id="connect-live">Connect Bank (Live)</button>
+  <button id="connect-sandbox" style="background: #666;">Connect Bank (Sandbox/Test)</button>
+
+  <div id="result">
+    <h3>Enrollment Successful!</h3>
+    <p><strong>Access Token:</strong></p>
+    <div class="token" id="token"></div>
+    <p style="margin-top: 15px; color: #666;">
+      Save this token - you'll need to add it to your n8n workflow to access this account's data.
+    </p>
+  </div>
+
+  <script src="https://cdn.teller.io/connect/connect.js"></script>
+  <script>
+    function showResult(enrollment) {
+      document.getElementById('token').textContent = enrollment.accessToken;
+      document.getElementById('result').style.display = 'block';
+      console.log('Full enrollment object:', enrollment);
+    }
+
+    // Live/Production connection
+    const tellerLive = TellerConnect.setup({
+      applicationId: "app_pr3an2tnn9tq045oi0000",
+      products: ["transactions", "balance", "identity"],
+      onSuccess: showResult,
+      onExit: function() {
+        console.log("User closed Teller Connect");
+      }
+    });
+
+    // Sandbox connection (for testing)
+    const tellerSandbox = TellerConnect.setup({
+      applicationId: "app_pr3an2tnn9tq045oi0000",
+      environment: "sandbox",
+      products: ["transactions", "balance", "identity"],
+      onSuccess: showResult,
+      onExit: function() {
+        console.log("User closed Teller Connect");
+      }
+    });
+
+    document.getElementById("connect-live").onclick = () => tellerLive.open();
+    document.getElementById("connect-sandbox").onclick = () => tellerSandbox.open();
+  </script>
+</body>
+</html>

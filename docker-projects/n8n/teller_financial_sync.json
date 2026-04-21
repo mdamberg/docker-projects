@@ -1,0 +1,243 @@
+{
+  "name": "Teller Financial Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 6 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const https = require('https');\nconst fs = require('fs');\n\nconst cert = fs.readFileSync('/certs/teller/certificate.pem');\nconst key = fs.readFileSync('/certs/teller/private_key.pem');\n\n// Read tokens from environment variable (comma-separated)\nconst tokens = (process.env.TELLER_TOKENS || '').split(',').filter(t => t.trim());\n\nif (tokens.length === 0) {\n  throw new Error('No TELLER_TOKENS configured');\n}\n\nconst makeRequest = (path, token) => {\n  return new Promise((resolve, reject) => {\n    const options = {\n      hostname: 'api.teller.io',\n      path: path,\n      method: 'GET',\n      cert: cert,\n      key: key,\n      headers: {\n        'Authorization': 'Basic ' + Buffer.from(token + ':').toString('base64')\n      }\n    };\n    const req = https.request(options, (res) => {\n      let data = '';\n      res.on('data', chunk => data += chunk);\n      res.on('end', () => {\n        try {\n          resolve(JSON.parse(data));\n        } catch (e) {\n          resolve([]);\n        }\n      });\n    });\n    req.on('error', reject);\n    req.end();\n  });\n};\n\nconst accountRecords = [];\nconst balanceRecords = [];\nconst transactionRecords = [];\n\n// Loop through each token (enrollment)\nfor (const token of tokens) {\n  const accounts = await makeRequest('/accounts', token);\n  if (!Array.isArray(accounts)) continue;\n  \n  for (const a of accounts) {\n    accountRecords.push({\n      teller_account_id: a.id,\n      enrollment_id: a.enrollment_id,\n      institution_name: a.institution?.name || null,\n      institution_id: a.institution?.id || null,\n      account_name: a.name,\n      account_type: a.type,\n      account_subtype: a.subtype,\n      account_status: a.status,\n      currency: a.currency,\n      last_four: a.last_four\n    });\n  }\n  \n  for (const a of accounts) {\n    const bal = await makeRequest('/accounts/' + a.id + '/balances', token);\n    balanceRecords.push({\n      teller_account_id: a.id,\n      ledger_balance: parseFloat(bal.ledger) || 0,\n      available_balance: parseFloat(bal.available) || 0\n    });\n  }\n  \n  for (const a of accounts) {\n    const txns = await makeRequest('/accounts/' + a.id + '/transactions', token);\n    if (!Array.isArray(txns)) continue;\n    for (const t of txns) {\n      transactionRecords.push({\n        teller_transaction_id: t.id,\n        teller_account_id: a.id,\n        transaction_date: t.date,\n        description: t.description,\n        amount: parseFloat(t.amount) || 0,\n        status: t.status,\n        type: t.type,\n        category: t.details?.category || null,\n        merchant_name: t.details?.counterparty?.name || null,\n        merchant_category: t.details?.counterparty?.type || null,\n        running_balance: parseFloat(t.running_balance) || null\n      });\n    }\n  }\n}\n\nreturn [{\n  json: {\n    accounts: accountRecords,\n    balances: balanceRecords,\n    transactions: transactionRecords,\n    summary: {\n      tokenCount: tokens.length,\n      accountCount: accountRecords.length,\n      balanceCount: balanceRecords.length,\n      transactionCount: transactionRecords.length\n    }\n  }\n}];"
+      },
+      "id": "fetch-all-data",
+      "name": "Fetch All Teller Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [220, 0],
+      "notes": "Fetches all accounts, balances, and transactions from Teller API using mTLS certificates. Requires NODE_FUNCTION_ALLOW_BUILTIN=https,fs environment variable."
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nreturn data.accounts.map(a => ({ json: a }));"
+      },
+      "id": "extract-accounts",
+      "name": "Extract Accounts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, -100]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nreturn data.balances.map(b => ({ json: b }));"
+      },
+      "id": "extract-balances",
+      "name": "Extract Balances",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nreturn data.transactions.map(t => ({ json: t }));"
+      },
+      "id": "extract-transactions",
+      "name": "Extract Transactions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 100]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO raw.raw_teller_accounts (\n  teller_account_id, enrollment_id, institution_name, institution_id,\n  account_name, account_type, account_subtype, account_status,\n  currency, last_four, updated_at\n) VALUES (\n  '{{ $json.teller_account_id }}',\n  '{{ $json.enrollment_id }}',\n  '{{ $json.institution_name }}',\n  '{{ $json.institution_id }}',\n  '{{ $json.account_name }}',\n  '{{ $json.account_type }}',\n  '{{ $json.account_subtype }}',\n  '{{ $json.account_status }}',\n  '{{ $json.currency }}',\n  '{{ $json.last_four }}',\n  CURRENT_TIMESTAMP\n)\nON CONFLICT (teller_account_id) DO UPDATE SET\n  enrollment_id = EXCLUDED.enrollment_id,\n  institution_name = EXCLUDED.institution_name,\n  institution_id = EXCLUDED.institution_id,\n  account_name = EXCLUDED.account_name,\n  account_type = EXCLUDED.account_type,\n  account_subtype = EXCLUDED.account_subtype,\n  account_status = EXCLUDED.account_status,\n  currency = EXCLUDED.currency,\n  last_four = EXCLUDED.last_four,\n  updated_at = CURRENT_TIMESTAMP"
+      },
+      "id": "upsert-accounts",
+      "name": "Upsert Accounts",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [660, -100],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-account",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO raw.raw_teller_balances (\n  teller_account_id, ledger_balance, available_balance\n) VALUES (\n  '{{ $json.teller_account_id }}',\n  {{ $json.ledger_balance }},\n  {{ $json.available_balance }}\n)"
+      },
+      "id": "insert-balances",
+      "name": "Insert Balances",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [660, 0],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-account",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO raw.raw_teller_transactions (\n  teller_transaction_id, teller_account_id, transaction_date, description,\n  amount, status, type, category, merchant_name, merchant_category,\n  running_balance, updated_at\n) VALUES (\n  '{{ $json.teller_transaction_id }}',\n  '{{ $json.teller_account_id }}',\n  '{{ $json.transaction_date }}',\n  '{{ ($json.description || \"\").replace(/'/g, \"''\") }}',\n  {{ $json.amount }},\n  '{{ ($json.status || \"\").replace(/'/g, \"''\") }}',\n  '{{ ($json.type || \"\").replace(/'/g, \"''\") }}',\n  '{{ ($json.category || \"\").replace(/'/g, \"''\") }}',\n  '{{ ($json.merchant_name || \"\").replace(/'/g, \"''\") }}',\n  '{{ ($json.merchant_category || \"\").replace(/'/g, \"''\") }}',\n  {{ $json.running_balance || 'null' }},\n  CURRENT_TIMESTAMP\n)\nON CONFLICT (teller_transaction_id) DO UPDATE SET\n  description = EXCLUDED.description,\n  amount = EXCLUDED.amount,\n  status = EXCLUDED.status,\n  type = EXCLUDED.type,\n  category = EXCLUDED.category,\n  merchant_name = EXCLUDED.merchant_name,\n  merchant_category = EXCLUDED.merchant_category,\n  running_balance = EXCLUDED.running_balance,\n  updated_at = CURRENT_TIMESTAMP"
+      },
+      "id": "upsert-transactions",
+      "name": "Upsert Transactions",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [660, 100],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-account",
+          "name": "Postgres account"
+        }
+      },
+      "notes": "Escapes apostrophes in string fields to prevent SQL injection errors"
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { status: 'completed', timestamp: new Date().toISOString() } }];"
+      },
+      "id": "done",
+      "name": "Done",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 0]
+    }
+  ],
+  "connections": {
+    "Daily 6 AM": {
+      "main": [
+        [
+          {
+            "node": "Fetch All Teller Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch All Teller Data": {
+      "main": [
+        [
+          {
+            "node": "Extract Accounts",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Balances",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract Transactions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Accounts": {
+      "main": [
+        [
+          {
+            "node": "Upsert Accounts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Balances": {
+      "main": [
+        [
+          {
+            "node": "Insert Balances",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Transactions": {
+      "main": [
+        [
+          {
+            "node": "Upsert Transactions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Accounts": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Balances": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Transactions": {
+      "main": [
+        [
+          {
+            "node": "Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "financial",
+      "id": "financial"
+    },
+    {
+      "name": "teller",
+      "id": "teller"
+    }
+  ],
+  "triggerCount": 1,
+  "versionId": "2"
+}

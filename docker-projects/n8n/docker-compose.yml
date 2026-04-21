@@ -1,16 +1,32 @@
+networks:
+  home-metrics:
+    external: true
+
 services:
 
   n8n:
-     image: n8nio/n8n:latest
-     container_name: n8n
-     restart: unless-stopped
-     ports:
-       - "5678:5678"
-     environment:
-       # Auth is now managed via UI (Settings → Users)
-       - N8N_HOST=10.0.0.7
-       - N8N_PORT=5678
-       - N8N_PROTOCOL=http
-       - N8N_SECURE_COOKIE=false
-     volumes:
-       - ./n8n_data:/home/node/.n8n
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Auth is now managed via UI (Settings → Users)
+      - N8N_HOST=10.0.0.7
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_SECURE_COOKIE=false
+      # Allow built-in Node.js modules in Code nodes (required for Teller mTLS)
+      - NODE_FUNCTION_ALLOW_BUILTIN=https,fs
+      # Allow access to environment variables in Code nodes
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      # Teller API configuration
+      - TELLER_APPLICATION_ID=${TELLER_APPLICATION_ID}
+      - TELLER_CERTS_PATH=/certs/teller
+      - TELLER_TOKENS=${TELLER_TOKENS}
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+      # Teller mTLS certificates (read-only)
+      - ${TELLER_CERTS_HOST_PATH}:/certs/teller:ro
+    networks:
+      - home-metrics
