@@ -12,13 +12,16 @@ accounts_data as (
 )
 
 select
-    transaction_pk,
-    account_pk,
-    account_skey,
-    account_
-    teller_transaction_id,
-    transactions_data.teller_account_id,
-    account_skey,
+    t.transaction_pk,
+    a.account_pk,
+    a.account_skey,
+    a.account_holder,
+    a.account_name_friendly,
+    a.last_four,
+    a.account_type,
+    a.account_subtype,
+    t.teller_transaction_id,
+    t.teller_account_id,
     transaction_date,
     transaction_description,
     transaction_amount,
@@ -28,9 +31,10 @@ select
     vendor_name,
     vendor_category,
     running_balance,
-    transactions_data.inserted_at as transaction_inserted_at,
-    transactions_data.updated_at as transaction_updated_at
+    t.inserted_at as transaction_inserted_at,
+    t.updated_at as transaction_updated_at
 from transactions_data t
 left join accounts_data a
     on t.teller_account_id = a.teller_account_id 
     and t.account_skey = a.account_skey
+
