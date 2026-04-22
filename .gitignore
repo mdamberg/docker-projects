@@ -2,6 +2,8 @@
 #homelab-docs/
 .vscode/
 .claude/
+!.claude/skills/
+!.claude/skills/**
 CLAUDE.local.md
 
 # Home Assistant - Exclude sensitive storage and runtime files
@@ -60,3 +62,14 @@ docker-projects/n8n/n8n_data/crash.journal
 !docker-projects/phpipam/docker-compose.yml
 !docker-projects/phpipam/README.md
 logs/query_log.sql
+
+# Certificates - Never commit certificates or private keys
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+**/certs/
+**/certificates/
+teller-certs/

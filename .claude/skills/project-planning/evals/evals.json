@@ -1,0 +1,50 @@
+{
+  "skill_name": "project-planning",
+  "evals": [
+    {
+      "id": 1,
+      "name": "dbt-with-context",
+      "prompt": "Simulate a full project-planning session. The user says:\n\n\"I want to add YouTube watch history to my analytics. I have CSV exports from Google Takeout and want to see monthly viewing patterns by channel and category.\"\n\nSimulate the interview by providing reasonable user responses:\n- When asked about data source: \"The CSVs have video title, channel name, watch timestamp, and video URL. I'll manually export and drop them in a folder monthly.\"\n- When asked about existing models: \"No YouTube models exist yet, but I want it to follow the same pattern as media_activity.\"\n- When asked about dimensions: \"Channel, video category, and day of week. I want to see what days I watch the most.\"\n- When asked about aggregations: \"Daily and monthly summaries.\"\n\nFollow the project-planning skill fully: enter plan mode, check for existing work, conduct the interview, create the plan document, then present for approval. Save the plan to the correct folder.",
+      "expected_output": "Should: 1) Enter plan mode, 2) Check existing dbt models, 3) Recognize problem/success already provided in initial prompt, 4) Ask follow-up questions about data structure, 5) Detect dbt project type, 6) Create comprehensive plan at project-plans/dbt/youtube-watch-history.md",
+      "files": [],
+      "assertions": [
+        {"name": "entered_plan_mode", "type": "behavior", "description": "Called EnterPlanMode tool"},
+        {"name": "checked_existing_work", "type": "behavior", "description": "Searched for existing dbt models or plans"},
+        {"name": "recognized_context", "type": "behavior", "description": "Did not re-ask problem/success questions since they were in initial prompt"},
+        {"name": "correct_project_type", "type": "output", "description": "Identified as dbt project"},
+        {"name": "plan_created", "type": "file", "description": "Plan document created in project-plans/dbt/"},
+        {"name": "plan_has_sections", "type": "content", "description": "Plan includes: Discovery Summary, Scope & Goals, Technical Approach, Risk Assessment, Task Breakdown, Expected Output"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "n8n-minimal-context",
+      "prompt": "Simulate a full project-planning session. The user says:\n\n\"I need a workflow for backing up my Plex database\"\n\nSimulate the interview by providing reasonable user responses:\n- When asked about the problem: \"My Plex database has gotten corrupted twice and I lost watch history. I need automated backups.\"\n- When asked about success criteria: \"Daily backups stored on my NAS, kept for 2 weeks, and I get notified if a backup fails.\"\n- When asked about trigger: \"Daily at 3am when nothing is streaming.\"\n- When asked about failure handling: \"Send a Discord notification to my alerts channel.\"\n- When asked about existing workflows: \"There's a media-related workflow but it doesn't do Plex backups.\"\n\nFollow the project-planning skill fully: enter plan mode, query n8n MCP for existing workflows, conduct the interview, create the plan document. Save to correct folder.",
+      "expected_output": "Should: 1) Enter plan mode, 2) Query n8n MCP (list_workflows, get_workflow_stats), 3) Ask core questions since minimal context, 4) Detect n8n project type, 5) Ask about triggers/failure handling, 6) Create plan at project-plans/n8n/plex-database-backup.md",
+      "files": [],
+      "assertions": [
+        {"name": "entered_plan_mode", "type": "behavior", "description": "Called EnterPlanMode tool"},
+        {"name": "queried_n8n_mcp", "type": "behavior", "description": "Used mcp__n8n-manager tools to check existing workflows"},
+        {"name": "asked_core_questions", "type": "behavior", "description": "Asked about problem and success criteria"},
+        {"name": "correct_project_type", "type": "output", "description": "Identified as n8n project"},
+        {"name": "asked_n8n_specifics", "type": "behavior", "description": "Asked about trigger, failure handling"},
+        {"name": "plan_created", "type": "file", "description": "Plan document created in project-plans/n8n/"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "docker-ambiguous",
+      "prompt": "Simulate a full project-planning session. The user says:\n\n\"Let's plan adding Jellyfin to the homelab\"\n\nSimulate the interview by providing reasonable user responses:\n- When asked about the problem: \"I want an alternative to Plex that's fully open source. Some family members prefer Jellyfin's interface.\"\n- When asked about success criteria: \"Jellyfin running alongside Plex, pointing to the same media library, accessible via Tailscale.\"\n- When asked about volumes: \"Same media paths as Plex - C:/media/movies and C:/media/tv. Config in the jellyfin service folder.\"\n- When asked about ports: \"Use 8096 for web UI.\"\n- When asked about networking: \"Needs to be on the default bridge network, no special requirements.\"\n- When asked about secrets: \"No API keys needed for basic setup.\"\n\nFollow the project-planning skill fully: enter plan mode, check existing Docker services, conduct interview, create plan. Save to correct folder.",
+      "expected_output": "Should: 1) Enter plan mode, 2) Check existing Docker services and compose files, 3) Ask core questions, 4) Detect Docker project type, 5) Ask about volumes/ports/networks/secrets, 6) Create plan at project-plans/docker/jellyfin-media-server.md",
+      "files": [],
+      "assertions": [
+        {"name": "entered_plan_mode", "type": "behavior", "description": "Called EnterPlanMode tool"},
+        {"name": "checked_existing_services", "type": "behavior", "description": "Checked existing docker-compose files or running containers"},
+        {"name": "asked_core_questions", "type": "behavior", "description": "Asked about problem and success criteria"},
+        {"name": "correct_project_type", "type": "output", "description": "Identified as Docker project"},
+        {"name": "asked_docker_specifics", "type": "behavior", "description": "Asked about volumes, ports, networks, secrets"},
+        {"name": "plan_created", "type": "file", "description": "Plan document created in project-plans/docker/"}
+      ]
+    }
+  ]
+}

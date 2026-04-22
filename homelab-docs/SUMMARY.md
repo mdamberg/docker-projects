@@ -49,6 +49,8 @@
     * [Setup](analytics-stack/ops/setup.md)
     * [Backup & Restore](analytics-stack/ops/backup-restore.md)
     * [Troubleshooting](analytics-stack/ops/troubleshooting.md)
+* Financial Data
+  * [Teller Integration](financial-data/README.md)
 * Utilities
   * [Ansible Notes](utilities/ansible-notes.md)
   * [Scripts](utilities/scripts.md)

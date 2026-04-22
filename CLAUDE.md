@@ -38,6 +38,11 @@ C:\Users\mattd\OneDrive\Matts Documents\Docker\
 │   ├── TODO.md            # Prioritized action items
 │   └── <topic>/README.md
 ├── data-projects/         # Data/analytics experiments
+├── project-plans/         # Project planning documents
+│   ├── dbt/               # dbt model projects
+│   ├── n8n/               # Workflow automation projects
+│   ├── docker/            # Container/service projects
+│   └── general/           # Other projects
 ├── temp_home_metrics_files/ # Temp files for metrics pipeline
 ├── CLAUDE.md              # This file
 ├── *.ps1                  # PowerShell utility scripts
@@ -52,6 +57,7 @@ C:\Users\mattd\OneDrive\Matts Documents\Docker\
 | Service config changes | `docker-projects/<service>/` | Updating compose file |
 | Documentation | `homelab-docs/` | How-to guides, READMEs |
 | dbt models | `docker-projects/home_metrics_dbt/` | SQL transformations |
+| Project plans | `project-plans/<type>/` | Planning docs (dbt, n8n, docker, general) |
 | Utility scripts | Root directory | PowerShell helpers |
 
 ## Common Commands
@@ -126,6 +132,19 @@ docker compose logs -f <container>
 3. Test with `docker compose up -d && docker compose ps`
 4. Add to `start-all-services.ps1`
 5. Document in `homelab-docs/`
+
+### Project planning
+For non-trivial work, use `/project-planning` to enter structured planning mode:
+1. **Existing work detection** - check for related plans, workflows, code
+2. **Discovery interview** - understand problem and success criteria
+3. **Scope & Goals** - define boundaries and measurable outcomes
+4. **Technical approach** - determine how, with rationale
+5. **Risk assessment** - identify pitfalls and mitigations
+6. **Task breakdown** - structure into phases and tasks
+7. **User approval** - explicit agreement before implementation
+8. **Auto-handoff** - invoke appropriate builder skill (dbt-query, n8n-workflow, docker-service)
+
+Plans are saved to `project-plans/<type>/` for documentation. For n8n projects, the skill queries the MCP server to understand existing workflows before planning.
 
 ### Deleting media properly
 Delete through Radarr/Sonarr UI, not filesystem. See `homelab-docs/media-stack/ops/deleting-media.md`
