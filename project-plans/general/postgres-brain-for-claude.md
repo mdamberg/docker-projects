@@ -6,37 +6,44 @@
 
 ## Discovery Summary
 
-The goal is to pre-sync personal productivity data (Gmail, Google Calendar, Notion) into a
-dedicated Postgres schema so Claude can answer questions with a single SQL tool call instead
-of invoking multiple live API tools per query. This reduces token usage, latency, and the
-number of MCP tool definitions loaded at session start.
+The goal is to give Claude a single Postgres-backed interface for answering two categories
+of questions without live API calls: (1) personal productivity — calendar events, tagged
+emails, Notion notes; (2) homelab metrics — n8n run health, media library stats, power
+consumption, and financial summaries.
+
+For personal productivity, data doesn't exist yet and must be synced via new n8n workflows
+into a new `claude_brain` schema. For homelab metrics, the data already lives in
+`home-metrics-postgres` — existing n8n workflows collect it and dbt models transform it
+into queryable marts. No new sync infrastructure is needed for that half; server4 simply
+needs read access to the existing schemas alongside `claude_brain`.
 
 The original concept included CRM-style client joining (client_id), but the actual use cases
-are personal productivity queries — no client dimension is needed. The schema is simpler:
-three independent source tables searchable by content, plus a sync health log.
-
-The existing `home-metrics-postgres` instance (home-metrics-infrastructure repo) already
-runs on the `home-metrics` Docker network. A new `claude_brain` schema inside that instance
-avoids a new container while keeping the data isolated from the personal finance warehouse.
+are personal productivity and homelab monitoring — no client dimension is needed.
 
 ## Scope & Goals
 
 **Goals:**
 - [ ] Pre-sync Gmail, Google Calendar, and Notion into Postgres on a schedule via n8n
-- [ ] Expose a new MCP server (server4) with targeted query tools for Claude
+- [ ] Expose a new MCP server (server4) with targeted query tools for Claude covering both personal and homelab data
 - [ ] Monitor sync health with alerts on failure or stale data
 - [ ] Establish a repeatable pattern so additional sources can be added later
 
-**Success Criteria:**
+**Success Criteria — Personal Productivity:**
 - [ ] Claude can answer "Do I have any appointments this week?" without a live API call
 - [ ] Claude can answer "Have I received any emails tagged X?" without a live API call
 - [ ] Claude can answer "What are my HomeLab notes in Notion?" without a live API call
 - [ ] Each sync runs on schedule and alerts (Pushover) on failure within 5 minutes
 - [ ] `sync_log` table shows last successful sync per source; stale data triggers daily alert
 
+**Success Criteria — Homelab Metrics (data already in DB, no new sync needed):**
+- [ ] Claude can answer "Have any n8n workflows failed recently?"
+- [ ] Claude can answer "How many movies do I have and what's the total storage?"
+- [ ] Claude can answer "How much energy has my house used this month?"
+- [ ] Claude can answer "What was my total income and spending last month?"
+
 **Out of Scope (v1):**
-- HubSpot, Slack, or other sources (added later using the same pattern)
-- Writing back to any source (read-only sync)
+- HubSpot, Slack, or other external sources (added later using the same pattern)
+- Writing back to any source (read-only throughout)
 - Full email body storage (snippets + metadata only, for token efficiency)
 - Notion page content beyond plain text extraction
 
@@ -45,13 +52,20 @@ avoids a new container while keeping the data isolated from the personal finance
 ### Overview
 
 ```
-Gmail ──────── n8n (hourly)  ──────────────────────────────┐
-Google Cal ─── n8n (every 4h) ─── INSERT/UPSERT ──────── home-metrics-postgres
-Notion ──────── n8n (every 2h) ──────────────────────────── schema: claude_brain
-                                                              │
-                                                    MCP server4 (read-only)
-                                                              │
-                                                           Claude
+── NEW SYNCS ──────────────────────────────────────────────────────────────────────────────┐
+Gmail ──────── n8n (hourly)   ──┐                                                          │
+Google Cal ─── n8n (every 4h) ──┼── UPSERT ──► home-metrics-postgres / schema: claude_brain│
+Notion ──────── n8n (every 2h) ─┘                                                          │
+                                                                                            │
+── ALREADY SYNCED ─────────────────────────────────────────────────────────────────────────┤
+n8n run logs ─── existing workflow ──► raw.raw_n8n_workflow_runs                           │
+Media library ── existing workflow ──► raw.raw_media_library_metrics                       │
+Power data ───── existing workflow ──► marts.fct_power_consumption                         │
+Transactions ─── existing workflow ──► marts.monthly_transactions                          │
+                                            │                                              │
+                                   MCP server4 (read-only, queries both schemas)           │
+                                            │                                              │
+                                         Claude ◄─────────────────────────────────────────┘
 ```
 
 ### Key Decisions
@@ -61,7 +75,8 @@ Notion ──────── n8n (every 2h) ───────────
 | Postgres instance | Existing `home-metrics-postgres`, new schema `claude_brain` | No new container; clean isolation via schema |
 | Schema design | Flat tables per source, no client join | Use cases are personal productivity, not CRM |
 | MCP server | New server4 (`mcp-postgres-brain`) | No existing SQL/Postgres MCP server; follows server1-3 pattern |
-| MCP tool design | Named tools per query type (4 tools) | More compact responses than raw SQL; prevents injection |
+| MCP tool design | Named tools per query type (8 tools) | More compact responses than raw SQL; prevents injection |
+| Homelab data access | Read existing `raw` + `public` schemas | Data already collected — no new sync needed for homelab metrics |
 | Gmail storage | Snippet + metadata only, no full body | Token efficiency; full body not needed for the use cases |
 | Notion content | Plain text extraction, no blocks/rich text | Keeps rows lean and queryable |
 | Sync approach | n8n upsert on unique ID | Idempotent; re-runs don't duplicate data |
@@ -124,16 +139,27 @@ CREATE TABLE claude_brain.sync_log (
 );
 ```
 
-### MCP Server4 Tools (4 tools)
+### MCP Server4 Tools (8 tools)
 
 All tools are read-only, parameterized queries — no raw SQL exposed to Claude.
+
+**Personal Productivity (queries `claude_brain` schema):**
 
 | Tool | Description |
 |------|-------------|
 | `get_upcoming_events` | Calendar events for a date range (default: next 7 days). Returns title, start/end, location, event_type. |
 | `search_emails` | Search gmail_messages by label, sender, subject keyword, or date range. Returns subject, sender, snippet, received_at. |
 | `search_notion` | Search notion_pages by database name or keyword in title/content. Returns title, database_name, excerpt, last_edited, url. |
-| `get_sync_status` | Returns last successful sync time per source and record counts from sync_log. |
+| `get_sync_status` | Returns last successful sync time per source and record counts from `claude_brain.sync_log`. |
+
+**Homelab Metrics (queries existing `raw` + dbt mart schemas — no new sync needed):**
+
+| Tool | Source Table(s) | Description |
+|------|-----------------|-------------|
+| `get_n8n_run_health` | `raw.raw_n8n_workflow_runs` | Recent workflow executions with status. Params: lookback hours (default 24), status filter (all/error/success). Returns workflow name, status, started_at, duration. |
+| `get_media_stats` | `raw.raw_media_library_metrics` | Media library summary. Returns movie count, TV show count, total storage in GB, breakdown by library — from most recent snapshot. |
+| `get_power_stats` | `fct_power_consumption`, `monthly_hardware_sensors` | Energy usage summary. Params: period (today/week/month). Returns kWh total, daily average, peak reading. |
+| `get_financial_summary` | `monthly_transactions` | Income and spending summary. Params: month (default current). Returns total income, total expenses, net, top spending categories. |
 
 ### n8n Workflows (3 new workflows)
 
@@ -184,11 +210,13 @@ All tools are read-only, parameterized queries — no raw SQL exposed to Claude.
 
 ### Phase 2: MCP Server4
 1. [ ] Create `mcp_servers/server4/` directory with `Dockerfile`, `requirements.txt`, `server.py`
-2. [ ] Implement 4 tools: `get_upcoming_events`, `search_emails`, `search_notion`, `get_sync_status`
-3. [ ] Add `mcp-postgres-brain` service to `mcp_server/docker-compose.yml` (port 8004)
-4. [ ] Add `BRAIN_DB_URL` to `mcp_server/.env`
-5. [ ] Build and smoke-test container
-6. [ ] Add server4 to Claude Desktop config
+2. [ ] Confirm exact schema/table names for homelab data by inspecting `home-metrics-postgres` (dbt output schema may differ from model names)
+3. [ ] Implement personal productivity tools: `get_upcoming_events`, `search_emails`, `search_notion`, `get_sync_status`
+4. [ ] Implement homelab tools: `get_n8n_run_health`, `get_media_stats`, `get_power_stats`, `get_financial_summary`
+5. [ ] Add `mcp-postgres-brain` service to `mcp_server/docker-compose.yml` (port 8004)
+6. [ ] Add `BRAIN_DB_URL` to `mcp_server/.env` (single connection string covers all schemas)
+7. [ ] Build and smoke-test container
+8. [ ] Add server4 to Claude Desktop config
 
 ### Phase 3: n8n Credential Setup
 1. [ ] Create Google OAuth credential in n8n (covers Gmail + Calendar)
@@ -205,7 +233,7 @@ All tools are read-only, parameterized queries — no raw SQL exposed to Claude.
 6. [ ] Run all three syncs manually and verify row counts in Postgres
 
 ### Phase 5: Verification & Docs
-1. [ ] Test all 4 MCP tools from Claude: confirm expected results for each use case query
+1. [ ] Test all 8 MCP tools from Claude using the example queries in the success criteria
 2. [ ] Verify Pushover alert fires on simulated sync failure
 3. [ ] Add server4 entry to `mcp_server/readme`
 4. [ ] Update `homelab-docs/` with new brain infrastructure entry
@@ -251,7 +279,11 @@ Phases 2 and 3 can run in parallel after Phase 1 is done.
 4. Claude: "Any emails labeled Important?" → returns matching rows
 5. Claude: "What are my HomeLab notes in Notion?" → returns notion_pages rows
 6. Claude: "What's the sync status?" → returns last sync time per source
-7. Disable a sync workflow → verify Pushover alert fires within schedule window
+7. Claude: "Have any n8n workflows failed in the last 24 hours?" → returns run health
+8. Claude: "How many movies do I have and what's the total storage?" → returns media stats
+9. Claude: "How much energy has my house used this month?" → returns power summary
+10. Claude: "What was my income and spending last month?" → returns financial summary
+11. Disable a sync workflow → verify Pushover alert fires within schedule window
 
 ## Pre-Implementation Checklist (Manual Steps Before Starting)
 
