@@ -1,17 +1,21 @@
 MCP Server Project
 A Docker-based Model Context Protocol (MCP) server implementation that provides AI assistants with tools to interact with Docker containers and the filesystem.
 Overview
-This project contains two MCP servers that enable Claude Desktop to interact with your local Docker environment and filesystem through natural language commands. The servers run in Docker containers and communicate with Claude Desktop using the MCP stdio protocol.
+This project contains three MCP servers that enable Claude Desktop to interact with your local Docker environment, filesystem, and n8n workflow automation through natural language commands. The servers run in Docker containers and communicate with Claude Desktop using the MCP stdio protocol.
 Project Structure
 mcp_server/
-├── docker-compose.yml          # Docker Compose configuration for both servers
-├── .env                        # Environment variables (if needed)
+├── docker-compose.yml          # Docker Compose configuration for all servers
+├── .env                        # Environment variables
 └── mcp_servers/
     ├── server1/                # Docker Management Server
     │   ├── Dockerfile
     │   ├── requirements.txt
     │   └── server.py
-    └── server2/                # Filesystem Management Server
+    ├── server2/                # Filesystem Management Server
+    │   ├── Dockerfile
+    │   ├── requirements.txt
+    │   └── server.py
+    └── server3/                # n8n Workflow Management Server
         ├── Dockerfile
         ├── requirements.txt
         └── server.py
@@ -135,6 +139,20 @@ json   {
            "mcp_server-mcp-filesystem-server",
            "python", "/app/server.py"
          ]
+       },
+       "n8n-manager": {
+         "command": "docker",
+         "args": [
+           "run",
+           "--rm",
+           "-i",
+           "--name", "mcp-n8n-temp",
+           "-e", "N8N_API_URL=http://10.0.0.7:5678",
+           "-e", "N8N_API_KEY=YOUR_N8N_API_KEY",
+           "--network", "host",
+           "mcp_server-mcp-n8n-server",
+           "python", "/app/server.py"
+         ]
        }
      }
    }
@@ -226,6 +244,98 @@ Add the service to docker-compose.yml
 Add the server configuration to Claude Desktop's config
 Build and restart
 
+Server 3: n8n Manager (n8n-manager)
+Purpose: Provides tools to monitor, trigger, and manage n8n workflows.
+Available Tools:
+
+**Read Operations:**
+
+list_workflows
+- Lists all n8n workflows with status, tags, and metadata
+- Optional filters: active (boolean), tags (string)
+- Returns: Workflow ID, name, active status, tags, last updated
+
+get_workflow
+- Gets full workflow definition including nodes and connections
+- Parameter: workflow_id (required)
+- Returns: Complete workflow structure with nodes, connections, settings
+
+list_executions
+- Gets workflow execution history with filtering
+- Optional parameters: workflow_id, status (error/success/waiting), limit
+- Returns: Execution ID, workflow ID, status, timestamps
+
+get_execution
+- Gets detailed execution data including node-level input/output
+- Parameter: execution_id (required)
+- Returns: Full execution details with node run data and errors
+
+get_workflow_stats
+- Gets aggregated statistics for a workflow
+- Parameters: workflow_id (required), days (default: 7)
+- Returns: Success rate, execution counts, recent errors
+
+list_node_types
+- Reference of available n8n nodes by category
+- Parameter: category (triggers/core/data_transformation/communication/databases/files/services/all)
+- Returns: Node names and descriptions for workflow building
+
+**Write Operations:**
+
+create_workflow
+- Creates a new workflow from JSON definition
+- Parameters: name (required), nodes (required), connections (required), settings (optional)
+- Returns: Created workflow ID and details
+
+update_workflow
+- Updates an existing workflow definition
+- Parameters: workflow_id (required), name/nodes/connections/settings (optional)
+- Returns: Updated workflow details
+
+delete_workflow
+- Permanently deletes a workflow
+- Parameter: workflow_id (required)
+- Returns: Confirmation message
+
+**State Operations:**
+
+activate_workflow
+- Enables a workflow so it can be triggered
+- Parameter: workflow_id (required)
+- Returns: Confirmation message
+
+deactivate_workflow
+- Disables a workflow
+- Parameter: workflow_id (required)
+- Returns: Confirmation message
+
+**Execution Operations:**
+
+trigger_workflow
+- Executes a workflow via its webhook trigger
+- Parameters: workflow_id (required), webhook_path (optional - auto-detected), data (optional JSON payload)
+- Note: Workflow must have a webhook node configured
+- Returns: Webhook response
+
+retry_execution
+- Retries a failed workflow execution
+- Parameter: execution_id (required)
+- Returns: Confirmation message
+
+Example Usage:
+
+"List all my n8n workflows"
+"Show me workflow X details"
+"What are the recent executions with errors?"
+"Trigger my backup workflow"
+"Activate workflow 123"
+"What nodes can I use for communication?"
+
+Configuration:
+Set the following environment variables in .env:
+- N8N_API_URL: Your n8n instance URL (default: http://10.0.0.7:5678)
+- N8N_API_KEY: Your n8n API key (generate in n8n Settings > API)
+
 Ideas for Additional Servers:
 
 Media stack controller (Sonarr, Radarr, Plex APIs)
@@ -243,6 +353,11 @@ docker
 Server 2 (Filesystem Manager)
 
 mcp>=1.0.0
+
+Server 3 (n8n Manager)
+
+mcp>=1.0.0
+aiohttp>=3.9.0
 
 License
 This is a personal project for local use. Modify and extend as needed for your own purposes.

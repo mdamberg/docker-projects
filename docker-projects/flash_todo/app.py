@@ -4,7 +4,25 @@ import os
 
 app = Flask(__name__)
 
-TODO_FILE = '/app/data/todos.json'  # where we save todos (/app/data is volume mount point)
+TODO_FILE  = '/app/data/todos.json'   # where we save todos (/app/data is volume mount point)
+STATS_FILE = '/app/data/stats.json'   # persistent counters that survive task deletion
+
+
+# STATS PERSISTENCE (survives task deletion)
+
+def load_stats():
+    """Load persistent stats from JSON file"""
+    if os.path.exists(STATS_FILE):
+        with open(STATS_FILE, 'r') as f:
+            return json.load(f)
+    return {'deleted_done_count': 0}   # default: no deleted completions yet
+
+
+def save_stats(stats):
+    """Save persistent stats to JSON file"""
+    os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
+    with open(STATS_FILE, 'w') as f:
+        json.dump(stats, f, indent=2)
 
 
 # CATEGORY AND PRIORITY MANAGEMENT
@@ -70,17 +88,26 @@ def migrate_todos(todos):
     return todos, migrated
 
 
-def calculate_metrics(todos):
-    """Calculate metrics for the dashboard"""
-    total_tasks = len(todos)
-    pending_tasks = sum(1 for todo in todos if not todo['done'])
-    completed_tasks = sum(1 for todo in todos if todo['done'])
+def calculate_metrics(todos, stats=None):
+    """Calculate metrics for the dashboard.
+
+    completed and total both include tasks that were marked done then deleted,
+    so the counters never drop when you clean up finished tasks.
+    """
+    if stats is None:
+        stats = {'deleted_done_count': 0}
+
+    deleted_done      = stats.get('deleted_done_count', 0)
+    current_done      = sum(1 for todo in todos if todo['done'])
+    current_pending   = sum(1 for todo in todos if not todo['done'])
+    completed_tasks   = current_done + deleted_done          # all-time completions
+    total_tasks       = len(todos) + deleted_done            # active + ever-completed-and-deleted
     completion_percentage = (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
     high_priority_pending = sum(1 for todo in todos if not todo['done'] and todo.get('priority') == 'High')
 
     return {
         'total': total_tasks,
-        'pending': pending_tasks,
+        'pending': current_pending,
         'completed': completed_tasks,
         'completion_percentage': round(completion_percentage, 1),
         'high_priority_pending': high_priority_pending
@@ -118,7 +145,8 @@ def save_todos(todos):
 def index():
     """Main page - shows all todos with metrics and category grouping"""
     todos = load_todos()                                # get todos from file
-    metrics = calculate_metrics(todos)                  # calculate dashboard metrics
+    stats = load_stats()                                # get persistent completion stats
+    metrics = calculate_metrics(todos, stats)           # calculate dashboard metrics
     sort = request.args.get('sort', 'category')         # 'category' (default) or 'urgency'
 
     categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring', 'DBT', 'HomeLab', 'AI', 'House-Projects', 'General']
@@ -213,14 +241,19 @@ def update_category(todo_id):
 # Reassigns IDs so they're sequential again, Saves and redirects
 @app.route('/delete/<int:todo_id>')
 def delete_todo(todo_id):
-    """Delete a todo"""
-    todos = load_todos()                    # Load todos
-    if 0 <= todo_id < len(todos):           # Valid ID?
-        todos.pop(todo_id)                  # Remove from list
-        for i, todo in enumerate(todos):    # Loop through remaining
-            todo['id'] = i                  # Reassign IDs (0, 1, 2...)
-        save_todos(todos)                   # Save
-    return redirect(url_for('index'))       # Back to homepage
+    """Delete a todo. If it was marked done, persist that completion in stats
+    so the completed counter never drops when cleaning up finished tasks."""
+    todos = load_todos()
+    if 0 <= todo_id < len(todos):
+        removed = todos.pop(todo_id)                    # Remove from list
+        if removed.get('done', False):                  # Was it completed?
+            stats = load_stats()
+            stats['deleted_done_count'] = stats.get('deleted_done_count', 0) + 1
+            save_stats(stats)                           # Persist the completion
+        for i, todo in enumerate(todos):
+            todo['id'] = i                              # Reassign IDs (0, 1, 2...)
+        save_todos(todos)
+    return redirect(url_for('index'))
 
 
 # API ENDPOINTS (for Scriptable widget and other apps)
@@ -285,14 +318,18 @@ def api_update_todo(todo_id):
 @app.route('/api/todos/<int:todo_id>', methods=['DELETE'])
 def api_delete_todo(todo_id):
     """API endpoint to delete a todo"""
-    todos = load_todos()                    # Load todos
-    if not (0 <= todo_id < len(todos)):     # Valid ID?
+    todos = load_todos()
+    if not (0 <= todo_id < len(todos)):
         return jsonify({'error': 'Todo not found'}), 404
 
-    deleted_todo = todos.pop(todo_id)       # Remove todo
-    for i, todo in enumerate(todos):        # Reassign IDs
+    deleted_todo = todos.pop(todo_id)
+    if deleted_todo.get('done', False):                 # Persist completion if task was done
+        stats = load_stats()
+        stats['deleted_done_count'] = stats.get('deleted_done_count', 0) + 1
+        save_stats(stats)
+    for i, todo in enumerate(todos):
         todo['id'] = i
-    save_todos(todos)                       # Save
+    save_todos(todos)
     return jsonify({'message': 'Todo deleted', 'todo': deleted_todo}), 200
 
 

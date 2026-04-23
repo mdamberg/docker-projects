@@ -73,3 +73,10 @@ logs/query_log.sql
 **/certs/
 **/certificates/
 teller-certs/
+
+# Local MCP configuration
+.mcp.json
+
+# Runtime data
+docker-projects/flash_todo/data/
+docker-projects/backups/duplicati/config/.dotnet/

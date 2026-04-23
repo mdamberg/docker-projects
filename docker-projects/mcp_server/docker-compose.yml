@@ -27,6 +27,21 @@ services:
       - SERVER_NAME=filesystem-manager
     # Remove restart policy - stdio servers run on-demand
 
+  mcp-n8n-server:
+    build: ./mcp_servers/server3
+    container_name: mcp-n8n-server
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./mcp_servers/server3:/app
+    networks:
+      - mcp-network
+    environment:
+      - SERVER_NAME=n8n-manager
+      - N8N_API_URL=${N8N_API_URL}
+      - N8N_API_KEY=${N8N_API_KEY}
+    # Remove restart policy - stdio servers run on-demand
+
 networks:
   mcp-network:
     driver: bridge
