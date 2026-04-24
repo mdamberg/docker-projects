@@ -68,6 +68,12 @@ models:
           meta:
             dimension:
               type: string
+      - name: date_key
+        description: "Surrogate key for transaction date (YYYYMMDD)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_name_friendly
         description: "Human-readable account name"
         config:

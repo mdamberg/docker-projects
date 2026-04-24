@@ -18,6 +18,12 @@ models:
           meta:
             dimension:
               type: string
+      - name: recorded_date_key
+        description: "Surrogate key for the date when balance was recorded"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: teller_account_id
         description: "Teller's unique account identifier"
         config:
