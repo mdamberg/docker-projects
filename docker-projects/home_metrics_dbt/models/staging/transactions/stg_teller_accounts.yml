@@ -11,8 +11,8 @@ models:
           meta:
             dimension:
               type: number
-      - name: account_skey
-        description: "Surrogate key based on teller_account_id"
+      - name: account_key
+        description: "Dimensional key based on teller_account_id"
         config:
           meta:
             dimension:

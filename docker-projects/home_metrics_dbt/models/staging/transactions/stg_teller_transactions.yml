@@ -61,8 +61,8 @@ models:
           meta:
             dimension:
               type: date
-      - name: account_skey
-        description: ""
+      - name: account_key
+        description: "Dimensional key based on teller_account_id"
         config:
           meta:
             dimension:

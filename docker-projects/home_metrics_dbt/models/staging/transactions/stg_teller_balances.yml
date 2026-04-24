@@ -12,8 +12,8 @@ models:
           meta:
             dimension:
               type: number
-      - name: account_skey
-        description: "Reference to account surrogate key"
+      - name: account_key
+        description: "Reference to account dimensional key"
         config:
           meta:
             dimension:

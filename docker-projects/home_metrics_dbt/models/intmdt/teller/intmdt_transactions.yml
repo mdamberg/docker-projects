@@ -1,0 +1,172 @@
+models:
+  - name: intmdt_transactions
+    description: "Enriched transactions with account details and dimension keys for analytics"
+    columns:
+      - name: transaction_pk
+        description: "Primary key from raw transactions table"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_skey
+        description: "Surrogate key for transaction"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_pk
+        description: "Primary key from accounts table"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: account_key
+        description: "Dimension key - groups transactions by account"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_holder_key
+        description: "Dimension key - groups transactions by account holder (Matt/Jessica)"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_type_key
+        description: "Dimension key - groups by credit/debit"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_category_key
+        description: "Dimension key - groups by transaction category"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_key
+        description: "Dimension key - groups by vendor"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_holder
+        description: "Account holder name (Matt or Jessica)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name_friendly
+        description: "Human-readable account name"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: last_four
+        description: "Last four digits of account number"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_type
+        description: "Account type (checking, savings, credit)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_subtype
+        description: "Original Teller account subtype"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_transaction_id
+        description: "Teller's unique transaction identifier"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_account_id
+        description: "Teller's account identifier"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_date
+        description: "Date of the transaction"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: transaction_description
+        description: "Transaction description from bank"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_amount
+        description: "Transaction amount (negative for debits)"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_status
+        description: "Transaction status (pending, posted)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_type
+        description: "Credit or Debit"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_category
+        description: "Transaction category"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_name
+        description: "Merchant/vendor name"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_category
+        description: "Merchant category code description"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: running_balance
+        description: "Account balance after transaction"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_inserted_at
+        description: "Timestamp when the transaction was first inserted"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_updated_at
+        description: "Timestamp when the transaction was last updated"
+        config:
+          meta:
+            dimension:
+              type: string

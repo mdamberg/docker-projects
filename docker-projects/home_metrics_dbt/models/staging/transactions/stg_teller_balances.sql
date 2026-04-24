@@ -7,7 +7,7 @@
 select 
     id as balance_pk,
     teller_account_id,
-    {{ dbt_utils.generate_surrogate_key(['teller_account_id']) }} as account_skey,
+    {{ dbt_utils.generate_surrogate_key(['teller_account_id']) }} as account_key,
     ledger_balance,
     available_balance, 
     recorded_at,

@@ -11,3 +11,14 @@ This file documents the granularity for each intermediate model. Intermediate mo
    - Primary key: `system_health_id` + `interval_ts`
    - Joins: `stg_system_health` + `stg_hardware_sensors` (on 15-min interval)
    - Purpose: Aligns system health and hardware sensor data to same time grain for downstream fact table
+
+---
+
+## Financial
+
+2. **intmdt_transactions**
+   - Grain: 1 row per transaction
+   - Primary key: `transaction_pk`
+   - Surrogate key: `transaction_skey`
+   - Joins: `stg_teller_transactions` + `stg_teller_accounts` (on teller_account_id)
+   - Purpose: Enriches transactions with account details and adds dimension keys for analytics

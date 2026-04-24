@@ -11,7 +11,7 @@ with accounts_data as (
         institution_name,
         institution_id,
         account_name,
-        {{ dbt_utils.generate_surrogate_key(['teller_account_id']) }} as account_skey,
+        {{ dbt_utils.generate_surrogate_key(['teller_account_id']) }} as account_key,
         case
             when last_four in ('7868', '8119', '5766') then 'Matt'
             when last_four in ('0999', '0325', '4113', '2410') then 'Jessica' 
