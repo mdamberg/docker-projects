@@ -138,7 +138,7 @@
         "url": "YOUR_DISCORD_WEBHOOK_URL",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"content\": \"{{ $json.alert_title }}\",\n  \"embeds\": [{\n    \"title\": \"Data Pipeline Status\",\n    \"description\": {{ JSON.stringify($json.alert_body) }},\n    \"color\": 16744256,\n    \"timestamp\": \"{{ $json.checked_at }}\",\n    \"footer\": {\n      \"text\": \"Home Metrics Monitor\"\n    }\n  }]\n}",
+        "jsonBody": "={ \"content\": \"{{ $json.alert_title }} | Stale: {{ $json.stale_count }} | Healthy: {{ $json.healthy_count }}\" }",
         "options": {}
       },
       "id": "send-discord-alert",
