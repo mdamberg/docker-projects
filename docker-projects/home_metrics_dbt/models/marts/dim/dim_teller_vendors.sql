@@ -4,7 +4,7 @@
   ) }}
 
   with vendors as (
-      select distinct
+      select 
           vendor_key,
           vendor as vendor_name,
           teller_vendor_category as vendor_category,
