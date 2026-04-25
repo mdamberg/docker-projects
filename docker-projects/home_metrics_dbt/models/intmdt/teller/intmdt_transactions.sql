@@ -60,7 +60,7 @@ enriched as (
         -- Dimensional Keys (for Grouping)
         {{ dbt_utils.generate_surrogate_key(['account_holder']) }} as account_holder_key,
         {{ dbt_utils.generate_surrogate_key(['transaction_type']) }} as transaction_type_key,
-        {{ dbt_utils.generate_surrogate_key(['coalesce(custom_category, transaction_category)']) }} as transaction_category_key,
+        {{ dbt_utils.generate_surrogate_key(['coalesce(custom_category, transaction_category)']) }} as category_key,
         {{ dbt_utils.generate_surrogate_key(['coalesce(vendor_normalized, vendor_name, transaction_description)']) }} as vendor_key,
 
         -- Date Key
@@ -91,8 +91,8 @@ enriched as (
 
         -- Vendor fields (mapped with fallback)
         coalesce(vendor_normalized, vendor_name, transaction_description) as vendor,
-        vendor_name as vendor_name,
-        vendor_category as vendor_category,
+        vendor_name as teller_vendor_name,
+        vendor_category as teller_vendor_category,
 
         -- Flags
         coalesce(is_recurring, false) as is_recurring,
