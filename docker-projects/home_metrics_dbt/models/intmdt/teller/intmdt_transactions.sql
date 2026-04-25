@@ -19,7 +19,6 @@ transactions_with_accounts as (
     select
         t.*,
         a.account_pk,
-        a.account_key,
         a.account_holder,
         a.account_name_friendly,
         a.last_four,
@@ -37,10 +36,7 @@ mapped as (
         m.custom_subcategory,
         m.vendor_normalized,
         m.is_recurring,
-        row_number() over (
-            partition by t.transaction_pk
-            order by length(m.description_pattern) desc
-        ) as match_rank
+        row_number() over (partition by t.transaction_pk order by length(m.description_pattern) desc) as match_rank
     from transactions_with_accounts t
     left join category_map m
         on t.transaction_description ilike '%' || m.description_pattern || '%'
@@ -64,7 +60,7 @@ enriched as (
         -- Dimensional Keys (for Grouping)
         {{ dbt_utils.generate_surrogate_key(['account_holder']) }} as account_holder_key,
         {{ dbt_utils.generate_surrogate_key(['transaction_type']) }} as transaction_type_key,
-        {{ dbt_utils.generate_surrogate_key(['coalesce(custom_category, transaction_category)']) }} as category_key,
+        {{ dbt_utils.generate_surrogate_key(['coalesce(custom_category, transaction_category)']) }} as transaction_category_key,
         {{ dbt_utils.generate_surrogate_key(['coalesce(vendor_normalized, vendor_name, transaction_description)']) }} as vendor_key,
 
         -- Date Key
@@ -95,8 +91,8 @@ enriched as (
 
         -- Vendor fields (mapped with fallback)
         coalesce(vendor_normalized, vendor_name, transaction_description) as vendor,
-        vendor_name as teller_vendor_name,
-        vendor_category as teller_vendor_category,
+        vendor_name as vendor_name,
+        vendor_category as vendor_category,
 
         -- Flags
         coalesce(is_recurring, false) as is_recurring,

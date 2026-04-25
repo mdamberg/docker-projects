@@ -6,26 +6,61 @@
 
 with transactions as (
     select
+        
+        -- Primary and Surrogate Keys
         transaction_pk,
+        transaction_skey,  
+        
+        -- Date Key
+        date_key,
+        
+        -- Account Keys
+        account_pk,
         account_key,
-        category_key,
-        transaction_date,
-        transaction_time,
-        account_type,
-        account_name,
-        account_number,
+        
+        -- Account Attributes
+        account_holder_key,
+        transaction_type_key,
         account_holder,
-        transaction_name,
-        transaction_type,
-        case    
-            when transaction_category ilike '%STDNT LN%' then 'Student Loan'
-                else transaction_category 
-                    end as transaction_category,
+        account_name_friendly,
+        last_four,
+        account_type,
+        account_subtype,
+        
+        -- Transaction Identifiers
+        teller_transaction_id,
+        teller_account_id,
+        
+        -- Transaction Attributes
+        transaction_date,
+        transaction_description,
         transaction_amount,
-        is_recurring_payment_flag,
-        is_large_transaction_flag,
-        row_number() over( )
-    from {{ ref('stg_transactions') }}
-    where transaction_category not in ('Savings Transfer', 'Internal Transfers', 'Credit Card Payment')
+        transaction_status,
+        transaction_type,
+        row_number() over(partition by vendor_key order by transaction_date) as vendor_transaction_num,
+        
+        -- Category fields (mapped with fallback to original)
+        category_key,
+        category,
+        subcategory,
+        teller_category,
+        
+        -- Vendor fields (mapped with fallback)
+        vendor_key,
+        vendor,
+        teller_vendor_name,
+        teller_vendor_category,
+        
+        -- Flags
+        is_recurring,
+        is_mapped,
+        running_balance,
+        
+        -- Timestamps
+        transaction_inserted_at,
+        transaction_updated_at
+
+    from {{ ref('intmdt_transactions') }}
 )
+
 select * from transactions

@@ -2,86 +2,200 @@ models:
   - name: fct_transactions
     columns:
       - name: transaction_pk
-        description: ""
+        description: "Primary key from raw transactions table"
         config:
           meta:
             dimension:
-              type: number
+              type: string
       - name: account_key
-        description: ""
+        description: "Dimension key - groups transactions by account"
         config:
           meta:
             dimension:
               type: string
       - name: category_key
-        description: ""
+        description: "Dimension key - groups transactions by category"
         config:
           meta:
             dimension:
               type: string
       - name: transaction_date
-        description: ""
+        description: "Date of the transaction"
         config:
           meta:
             dimension:
               type: date
-      - name: transaction_time
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: timestamp
       - name: account_type
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: account_name
-        description: ""
+        description: "Type of the account (checking, savings, credit)"
         config:
           meta:
             dimension:
               type: string
       - name: account_holder
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: transaction_name
-        description: ""
+        description: "Name of the account holder"
         config:
           meta:
             dimension:
               type: string
       - name: transaction_type
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: transaction_category
-        description: ""
+        description: "Type of the transaction (credit or debit)"
         config:
           meta:
             dimension:
               type: string
       - name: transaction_amount
-        description: ""
+        description: "Amount of the transaction (negative for debits)"
         config:
           meta:
             dimension:
               type: number
-      - name: is_recurring_payment_flag
-        description: "1 if transaction description contains 'RECURRING PAYMENT', 0 otherwise"
+      - name: transaction_skey
+        description: "Surrogate key for transaction"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: date_key
+        description: "Date key for the transaction"
         config:
           meta:
             dimension:
               type: number
-      - name: is_large_transaction_flag
-        description: "1 if absolute transaction amount > $1000, 0 otherwise"
+      - name: account_pk
+        description: "Primary key for the account"
         config:
           meta:
             dimension:
               type: number
+      - name: account_holder_key
+        description: "Dimension key for account holder"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_type_key
+        description: "Dimension key for transaction type"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name_friendly
+        description: "Human-readable account name"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: last_four
+        description: "Last four digits of account number"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_subtype
+        description: "Subtype of the account (e.g. personal checking, business savings)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_transaction_id
+        description: "ID of the transaction in the Teller system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_account_id
+        description: "ID of the account in the Teller system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_description
+        description: "Description of the transaction"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_status
+        description: "Status of the transaction (e.g. pending, posted)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_transaction_num
+        description: "Sequential number for transactions within each vendor"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: category
+        description: "Category of the transaction (mapped with fallback to original)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: subcategory
+        description: "Subcategory of the transaction (mapped with fallback to original)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_category
+        description: "Category of the transaction in the Teller system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor_key
+        description: "Key for the vendor"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: vendor
+        description: "Name of the vendor"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_vendor_name
+        description: "Name of the vendor in the Teller system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_vendor_category
+        description: "Category of the vendor in the Teller system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: is_recurring
+        description: "Indicates if the transaction is recurring"
+        config:
+          meta:
+            dimension:
+              type: boolean
+      - name: is_mapped
+        description: "Indicates if the transaction is mapped"
+        config:
+          meta:
+            dimension:
+              type: boolean
+      - name: running_balance
+        description:  "Account balance after the transaction"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_inserted_at
+        description: "Timestamp when the transaction was inserted"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_updated_at
+        description: "Timestamp when the transaction was last updated"
+        config:
+          meta:
+            dimension:
+              type: string
