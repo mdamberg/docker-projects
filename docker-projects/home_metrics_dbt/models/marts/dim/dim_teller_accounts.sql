@@ -6,7 +6,7 @@
 with accounts as (
     select 
         account_key,
-        teller_account_id
+        teller_account_id,
         account_holder,
         account_name_friendly,
         account_name,

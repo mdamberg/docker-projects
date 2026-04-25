@@ -7,6 +7,12 @@ models:
           meta:
             dimension:
               type: string
+      - name: teller_account_id
+        description: "Teller's unique account identifier"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_holder
         description: "Name of the account holder"
         config:

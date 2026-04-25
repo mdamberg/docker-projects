@@ -50,7 +50,7 @@ models:
           meta:
             dimension:
               type: string
-      - name: transaction_category_key
+      - name: category_key
         description: "Dimension key - groups by transaction category"
         config:
           meta:
@@ -140,24 +140,54 @@ models:
           meta:
             dimension:
               type: string
-      - name: transaction_category
-        description: "Transaction category"
+      - name: category
+        description: "Transaction category (mapped with fallback to Teller category)"
         config:
           meta:
             dimension:
               type: string
-      - name: vendor_name
-        description: "Merchant/vendor name"
+      - name: subcategory
+        description: "Custom subcategory from mapping"
         config:
           meta:
             dimension:
               type: string
-      - name: vendor_category
-        description: "Merchant category code description"
+      - name: teller_category
+        description: "Original transaction category from Teller"
         config:
           meta:
             dimension:
               type: string
+      - name: vendor
+        description: "Vendor name (mapped with fallback to Teller vendor)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_vendor_name
+        description: "Original merchant/vendor name from Teller"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_vendor_category
+        description: "Original merchant category code description from Teller"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: is_recurring
+        description: "Whether the transaction is recurring"
+        config:
+          meta:
+            dimension:
+              type: boolean
+      - name: is_mapped
+        description: "Whether the transaction was matched to a custom category mapping"
+        config:
+          meta:
+            dimension:
+              type: boolean
       - name: running_balance
         description: "Account balance after transaction"
         config:
