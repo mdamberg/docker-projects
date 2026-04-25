@@ -162,6 +162,9 @@ The sync pattern is designed to be repeatable. To add a new source (e.g. Slack, 
 
 ## Related Documentation
 
+- [Architecture Diagram](architecture.md)
+
+
 - [Analytics Stack Overview](../analytics-stack/README.md) — the Postgres instance this uses
 - [PostgreSQL Service](../analytics-stack/services/postgresql.md) — connection details
 - [n8n Workflows](../analytics-stack/services/n8n.md) — existing workflow patterns

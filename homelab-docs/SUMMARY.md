@@ -51,6 +51,7 @@
     * [Troubleshooting](analytics-stack/ops/troubleshooting.md)
 * Claude Brain
   * [Overview](claude-brain/README.md)
+  * [Architecture Diagram](claude-brain/architecture.md)
 * Financial Data
   * [Teller Integration](financial-data/README.md)
 * Utilities
