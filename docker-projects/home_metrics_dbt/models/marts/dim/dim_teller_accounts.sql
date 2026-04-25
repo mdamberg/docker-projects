@@ -1,5 +1,12 @@
+{{ config(
+    materialized = 'table',
+    schema = 'marts'
+) }}
+
 with accounts as (
     select 
+        account_key,
+        teller_account_id
         account_holder,
         account_name_friendly,
         account_name,
@@ -9,11 +16,7 @@ with accounts as (
         account_status,
         institution_name,
         institution_id,
-        account_key,
-        teller_account_id,
         enrollment_id,
-        account_type,
-        account_subtype,
         inserted_at,
         updated_at
 from {{ ref('stg_teller_accounts') }} 

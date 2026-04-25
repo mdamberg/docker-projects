@@ -1,0 +1,81 @@
+models:
+  - name: dim_teller_accounts
+    columns:
+      - name: account_key
+        description: "dimensional key based on teller_account_id, used for joining with transactions"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_holder
+        description: "Name of the account holder"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name_friendly
+        description: "Friendly name for the account (e.g. 'Chase Checking')"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name
+        description: "Name of the account"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_type
+        description: "Type of the account (e.g. checking, savings, credit)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_subtype
+        description: "Subtype of the account (e.g. personal checking, business savings)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: last_four
+        description: "Last four digits of the account number"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_status
+        description: "Status of the account"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_name
+        description: "Name of the institution"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_id
+        description: "ID of the institution"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: enrollment_id
+        description: "ID of the enrollment"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: inserted_at
+        description: "Timestamp when the account was inserted into the system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: updated_at
+        description: "Timestamp when the account was last updated"
+        config:
+          meta:
+            dimension:
+              type: string
