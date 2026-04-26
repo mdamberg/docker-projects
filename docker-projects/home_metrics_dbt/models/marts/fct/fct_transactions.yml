@@ -1,12 +1,6 @@
 models:
   - name: fct_transactions
     columns:
-      - name: transaction_pk
-        description: "Primary key from raw transactions table"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: account_key
         description: "Dimension key - groups transactions by account"
         config:
@@ -45,6 +39,18 @@ models:
               type: string
       - name: transaction_amount
         description: "Amount of the transaction (negative for debits)"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: amount_normalized
+        description: "Amount of the transaction (positive for debits)"
+        config:
+          meta:
+            dimension:
+              type: number 
+      - name: transaction_flow
+        description: "Flags transactions as crdits if > 0 and debits if < 0"
         config:
           meta:
             dimension:

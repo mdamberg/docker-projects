@@ -8,7 +8,7 @@ with transactions as (
     select
         
         -- Primary and Surrogate Keys
-        transaction_pk,
+      --  transaction_pk,
         transaction_skey,  
         
         -- Date Key
@@ -35,6 +35,8 @@ with transactions as (
         transaction_date,
         transaction_description,
         transaction_amount,
+        transaction_amount_normalized,
+        transaction_flow,
         transaction_status,
         transaction_type,
         row_number() over(partition by vendor_key order by transaction_date) as vendor_transaction_num,

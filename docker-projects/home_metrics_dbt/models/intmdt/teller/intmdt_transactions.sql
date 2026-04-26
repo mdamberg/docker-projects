@@ -81,6 +81,8 @@ enriched as (
         transaction_date,
         transaction_description,
         transaction_amount,
+        amount_normalized as transaction_amount_normalized,
+        transaction_flow,
         transaction_status,
         transaction_type,
 

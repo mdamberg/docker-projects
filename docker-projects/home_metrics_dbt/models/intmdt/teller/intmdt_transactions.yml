@@ -128,6 +128,18 @@ models:
           meta:
             dimension:
               type: number
+      - name: transaction_amount_normalized
+        description: "Transaction amount: credits = + and debits = -"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_flow
+        description: "Flag for whether a transaction is a debit (-) or credit (+)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: transaction_status
         description: "Transaction status (pending, posted)"
         config:

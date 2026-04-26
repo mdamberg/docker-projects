@@ -16,6 +16,17 @@ select
     amount as transaction_amount,
     status as transaction_status,
     type as transaction_type,
+    case
+        when amount > 0 then 'debit'
+        when amount < 0 then 'credit'
+        else 'zero'
+    end as transaction_flow,
+    case
+        when type = 'payment' then 0
+        when amount > 0 then -abs(amount)
+        when amount < 0 then abs(amount)
+        else 0
+    end as amount_normalized,
     category as transaction_category,
     merchant_name as vendor_name,
     merchant_category as vendor_category,
