@@ -1,3 +1,6 @@
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-gray; icon-glyph: bolt;
 // n8n Pipeline Status Widget
 // Requires: n8n API key (Settings -> API in n8n UI)
 // Supports: Small (summary), Medium (6 workflows), Large (12 workflows)
