@@ -1,0 +1,105 @@
+models:
+  - name: monthly_transactions
+    columns:
+      - name: month_start_date
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: month_end_date
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: account_type
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_key
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: monthly_transaction_skey
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_holder
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name_friendly
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: last_four
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_subtype
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: category
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: has_recurring
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: boolean
+      - name: transaction_count
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: net_income
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: max_monthly_balance
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: min_running_balance
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: total_expenses
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: total_income
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
