@@ -15,7 +15,7 @@ async function fetchJson(path) {
 }
 
 async function getData() {
-  var wfRes = await fetchJson("/api/v1/workflows?limit=40&active=true");
+  var wfRes = await fetchJson("/api/v1/workflows?limit=40");
   var exRes = await fetchJson("/api/v1/executions?limit=100&includeData=false");
 
   var wfData = wfRes.data || [];
@@ -138,6 +138,13 @@ function buildList(widget, workflows, maxRows) {
   ts.textColor = Color.gray();
 
   widget.addSpacer(6);
+
+  if (workflows.length === 0) {
+    var empty = widget.addText("No workflows found. Check API key.");
+    empty.font = Font.systemFont(11);
+    empty.textColor = Color.gray();
+    return;
+  }
 
   var count = workflows.length;
   if (count > maxRows) { count = maxRows; }
