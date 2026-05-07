@@ -1,0 +1,19 @@
+services:
+  work_todo:
+    build: .
+    container_name: work_todo
+    ports:
+      - "5071:5000"          # host:container
+    volumes:
+      - ./data:/app/data
+      - ./templates:/app/templates
+    environment:
+      - FLASK_APP=app.py
+    restart: unless-stopped
+    networks:
+      - homarr_net
+
+networks:
+  homarr_net:
+    external: true
+    name: media_stack_default

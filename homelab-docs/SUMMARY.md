@@ -54,6 +54,11 @@
   * [Architecture Diagram](claude-brain/architecture.md)
 * Financial Data
   * [Teller Integration](financial-data/README.md)
+* Productivity
+  * [Flash Todo](productivity/flash-todo.md)
+  * [Work Todo](productivity/work-todo.md)
+  * [Linkding](productivity/linkding.md)
+  * [phpIPAM](productivity/phpipam.md)
 * Utilities
   * [Ansible Notes](utilities/ansible-notes.md)
   * [Scripts](utilities/scripts.md)

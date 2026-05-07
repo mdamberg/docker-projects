@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work Todo List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #000000;
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        .todo-container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .todo-card {
+            background: #1a1a1a;
+            border: 2px solid #9b59b6;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(155, 89, 182, 0.5);
+            padding: 30px;
+        }
+        .todo-item {
+            background: #0a0a0a;
+            border: 1px solid #00ffff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            color: #ffffff;
+        }
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .todo-item.done {
+            opacity: 0.6;
+            border-color: #9b59b6;
+        }
+        .todo-item.done .task-text {
+            text-decoration: line-through;
+        }
+        .todo-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .todo-task-area {
+            flex: 1;
+            min-width: 0;
+        }
+        .task-text {
+            word-break: break-word;
+        }
+        .add-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .add-form input, .add-form select {
+            background: #1a1a1a;
+            border: 1px solid #00ffff;
+            color: #ffffff;
+        }
+        .add-form input:focus, .add-form select:focus {
+            background: #0a0a0a;
+            border-color: #9b59b6;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+        }
+        .add-form select option {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        .btn-primary {
+            background: #9b59b6;
+            border-color: #9b59b6;
+        }
+        .btn-primary:hover {
+            background: #8e44ad;
+            border-color: #8e44ad;
+        }
+        .btn-outline-success {
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+        .btn-outline-success:hover {
+            background: #00ffff;
+            color: #000000;
+        }
+        .btn-outline-danger {
+            color: #ffff00;
+            border-color: #ffff00;
+        }
+        .btn-outline-danger:hover {
+            background: #ffff00;
+            color: #000000;
+        }
+        .btn-notes {
+            background: transparent;
+            border: 1px solid #555;
+            color: #888;
+            font-size: 11px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-notes:hover {
+            border-color: #9b59b6;
+            color: #9b59b6;
+        }
+        .btn-notes.has-notes {
+            border-color: #9b59b6;
+            color: #9b59b6;
+        }
+        h1 {
+            color: #ffff00;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+        }
+        hr {
+            border-color: #9b59b6;
+            opacity: 0.3;
+        }
+        .text-muted {
+            color: #00ffff !important;
+        }
+        .category-header {
+            color: #ffff00;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #9b59b6;
+        }
+        .category-header:first-of-type {
+            margin-top: 0;
+        }
+        .priority-select {
+            background: #1a1a1a;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .priority-select:hover {
+            opacity: 0.8;
+        }
+        .priority-select option {
+            background: #1a1a1a;
+            color: #ffffff;
+        }
+        .notes-section {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #222;
+        }
+        .notes-section textarea {
+            background: #111;
+            border: 1px solid #9b59b6;
+            color: #cccccc;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 13px;
+            padding: 6px 8px;
+            resize: vertical;
+            min-height: 60px;
+        }
+        .notes-section textarea:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 6px rgba(0, 255, 255, 0.3);
+        }
+        .notes-display {
+            color: #aaaaaa;
+            font-size: 12px;
+            margin-top: 6px;
+            padding: 4px 8px;
+            border-left: 2px solid #9b59b6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="todo-container">
+        <h1>💼 Work Todo List</h1>
+
+        <!-- Metrics Dashboard -->
+        <div class="todo-card mb-3">
+            <h5 style="color: #00ffff; margin-bottom: 15px;">📊 Dashboard</h5>
+            <div class="row text-center">
+                <div class="col-6 col-md-3 mb-2 mb-md-0">
+                    <div style="color: #9b59b6; font-size: 24px; font-weight: bold;">{{ metrics.total }}</div>
+                    <div style="color: #00ffff; font-size: 12px;">Total Tasks</div>
+                </div>
+                <div class="col-6 col-md-3 mb-2 mb-md-0">
+                    <div style="color: #ffff00; font-size: 24px; font-weight: bold;">{{ metrics.pending }}</div>
+                    <div style="color: #00ffff; font-size: 12px;">Pending</div>
+                </div>
+                <div class="col-6 col-md-3 mb-2 mb-md-0">
+                    <div style="color: #00ffff; font-size: 24px; font-weight: bold;">{{ metrics.completed }}</div>
+                    <div style="color: #00ffff; font-size: 12px;">Completed</div>
+                </div>
+                <div class="col-6 col-md-3 mb-2 mb-md-0">
+                    <div style="color: #9b59b6; font-size: 24px; font-weight: bold;">{{ metrics.completion_percentage }}%</div>
+                    <div style="color: #00ffff; font-size: 12px;">Complete</div>
+                </div>
+            </div>
+            {% if metrics.high_priority_pending > 0 %}
+            <div class="mt-3 text-center" style="color: #ffff00;">
+                🔴 <strong>{{ metrics.high_priority_pending }}</strong> High Priority Task{{ 's' if metrics.high_priority_pending > 1 else '' }} Remaining
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="todo-card">
+            <!-- Add Form -->
+            <form method="POST" action="/add" class="add-form">
+                <input
+                    type="text"
+                    name="task"
+                    class="form-control flex-grow-1"
+                    placeholder="Enter a new task..."
+                    required
+                    autofocus
+                >
+                <select name="category" class="form-select" style="width: auto;">
+                    <option value="Projects">📁 Projects</option>
+                    <option value="Planning">🗺️ Planning</option>
+                    <option value="Meetings/Follow-ups">📅 Meetings</option>
+                    <option value="Documentation">📄 Docs</option>
+                    <option value="Research">🔍 Research</option>
+                    <option value="General" selected>📝 General</option>
+                </select>
+                <select name="priority" class="form-select" style="width: auto;">
+                    <option value="High">🔴 High</option>
+                    <option value="Medium" selected>🟡 Medium</option>
+                    <option value="Low">🟢 Low</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+
+            <hr class="my-4">
+
+            <!-- Sort Controls -->
+            <div class="d-flex gap-2 mb-3 align-items-center">
+                <span style="color: #00ffff; font-size: 13px;">Sort by:</span>
+                <a href="/?sort=category" class="btn btn-sm"
+                   style="{% if sort == 'category' %}background: #9b59b6; border-color: #9b59b6; color: #ffffff;{% else %}color: #9b59b6; border: 1px solid #9b59b6;{% endif %}">
+                    📂 Category
+                </a>
+                <a href="/?sort=urgency" class="btn btn-sm"
+                   style="{% if sort == 'urgency' %}background: #ffff00; border-color: #ffff00; color: #000000;{% else %}color: #ffff00; border: 1px solid #ffff00;{% endif %}">
+                    🔴 Urgency
+                </a>
+            </div>
+
+            {% if grouped_todos %}
+                {% for category, category_todos in grouped_todos.items() %}
+                <div class="category-header">
+                    {% if sort == 'urgency' %}
+                        {% if category == 'High' %}🔴 High Priority
+                        {% elif category == 'Medium' %}🟡 Medium Priority
+                        {% else %}🟢 Low Priority
+                        {% endif %}
+                    {% elif category == 'Projects' %}📁 Projects
+                    {% elif category == 'Planning' %}🗺️ Planning
+                    {% elif category == 'Meetings/Follow-ups' %}📅 Meetings/Follow-ups
+                    {% elif category == 'Documentation' %}📄 Documentation
+                    {% elif category == 'Research' %}🔍 Research
+                    {% else %}📝 General
+                    {% endif %}
+                    <span style="color: #00ffff; font-size: 14px;">({{ category_todos|length }} task{{ 's' if category_todos|length > 1 else '' }})</span>
+                </div>
+
+                {% for todo in category_todos %}
+                <div class="todo-item {% if todo.done %}done{% endif %}">
+                    <div class="todo-top-row">
+                        <!-- Priority dropdown -->
+                        <form method="POST" action="/update_priority/{{ todo.id }}" style="display: inline-block; flex-shrink: 0;">
+                            <input type="hidden" name="sort" value="{{ sort }}">
+                            <select name="priority"
+                                    class="priority-select"
+                                    onchange="this.form.submit()"
+                                    style="border: 1px solid {% if todo.priority == 'High' %}#ffff00{% elif todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %}; color: {% if todo.priority == 'High' %}#ffff00{% elif todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %};">
+                                <option value="High" {% if todo.priority == 'High' %}selected{% endif %}>🔴</option>
+                                <option value="Medium" {% if todo.priority == 'Medium' %}selected{% endif %}>🟡</option>
+                                <option value="Low" {% if todo.priority == 'Low' %}selected{% endif %}>🟢</option>
+                            </select>
+                        </form>
+
+                        <!-- Category dropdown -->
+                        <form method="POST" action="/update_category/{{ todo.id }}" style="display: inline-block; flex-shrink: 0;">
+                            <input type="hidden" name="sort" value="{{ sort }}">
+                            <select name="category"
+                                    class="priority-select"
+                                    onchange="this.form.submit()"
+                                    style="border: 1px solid #9b59b6; color: #9b59b6;">
+                                <option value="Projects" {% if todo.category == 'Projects' %}selected{% endif %}>📁</option>
+                                <option value="Planning" {% if todo.category == 'Planning' %}selected{% endif %}>🗺️</option>
+                                <option value="Meetings/Follow-ups" {% if todo.category == 'Meetings/Follow-ups' %}selected{% endif %}>📅</option>
+                                <option value="Documentation" {% if todo.category == 'Documentation' %}selected{% endif %}>📄</option>
+                                <option value="Research" {% if todo.category == 'Research' %}selected{% endif %}>🔍</option>
+                                <option value="General" {% if todo.category == 'General' %}selected{% endif %}>📝</option>
+                            </select>
+                        </form>
+
+                        <!-- Task text -->
+                        <div class="todo-task-area">
+                            <span class="task-text">
+                                {% if todo.done %}✅{% else %}⬜{% endif %} {{ todo.task }}
+                            </span>
+                        </div>
+
+                        <!-- Notes toggle -->
+                        <button type="button"
+                                class="btn-notes {% if todo.notes %}has-notes{% endif %}"
+                                onclick="toggleNotes({{ todo.id }})"
+                                title="{% if todo.notes %}View/edit notes{% else %}Add a note{% endif %}">
+                            📝{% if todo.notes %} ✓{% endif %}
+                        </button>
+
+                        <!-- Action buttons -->
+                        <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                            <a href="/toggle/{{ todo.id }}" class="btn btn-sm btn-outline-success">
+                                {% if todo.done %}Undo{% else %}Done{% endif %}
+                            </a>
+                            <a href="/delete/{{ todo.id }}" class="btn btn-sm btn-outline-danger">Del</a>
+                        </div>
+                    </div>
+
+                    <!-- Notes section (collapsed by default, open if notes exist) -->
+                    <div class="notes-section" id="notes-{{ todo.id }}" {% if todo.notes %}style="display: block;"{% endif %}>
+                        {% if todo.notes and not todo.notes == '' %}
+                        <div class="notes-display" id="notes-display-{{ todo.id }}">{{ todo.notes }}</div>
+                        {% endif %}
+                        <form method="POST" action="/update_notes/{{ todo.id }}" style="margin-top: 8px;">
+                            <input type="hidden" name="sort" value="{{ sort }}">
+                            <textarea name="notes" placeholder="Add a note...">{{ todo.notes }}</textarea>
+                            <div style="display: flex; gap: 6px; margin-top: 6px;">
+                                <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                <button type="button" class="btn btn-sm" style="color: #555; border: 1px solid #333;" onclick="toggleNotes({{ todo.id }})">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-muted mt-4">
+                    No tasks yet. Add one above to get started. 🚀
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function toggleNotes(todoId) {
+            const section = document.getElementById('notes-' + todoId);
+            section.style.display = section.style.display === 'none' || section.style.display === '' ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
