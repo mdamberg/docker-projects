@@ -57,3 +57,5 @@
 * Utilities
   * [Ansible Notes](utilities/ansible-notes.md)
   * [Scripts](utilities/scripts.md)
+* Weather
+  * [Weather Widget](weather/README.md)
